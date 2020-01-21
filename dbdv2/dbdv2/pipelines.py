@@ -12,9 +12,9 @@ from scrapy.exceptions import DropItem
 class Dbdv2Pipeline(object):
     def __init__(self):
         self.db = mysql.connector.connect(
-                host='localhost',
+                host='dbd_database_1',
                 user='root',
-                passwd='qliphoth',
+                passwd='1234',
                 database='dbd'
                 )
     def open_spider(self, spider):

@@ -42,7 +42,7 @@ class DbdExcelReader(object):
 
         
     def hanldeData(self):
-        self.data_dict['ID'] = self.data_dict['ID'].astype('str')
+        #self.data_dict['ID'] = self.data_dict['ID'].astype('str')
         self.data_dict['REGISTRATION_MONEY'] = self.data_dict['REGISTRATION_MONEY'].astype('str')
         self.data_dict['ZIPCODE'] = self.data_dict['ZIPCODE'].astype('str')
         self.data_dict['BUSINESS_TYPE_CODE'] = self.data_dict['BUSINESS_TYPE_CODE'].astype('str')
@@ -90,10 +90,24 @@ class DbdExcelReader(object):
 
 
 if __name__ == "__main__":
-    if len(sys.argv)>1:
-        num = sys.argv[1]
+    import wget
+    import os
+    num = 10
+    if len(sys.argv)>2:
+        year = sys.argv[1]
+        month = sys.argv[2]
+        if len(sys.argv)>3:
+            num = sys.argv[3]
+        if len(month)==1 : month = '0'+month
+        datetime = year+month
 
-    a = DbdExcelReader("99_201901.xls", num)
-    a.start()
+        url = 'https://www.dbd.go.th/download/document_file/Statisic/2562/XLS/99_%s.xls'% datetime
+        filename = './company_excel/' + '99_%s.xls' %datetime
+
+        if not os.path.isfile(filename):
+            wget.download(url, './company_excel/')
+
+        a = DbdExcelReader(filename, num)
+        a.start()
 
         

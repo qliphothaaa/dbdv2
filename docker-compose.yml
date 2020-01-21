@@ -1,0 +1,25 @@
+version: '3.7'
+
+services:
+    python:
+        build:
+            context: ./
+            dockerfile: python.dockerfile
+        restart: always
+        volumes:
+            - ./dbdv2:/dbdv2
+            - ./chromedriver:/usr/bin/chromedriver
+        tty: true
+        depends_on:
+            - database
+
+    database:
+        image: mysql
+        restart: always
+        env_file:
+            - .env
+        ports:
+            - "3309:3309"
+        volumes:
+            - ./my.cnf:/etc/mysql/conf.d/my.cnf
+            - ./dbd.sql:/tmp/dbd.sql

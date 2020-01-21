@@ -1,3 +1,0 @@
-#!/bin/bash
-cd dbdv2/data_access/
-python3 xls_reader.py 10

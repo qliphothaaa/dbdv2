@@ -3,10 +3,11 @@ import datetime
 
 class DbdConnector(object):
     def __init__(self):
+        print('init db')
         self.db = mysql.connector.connect(
-                host='localhost', 
+                host='dbd_database_1', 
                 user='root', 
-                passwd='qliphoth',
+                passwd='1234',
                 database='dbd'
                 )
         
@@ -27,7 +28,7 @@ class DbdConnector(object):
             cur.execute(query, values)
             self.db.commit()
             print('insert into dbdcompany success',end=' ')
-            print(values[0])#if insert success, It print value
+            print(values[1])#if insert success, It print value
         except Exception as e:
             
             if e.errno == 1062:#the code when the data already in database
@@ -88,14 +89,11 @@ class DbdConnector(object):
             cur.close()
 
 
-    def dbClose(self):
-        self.db.close()
-        print("database close")
 
     def getCompanyIdList(self):
         try:
             cur = self.db.cursor()
-            query = ' select DBD_COMPANY_ID from dbd_new_query'
+            query = 'select DBD_COMPANY_ID from dbd_new_query Where DBD_STATUS is NULL'
             cur.execute(query)
             ids = cur.fetchall()
         except Exception as e:
@@ -105,6 +103,10 @@ class DbdConnector(object):
             cur.close()
         return ids
 
+
+    def dbClose(self):
+        self.db.close()
+        print("database closed")
 
 if __name__ == '__main__':
     db = DbdConnector()
