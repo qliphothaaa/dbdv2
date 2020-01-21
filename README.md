@@ -22,8 +22,8 @@ docker exec -it dbd_python_1 bash
 
 cd dbdv2
 
-./load_from_excel
+./load_from_excel #load the excel file to database, then you can go to database and select * from dbdcompany to see result.
 
-./crawl
+./crawl#start the scraping
 
 
