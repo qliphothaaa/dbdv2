@@ -14,7 +14,7 @@ services:
             - database
 
     database:
-        image: mysql
+        image: mariadb
         restart: always
         env_file:
             - .env

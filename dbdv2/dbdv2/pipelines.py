@@ -30,7 +30,7 @@ class Dbdv2Pipeline(object):
         directors    = item['directors']
         company_id   = item['company_id']
 
-        if status != None:
+        if status:
 
             directors_text = ''
             for index, name in enumerate(directors):

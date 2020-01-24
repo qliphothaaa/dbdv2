@@ -27,3 +27,8 @@ cd dbdv2
 ./crawl#start the scraping
 
 
+
+x. test
+
+./test
+(some path ploblem. If the console say like "No module named 'dbd_connector'", please add a "." before the module name.) 

@@ -20,6 +20,7 @@ class DbdExcelReader(object):
         #self.data_dict = pd.read_excel(self.path, skiprows=2)
         self.data_dict = pd.read_excel(self.path, skiprows=2, converters={'เลขทะเบียน':str}, nrows=self.rows)# import excel file as pandas dataframe
         self.data_dict.rename(columns={
+            "ลำดับ": "ROW",
             "เลขทะเบียน":"ID", 
             "ชื่อนิติบุคคล":"NAME_TH", 
             "วันที่\nจดทะเบียน":"REGISTRATION_DATE", 
