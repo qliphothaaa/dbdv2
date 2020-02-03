@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>new_query</title>
+</head>
+<body>
+    <h1>newquery info</h1>
+    <table>
+    <tr style="outline: thin solid">
+        <th>company_id</th>
+        <th>typecode</th>
+        <th>status</th>
+        <th>last_run</th>
+    </tr>
+    {% for query in new_query_list %}
+    <tr style="outline: thin solid">
+        <td>{{query.dbd_company_id}}</td>
+        <td>{{query.dbd_typecode}}</td>
+        <td>{{query.dbd_status}}</td>
+        <td>{{query.dbd_last_run}}</td>
+    </tr>
+    {% endfor %}
+    </table>
+</body>
+</html>

@@ -1,5 +1,5 @@
 import unittest
-from captcha.captcha_reader import readCaptcha
+from browser.captcha_reader import readCaptcha
 
 
 class TestBrowser(unittest.TestCase):

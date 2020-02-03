@@ -5,30 +5,17 @@ dbdv2
 docker-compose up
 
 
-2. enter the database
+2. 
+enter the main program
+docker exec -it dbd_python ./start.sh
 
-docker exec -it dbd_database_1 bash
-
-3. load the database
-
-mysql -u root -p < tmp/dbd.sql
-
-password is 1234
-
-
-4. enter the main program and run it
-
-docker exec -it dbd_python_1 bash
-
-cd dbdv2
-
-./load_from_excel #load the excel file to database, then you can go to database and select * from dbdcompany to see result.
-
-./crawl#start the scraping
+start the frontend:
+docker exec -it dbd_web python3 manage.py runserver 0.0.0.0:8000
 
 
 
-x. test
-
-./test
-(some path ploblem. If the console say like "No module named 'dbd_connector'", please add a "." before the module name.) 
+3.
+http://localhost:9000/
+(the front end of the program)
+http://localhost:8090/
+(the airflow of the program)

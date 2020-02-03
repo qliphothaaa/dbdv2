@@ -16,6 +16,11 @@ class DbdSpider(scrapy.Spider):
     def start_requests(self):
         db = DbdConnector()
         company_ids = db.getCompanyIdList()
+        if len(company_ids) > 0:
+            print("======================Strat scraping! There are %d company in schedule=================" % len(company_ids))
+        else:
+            print("======================no company in schedule! All data are complete====================")
+
         for i in company_ids:
             company_id = i[0]
             url = 'https://datawarehouse.dbd.go.th/company/profile/%s/%s' %(company_id[3],company_id)

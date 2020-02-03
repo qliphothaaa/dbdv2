@@ -1,5 +1,9 @@
 import pandas as pd
-from dbd_connector import DbdConnector
+import numpy as np
+try:
+    from dbd_connector import DbdConnector
+except:
+    from .dbd_connector import DbdConnector
 import sys
 
 #data = pd.read_excel('99_201901.xls', skiprows=2, nrows=10)
@@ -36,9 +40,13 @@ class DbdExcelReader(object):
         
 
     def checkData(self):
-        #here to check the data is right or not
-        #not implement yet
-        pass
+        check_nan_df = pd.isnull(self.data_dict)
+        position = np.where(check_nan_df)
+        for i in range(len(position[0])):
+            x = position[0][i]
+            y = position[1][i]
+            self.data_dict.iloc[x,y] = 'NaN'
+
 
 
         
@@ -90,25 +98,5 @@ class DbdExcelReader(object):
     '''
 
 
-if __name__ == "__main__":
-    import wget
-    import os
-    num = 10
-    if len(sys.argv)>2:
-        year = sys.argv[1]
-        month = sys.argv[2]
-        if len(sys.argv)>3:
-            num = sys.argv[3]
-        if len(month)==1 : month = '0'+month
-        datetime = year+month
-
-        url = 'https://www.dbd.go.th/download/document_file/Statisic/2562/XLS/99_%s.xls'% datetime
-        filename = './company_excel/' + '99_%s.xls' %datetime
-
-        if not os.path.isfile(filename):
-            wget.download(url, './company_excel/')
-
-        a = DbdExcelReader(filename, num)
-        a.start()
 
         

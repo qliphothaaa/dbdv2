@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>company</title>
+</head>
+<body>
+    <h1>company info</h1>
+    <table>
+    <tr style="outline: thin solid">
+        <th>id</th>
+        <th>type</th>
+        <th>name_th</th>
+        <th>registration_date</th>
+        <th>registration_money</th>
+        <th>status</th>
+        <th>address</th>
+        <th>objective</th>
+        <th>street</th>
+        <th>subdistrict</th>
+        <th>district</th>
+        <th>province</th>
+        <th>zipcode</th>
+        <th>business_type_code</th>
+        <th>business_type</th>
+        <th>directors</th>
+    </tr>
+    {% for company in company_list %}
+    <tr style="outline: thin solid">
+        <td>{{company.dbd_id}}</td>
+        <td>{{company.dbd_type}}</td>
+        <td>{{company.dbd_name_th}}</td>
+        <td>{{company.dbd_registration_date}}</td>
+        <td>{{company.dbd_registration_money}}</td>
+        <td>{{company.dbd_status}}</td>
+        <td>{{company.dbd_address}}</td>
+        <td>{{company.dbd_objective}}</td>
+        <td>{{company.dbd_street}}</td>
+        <td>{{company.dbd_subdistrict}}</td>
+        <td>{{company.dbd_district}}</td>
+        <td>{{company.dbd_province}}</td>
+        <td>{{company.dbd_zipcode}}</td>
+        <td>{{company.dbd_business_type_code}}</td>
+        <td>{{company.dbd_business_type}}</td>
+        <td>{{company.dbd_directors}}</td>
+    </tr>
+    {% endfor %}
+    </table>
+</body>
+</html>
+

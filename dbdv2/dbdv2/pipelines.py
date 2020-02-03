@@ -12,7 +12,7 @@ from scrapy.exceptions import DropItem
 class Dbdv2Pipeline(object):
     def __init__(self):
         self.db = mysql.connector.connect(
-                host='dbd_database_1',
+                host='dbd_db',
                 user='root',
                 passwd='1234',
                 database='dbd'

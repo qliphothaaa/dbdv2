@@ -6,12 +6,20 @@ services:
             context: ./
             dockerfile: python.dockerfile
         restart: always
+        container_name: dbd_python
+        working_dir: /dbdv2
         volumes:
             - ./dbdv2:/dbdv2
             - ./chromedriver:/usr/bin/chromedriver
+            - ./dags:/root/airflow/dags
+            - ./airflow.cfg:/root/airflow/airflow.cfg
+            - ./airflow.db:/root/airflow/airflow.db
+              #command: ["/dbdv2/start.sh"]
         tty: true
         depends_on:
             - database
+        ports:
+            - "8090:8080"
 
     database:
         image: mariadb
@@ -19,7 +27,29 @@ services:
         env_file:
             - .env
         ports:
-            - "3309:3309"
+            - "3309:3306"
+        expose:
+            - "3309"
+        container_name: dbd_db
         volumes:
             - ./my.cnf:/etc/mysql/conf.d/my.cnf
             - ./dbd.sql:/tmp/dbd.sql
+            - ./database:/var/lib/mysql
+
+    web:
+        build:
+            context: ./
+            dockerfile: django.dockerfile
+        restart: always
+        ports:
+            - "9000:8000"
+        tty: true
+        container_name: dbd_web
+        volumes:
+            - ./dbd_front:/dbd_front
+        working_dir: /dbd_front/frontend
+        #command: ["/dbd_front/start.sh"]
+        depends_on:
+            - database
+
+

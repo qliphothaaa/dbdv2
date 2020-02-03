@@ -1,18 +1,11 @@
-# -*- coding: utf-8 -*-
-
-# Define here the models for your spider middleware
-#
-# See documentation in:
-# https://docs.scrapy.org/en/latest/topics/spider-middleware.html
-
-import time, re, pickle
+import time
 import os.path
 from scrapy import signals
 from scrapy.http import HtmlResponse
-from selenium.webdriver.chrome.options import Options
-from selenium import webdriver
+from scrapy.exceptions import CloseSpider
 
-from captcha.fake_browser import Browser
+from browser.scraping_browser import ScrapingBrowser
+from .errors import  TargetServerDownError, CookieExpiredError
 
 
 class Dbdv2SpiderMiddleware(object):
@@ -45,15 +38,17 @@ class Dbdv2SpiderMiddleware(object):
 class Dbdv2DownloaderMiddleware(object):
     #my code
     def __init__(self):
-        print('=============init middleware')
-        self.fake_browser = Browser()
-        self.fake_browser.setCookie()
+        print('=============init middleware==============')
+        self.fake_browser  = ScrapingBrowser()
+        self.success_count = 0
+        self.fail_count    = 0
 
 
 
     def __del__(self):
+
+        print("===============finish scraping, Totally %d companys, %d data completed, %d data failed==========" %(self.success_count + self.fail_count, self.success_count, self.fail_count))
         self.fake_browser.close()
-        #print('++++++++++++++++quit driver')
 
 
 
@@ -64,11 +59,27 @@ class Dbdv2DownloaderMiddleware(object):
         return s
 
     def process_request(self, request, spider):
+        print("@@@@@@@@@@@@@@@@@@@@@@@@get page of company No.%d @@@@@@@@@@@@@@@@@@@@@@@@@" % (self.success_count + self.fail_count + 1))
+        
 
-        time.sleep(2)
-        #self.driver.get(request.url)
-        page, title = self.fake_browser.getPage(request.url)
+        time.sleep(1)
+        page, title, status = self.fake_browser.getPage(request.url)
+
+        if status == '401':
+            raise CloseSpider('@@@@@@@@@@@@@@@the cooike expired in scraping@@@@@@@@@@@@@@@@222')
+        if status == '500' or status == '503':
+            raise CloseSpider('@@@@@@@@@@@@@@@@@@@@the server is down! Please try to run it later@@@@@@@@@@@@@@@@@')
+
         request.driver_title = title
+        
+        if title:
+            print("@@@@@@@@@@@@@@@@@@@@@@@@Successfully got page of company No.%d @@@@@@@@@@@@@@@@@@@@@@@@@" % (self.success_count + self.fail_count + 1))
+            self.success_count += 1
+        else:
+            print("@@@@@@@@@@@@@@@@@@@@@@@@Get page of company No.%d failed@@@@@@@@@@@@@@@@@@@@@@@@@" % (self.success_count + self.fail_count + 1))
+            self.fail_count += 1
+
+
         response = HtmlResponse(url=request.url, body=page, request=request, encoding='utf-8')#, status=200)
 
         return response

@@ -5,7 +5,7 @@ class DbdConnector(object):
     def __init__(self):
         print('init db')
         self.db = mysql.connector.connect(
-                host='dbd_database_1', 
+                host='dbd_db', 
                 user='root', 
                 passwd='1234',
                 database='dbd'
@@ -94,6 +94,20 @@ class DbdConnector(object):
         try:
             cur = self.db.cursor()
             query = 'select DBD_COMPANY_ID from dbd_new_query Where DBD_STATUS is NULL'
+            cur.execute(query)
+            ids = cur.fetchall()
+        except Exception as e:
+            print(e)
+            print('fail to get information')
+        finally:
+            cur.close()
+        return ids
+
+
+    def getCompanyFailedIdList(self):
+        try:
+            cur = self.db.cursor()
+            query = 'select DBD_COMPANY_ID from dbd_new_query Where DBD_STATUS = "Failed"'
             cur.execute(query)
             ids = cur.fetchall()
         except Exception as e:
