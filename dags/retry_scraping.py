@@ -7,11 +7,17 @@ from airflow.utils.trigger_rule import TriggerRule
 from airflow.operators.bash_operator import BashOperator
 from airflow.operators.email_operator import EmailOperator
 
-excel_config = Variable.get("excel_setting", deserialize_json=True)
-email = Variable.get("email")
-year = excel_config['year']
-date = excel_config['date']
-num = excel_config['num']
+try:
+    excel_config = Variable.get("excel_setting", deserialize_json=True)
+    email = Variable.get("email")
+    year = excel_config['year']
+    date = excel_config['date']
+    num = excel_config['num']
+except:
+    email = 'nanashi.owen@gmail.com'
+    year = '2019'
+    date = '03'
+    num = '23'
 
 def default_options():
     default_args = {

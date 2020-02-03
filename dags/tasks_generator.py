@@ -3,12 +3,7 @@ from airflow.operators.email_operator import EmailOperator
 from airflow.models import Variable
 from airflow.utils.trigger_rule import TriggerRule
 
-email = Variable.get("email")
-excel_config = Variable.get("excel_setting", deserialize_json=True)
-#email = Variable.get("email")
-year = excel_config['year']
-date = excel_config['date']
-num = excel_config['num']
+email = 'nanashi.owen@gmail.com'
 
 def start(dag, dag_name):
     task = EmailOperator(
@@ -20,7 +15,7 @@ def start(dag, dag_name):
     return task
 
 
-def loadExcel(dag, year, date, nun):
+def loadExcel(dag, year, date, num):
     task = BashOperator(
             task_id='load_excel',
             bash_command="cd /dbdv2 && python3 data_access/load_excel_file.py %s %s %s"% (year, date, num),

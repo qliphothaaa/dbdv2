@@ -13,7 +13,6 @@ services:
             - ./chromedriver:/usr/bin/chromedriver
             - ./dags:/root/airflow/dags
             - ./airflow.cfg:/root/airflow/airflow.cfg
-            - ./airflow.db:/root/airflow/airflow.db
               #command: ["/dbdv2/start.sh"]
         tty: true
         depends_on:
