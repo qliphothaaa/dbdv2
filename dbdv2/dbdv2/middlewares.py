@@ -65,9 +65,15 @@ class Dbdv2DownloaderMiddleware(object):
         time.sleep(1)
         page, title, status = self.fake_browser.getPage(request.url)
 
+        request.status = False
+
         if status == '401':
-            raise CloseSpider('@@@@@@@@@@@@@@@the cooike expired in scraping@@@@@@@@@@@@@@@@222')
+            self.fail_count += 1
+            raise CloseSpider('@@@@@@@@@@@@@@@the cooike expired in scraping@@@@@@@@@@@@@@@@')
         if status == '500' or status == '503':
+            #self.fake_browser.driver.save_screenshot('failed.png')
+            #print(self.fake_browser.driver.current_url)
+            self.fail_count += 1
             raise CloseSpider('@@@@@@@@@@@@@@@@@@@@the server is down! Please try to run it later@@@@@@@@@@@@@@@@@')
 
         request.driver_title = title
@@ -75,6 +81,7 @@ class Dbdv2DownloaderMiddleware(object):
         if title:
             print("@@@@@@@@@@@@@@@@@@@@@@@@Successfully got page of company No.%d @@@@@@@@@@@@@@@@@@@@@@@@@" % (self.success_count + self.fail_count + 1))
             self.success_count += 1
+            request.status = True
         else:
             print("@@@@@@@@@@@@@@@@@@@@@@@@Get page of company No.%d failed@@@@@@@@@@@@@@@@@@@@@@@@@" % (self.success_count + self.fail_count + 1))
             self.fail_count += 1

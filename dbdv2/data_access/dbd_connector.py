@@ -15,12 +15,8 @@ class DbdConnector(object):
     def insertToDbdcompany(self,values):
         try:
             cur = self.db.cursor()
-            '''
-            for value in values:
-                print(type(value))
-            '''
             query ='''INSERT INTO dbdcompany 
-                        (DBD_ID, DBD_NAME_TH, DBD_REGISTRATION_DATE, DBD_REGISTRATION_MONEY,DBD_BUSINESS_TYPE_CODE,DBD_BUSINESS_TYPE, DBD_STREET, DBD_SUBDISTRICT, DBD_DISTRICT, DBD_PROVINCE, DBD_ZIPCODE, DBD_ADDRESS)
+                        (DBD_ID, DBD_NAME_TH, DBD_REGISTRATION_DATE, DBD_REGISTRATION_MONEY,DBD_BUSINESS_TYPE_CODE,DBD_OBJECTIVE, DBD_STREET, DBD_SUBDISTRICT, DBD_DISTRICT, DBD_PROVINCE, DBD_ZIPCODE, DBD_ADDRESS)
                         VALUES
                         (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);
                     '''
@@ -90,7 +86,7 @@ class DbdConnector(object):
 
 
 
-    def getCompanyIdList(self):
+    def getNewCompanyIdList(self):
         try:
             cur = self.db.cursor()
             query = 'select DBD_COMPANY_ID from dbd_new_query Where DBD_STATUS is NULL'
@@ -117,6 +113,18 @@ class DbdConnector(object):
             cur.close()
         return ids
 
+    def getAllCompanyIdList(self):
+        try:
+            cur = self.db.cursor()
+            query = 'select DBD_COMPANY_ID from dbd_query'
+            cur.execute(query)
+            ids = cur.fetchall()
+        except Exception as e:
+            print(e)
+            print('fail to get information')
+        finally:
+            cur.close()
+        return ids
 
     def dbClose(self):
         self.db.close()

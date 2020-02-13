@@ -2,53 +2,47 @@ version: '3.7'
 
 services:
     python:
-        build:
-            context: ./
-            dockerfile: python.dockerfile
-        restart: always
+        build: ./
         container_name: dbd_python
+        tty: true
+        restart: always
+        ports:
+            - "8080:8080"
         working_dir: /dbdv2
+
         volumes:
             - ./dbdv2:/dbdv2
             - ./chromedriver:/usr/bin/chromedriver
-            - ./dags:/root/airflow/dags
-            - ./airflow.cfg:/root/airflow/airflow.cfg
-              #command: ["/dbdv2/start.sh"]
-        tty: true
+              #- ./dags:/root/airflow/dags
+              #- ./airflow.cfg:/root/airflow/airflow.cfg
         depends_on:
             - database
-        ports:
-            - "8090:8080"
 
+    django:
+        build: ./django_api
+        container_name: dbd_django
+        tty: true
+        restart: always
+        ports:
+            - "8000:8000"
+        working_dir: /frontend
+
+        volumes:
+            - ./django_api/frontend:/frontend
+        depends_on:
+            - database
+        command: ./wait-for-it.sh -t 0 -h dbd_db -p 3306 -- ./run.sh
+            
     database:
         image: mariadb
+        container_name: dbd_db
+        tty: true
         restart: always
-        env_file:
-            - .env
         ports:
             - "3309:3306"
-        expose:
-            - "3309"
-        container_name: dbd_db
+        env_file:
+            - .env
         volumes:
             - ./my.cnf:/etc/mysql/conf.d/my.cnf
             - ./dbd.sql:/tmp/dbd.sql
             - ./database:/var/lib/mysql
-
-    web:
-        build:
-            context: ./
-            dockerfile: django.dockerfile
-        restart: always
-        ports:
-            - "9000:8000"
-        tty: true
-        container_name: dbd_web
-        volumes:
-            - ./dbd_front:/dbd_front
-        working_dir: /dbd_front/frontend
-        #command: ["/dbd_front/start.sh"]
-        depends_on:
-            - database
-
-

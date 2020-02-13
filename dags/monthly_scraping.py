@@ -24,7 +24,7 @@ except:
 def default_options():
     default_args = {
         'owner': 'dbdv2',  
-        'start_date': days_ago(2),  
+        'start_date': datetime(2020, 2, 2),  
         'retries': 1,  
         'retry_delay': timedelta(seconds=5)  
     }
@@ -33,7 +33,7 @@ def default_options():
 with DAG(
         'monthly_scraping',  
         default_args=default_options(),  
-        schedule_interval="@once"  
+        schedule_interval="@monthly"  
 ) as d:
 
     task_start = start(d, 'monthly_scraping')

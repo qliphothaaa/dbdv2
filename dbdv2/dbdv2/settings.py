@@ -66,7 +66,8 @@ DOWNLOADER_MIDDLEWARES = {
 # Configure item pipelines
 # See https://docs.scrapy.org/en/latest/topics/item-pipeline.html
 ITEM_PIPELINES = {
-    'dbdv2.pipelines.Dbdv2Pipeline': 300,
+    'dbdv2.pipelines.MonthlyScrapingPipeline':   300,
+    'dbdv2.pipelines.AnnuallyScrapingtPipeline': 500,
 }
 
 # Enable and configure the AutoThrottle extension (disabled by default)

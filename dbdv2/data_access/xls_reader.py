@@ -1,5 +1,6 @@
 import pandas as pd
 import numpy as np
+from rex import address_clear
 try:
     from dbd_connector import DbdConnector
 except:
@@ -30,7 +31,8 @@ class DbdExcelReader(object):
             "วันที่\nจดทะเบียน":"REGISTRATION_DATE", 
             "ทุนจดทะเบียน\n(บาท)":"REGISTRATION_MONEY", 
             "รหัส\nวัตถุประสงค์":"BUSINESS_TYPE_CODE", 
-            "รายละเอียดวัตถุประสงค์":"BUSINESS_TYPE",
+            #"รายละเอียดวัตถุประสงค์":"BUSINESS_TYPE",
+            "รายละเอียดวัตถุประสงค์":"OBJECTIVE",
             "ที่ตั้งสำนักงานใหญ่":"STREET",
             "ตำบล":"SUBDISTRICT",
             "อำเภอ":"DISTRICT",
@@ -63,8 +65,6 @@ class DbdExcelReader(object):
         #code above is to conver the street and district to string. Because some data in excel is wrong. I found there is a record that have datetime as subDistrict.
         #it lead to error. maybe I will check the data later.
 
-        self.data_dict['ADDRESS'] = self.data_dict['STREET']+' '+self.data_dict['SUBDISTRICT']
-        #combine street and subdistrict to create address.
         
 
     def insertData(self):
@@ -72,6 +72,8 @@ class DbdExcelReader(object):
         
         for i in range(self.data_dict.shape[0]):
             values = list(self.data_dict.loc[i])[1:]#the data_dict.loc[i] get a row of data as list, the first data in list is row number. 
+            values[7], values[8], values[9] = address_clear(values[7], values[8], values[9])
+            values.append(values[6] +' '+ values[7])
             value_id = (values[0], values[0][3])#values[0] is the company id. The 4th number of company id is typecode
 
             dbconnector.insertToDbdcompany(values)

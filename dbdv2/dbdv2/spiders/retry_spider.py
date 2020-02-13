@@ -2,7 +2,7 @@ import scrapy
 import time
 #from browser.session_requester import Requester
 from data_access.dbd_connector import DbdConnector
-from dbdv2.items import Dbdv2Item
+from dbdv2.items import MonthlyItem
 
 DEBUG=False
 
@@ -39,7 +39,7 @@ class DbdSpider(scrapy.Spider):
         for i in directors:
             director_list.append(i.strip())
 
-        item = Dbdv2Item()
+        item = MonthlyItem()
         item['company_id'] = response.url.split('/')[-1]
         item['company_type'] = response.xpath('/html/body/div[1]/div[4]/div[2]/div[1]/div[2]/div[2]/div[1]/div[1]/div[1]/table/tbody/tr[1]/th[2]/text()').get()
         item['status']       = response.xpath('/html/body/div[1]/div[4]/div[2]/div[1]/div[2]/div[2]/div[1]/div[1]/div[1]/table/tbody/tr[3]/td[2]/text()').get()

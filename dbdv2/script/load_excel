@@ -1,0 +1,4 @@
+#!/bin/bash
+#cd data_access/
+python3 data_access/load_excel_file.py 2019 3 3
+
