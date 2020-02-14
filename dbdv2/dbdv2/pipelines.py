@@ -222,6 +222,7 @@ class AnnuallyScrapingtPipeline(object):
             update_query_string = self.sql_generate(update_query_dict)
             
 
+            #update dbdcompany
             if update_dbdcompany_string is not '':
                 try:
                     sql = f'UPDATE dbdcompany SET {update_dbdcompany_string} WHERE DBD_ID = {company_id};'
@@ -235,7 +236,7 @@ class AnnuallyScrapingtPipeline(object):
                     return item
                 print('------------update dbd_company finished=====================')
             else:
-                print('-------------nothing change-------------')
+                print('-------------nothing change in dbd_company-------------')
 
 
             #update dbd_query
@@ -261,7 +262,7 @@ class AnnuallyScrapingtPipeline(object):
                 except Exception as e:
                     print(e)
                     self.db.rollback()
-                print('------------update finished, nothing change=====================')
+                print('------------nothing change in query=====================')
 
 
 

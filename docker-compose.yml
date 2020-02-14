@@ -45,4 +45,5 @@ services:
         volumes:
             - ./my.cnf:/etc/mysql/conf.d/my.cnf
             - ./dbd.sql:/tmp/dbd.sql
+            - ./zipcodes.sql:/tmp/zipcodes.sql
             - ./database:/var/lib/mysql
