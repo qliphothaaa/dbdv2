@@ -33,7 +33,7 @@ def default_options():
 with DAG(
         'monthly_scraping',  
         default_args=default_options(),  
-        schedule_interval="@monthly"  
+        schedule_interval="@once"  
 ) as d:
 
     task_start = start(d, 'monthly_scraping')
