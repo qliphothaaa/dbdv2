@@ -1,9 +1,9 @@
 version: '3.7'
 
 services:
-    python:
+    python_webserver:
         build: ./
-        container_name: dbd_python
+        container_name: dbd_webserver
         tty: true
         restart: always
         ports:
@@ -20,21 +20,20 @@ services:
             - database
         command: ./wait-for-it.sh -t 0 -h dbd_db -p 3306 -- ./start.sh
 
-    python2:
+    python_scheduler:
         build: ./
-        container_name: dbd_python2
+        container_name: dbd_scheduler
         tty: true
         restart: always
         working_dir: /dbdv2
 
         volumes:
             - ./dbdv2:/dbdv2
-            #- ./chromedriver:/usr/bin/chromedriver
+            - ./chromedriver:/usr/bin/chromedriver
             - ./dags:/root/airflow/dags
             - ./logs:/root/airflow/logs
             - ./configs/airflow.cfg:/root/airflow/airflow.cfg
         depends_on:
-            - python
             - database
         command: ./wait-for-it.sh -t 0 -h dbd_db -p 3306 -- ./start2.sh
 

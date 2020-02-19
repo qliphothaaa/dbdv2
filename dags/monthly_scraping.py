@@ -9,14 +9,14 @@ from airflow.operators.email_operator import EmailOperator
 
 email = 'nanashi.owen@gmail.com'
 year = '2019'
-date = '03'
+month   = '03'
 num = '23'
 
 try:
     excel_config = Variable.get("excel_setting", deserialize_json=True)
     email = Variable.get("email")
     year = excel_config['year']
-    date = excel_config['date']
+    month= excel_config['month']
     num = excel_config['num']
 except:
     pass
@@ -38,17 +38,17 @@ with DAG(
 
     task_start = start(d, 'monthly_scraping')
 
-    task1 = loadExcel(d, year, date, num)
+    task1 = loadExcel(d, year, month, num)
     task2 = getCookies(d)
-    task3 = startScraping(d)
+    task3 = startMonthlyScraping(d)
 
     taskf1 = failedEmail(d, task1)
     taskf2 = failedEmail(d, task2)
     taskf3 = failedEmail(d, task3)
 
-    tasks = successEmail(d, 'monthly_scraping')
+    task_finished = successEmail(d, 'monthly_scraping')
 
-    task_start >> task1 >> task2 >> task3 >> tasks
+    task_start >> task1 >> task2 >> task3 >> task_finished
 
     task1 >> taskf1
     task2 >> taskf2

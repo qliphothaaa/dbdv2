@@ -40,9 +40,9 @@ class Dbdv2DownloaderMiddleware(object):
     def __init__(self):
         print('=============init middleware==============')
         self.fake_browser  = ScrapingBrowser()
+        print('fin br')
         self.success_count = 0
         self.fail_count    = 0
-
 
 
     def __del__(self):

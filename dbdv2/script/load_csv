@@ -1,0 +1,2 @@
+#!/bin/bash
+python3 data_access/run_load_csv.py '28012020.csv' 1000

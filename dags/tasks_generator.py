@@ -18,7 +18,7 @@ def start(dag, dag_name):
 def loadExcel(dag, year, date, num):
     task = BashOperator(
             task_id='load_excel',
-            bash_command="cd /dbdv2 && python3 data_access/load_excel_file.py %s %s %s"% (year, date, num),
+            bash_command="cd /dbdv2 && python3 data_access/run_load_excel.py %s %s %s"% (year, date, num),
             dag=dag)
     return task
 
@@ -29,10 +29,17 @@ def getCookies(dag):
             dag=dag)
     return task
 
-def startScraping(dag):
+def startMonthlyScraping(dag):
     task = BashOperator(
-            task_id='scraping',
-            bash_command="cd /dbdv2 && scrapy crawl dbdv2",
+            task_id='monthly_scraping',
+            bash_command="cd /dbdv2 && scrapy crawl monthly",
+            dag=dag)
+    return task
+
+def startAnnuallyScraping(dag):
+    task = BashOperator(
+            task_id='annually_scraping',
+            bash_command="cd /dbdv2 && scrapy crawl annually",
             dag=dag)
     return task
 
@@ -42,6 +49,28 @@ def scrapingFailedData(dag):
             bash_command="cd /dbdv2 && scrapy crawl retry",
             dag=dag)
     return task
+
+def clearMdbd(dag):
+    task = BashOperator(
+            task_id='clear_mdbd',
+            bash_command="cd /dbdv2 && python data_access/run_clear_mdbd.py",
+            dag=dag)
+    return task
+
+def readCSV(dag):
+    task = BashOperator(
+            task_id='read_csv',
+            bash_command="cd /dbdv2 && python data_access/run_load_csv.py '28012020.csv'",
+            dag=dag)
+    return task
+
+def exportDB(dag):
+    task = BashOperator(
+            task_id='export',
+            bash_command="cd /dbdv2 && python3 data_access/run_export_db.py",
+            dag=dag)
+    return task
+
 
 def failedEmail(dag, task):
     task = EmailOperator(

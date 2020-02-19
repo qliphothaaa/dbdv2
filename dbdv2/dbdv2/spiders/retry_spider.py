@@ -15,7 +15,8 @@ class DbdSpider(scrapy.Spider):
 
     def start_requests(self):
         db = DbdConnector()
-        company_ids = db.getCompanyFailedIdList()
+        query = 'select DBD_COMPANY_ID from dbd_new_query Where DBD_STATUS = "Failed"'
+        company_ids = db.readIds(query)
         if len(company_ids) > 0:
             print("======================Strat scraping failed record! There are %d company in schedule=================" % len(company_ids))
         else:

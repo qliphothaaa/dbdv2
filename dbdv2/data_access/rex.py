@@ -50,9 +50,6 @@ def address_clear(subdistrict, district, province):
         subdistrict = subdistrict.lstrip(subdistrict_pattern)
     return subdistrict, district, province
 
-
-
-
     print(s)
     if province_b in s:
         pattern = f'(.*){subdistrict_b}(.*){district_b}(.*){province_b}'

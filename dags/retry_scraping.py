@@ -10,14 +10,14 @@ from airflow.operators.email_operator import EmailOperator
 try:
     excel_config = Variable.get("excel_setting", deserialize_json=True)
     email = Variable.get("email")
-    year = excel_config['year']
-    date = excel_config['date']
-    num = excel_config['num']
+    year  = excel_config['year']
+    date  = excel_config['month']
+    num   = excel_config['num']
 except:
     email = 'nanashi.owen@gmail.com'
-    year = '2019'
-    date = '03'
-    num = '23'
+    year  = '2019'
+    month = '03'
+    num   = '23'
 
 def default_options():
     default_args = {

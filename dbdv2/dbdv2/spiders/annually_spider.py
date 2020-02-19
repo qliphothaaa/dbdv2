@@ -18,7 +18,8 @@ class AnnuallySpider(scrapy.Spider):
 
     def start_requests(self):
         db = DbdConnector()
-        company_ids = db.getAllCompanyIdList()
+        query = 'select DBD_COMPANY_ID from dbd_query'
+        company_ids = db.readIds(query)
         if len(company_ids) > 0:
             print("======================Strat scraping! There are %d company in schedule=================" % len(company_ids))
         else:

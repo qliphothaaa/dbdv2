@@ -3,36 +3,35 @@ import mysql.connector
 import time
 from scrapy.exceptions import DropItem
 from data_access.rex import *
+from data_access.dbd_connector import DbdConnector
 
 
 class MonthlyScrapingPipeline(object):
     def __init__(self):
-        self.db = mysql.connector.connect(
-                host='dbd_db',
-                user='root',
-                passwd='1234',
-                database='dbd'
-                )
+        self.dbconnector = DbdConnector()
+
     def open_spider(self, spider):
-        self.cur = self.db.cursor()
+        pass
+        #self.cur = self.db.cursor()
 
     def close_spider(self, spider):
-        self.cur.close()
+        pass
+        #self.cur.close()
 
     def process_item(self, item, spider):
         scraping_status = item['scraping_status']
-        if scraping_status:
+        company_id      = item['company_id']
 
+        #if find data succeed
+        if scraping_status:
             company_type = item['company_type']
             status       = item['status']
             objective    = item['objective']
             directors    = item['directors']
-            company_id   = item['company_id']
             company_name = item['company_name']
             raw_bussiness_type = item['bussiness_type']
 
             directors_text = ''
-
             for index, name in enumerate(directors):
                 directors_text = directors_text + str(index)+'. '+name +'\n'
             directors_text = directors_text.rstrip()
@@ -40,114 +39,102 @@ class MonthlyScrapingPipeline(object):
 
             company_name = re.split(':', company_name)[1].strip()
 
-            try:
-                sql = 'UPDATE dbdcompany SET DBD_TYPE = %s, DBD_STATUS= %s,DBD_OBJECTIVE = %s,DBD_DIRECTORS = %s, DBD_NAME_TH = %s, DBD_BUSINESS_TYPE = %s WHERE DBD_ID = %s;'
-                values = (company_type, status, objective, directors_text, company_name, bussiness_type, company_id)
-                self.cur.execute(sql, values)
-                self.db.commit()
-                print(self.cur.rowcount, "record(s) affected")
-            except Exception as e:
-                print(e)
-                self.db.rollback()
-                return item
-            print('------------update dbd_company finished=====================')
 
-            try:
-                sql = 'update dbd_new_query set DBD_Status = "Success", DBD_LAST_RUN=%s where DBD_COMPANY_ID = %s'
-                values = (time.strftime('%Y-%m-%d %H:%M:%S'), company_id)
-                self.cur.execute(sql, values)
-                self.db.commit()
-                print(self.cur.rowcount, "record(s) affected")
-            except Exception as e:
-                print(e)
-                self.db.rollback()
-            print('------------update dbd_new_query finished=====================')
+            #generate sql and valus
+            sql_dbdcompany       = 'UPDATE dbdcompany SET DBD_TYPE = %s, DBD_STATUS= %s,DBD_OBJECTIVE = %s,DBD_DIRECTORS = %s, DBD_NAME_TH = %s, DBD_BUSINESS_TYPE = %s WHERE DBD_ID = %s;'
+            values_dbdcompany    = (company_type, status, objective, directors_text, company_name, bussiness_type, company_id)
 
-            try:
-                sql = 'update dbd_query set DBD_Status = "Success", DBD_LAST_RUN=%s where DBD_COMPANY_ID = %s'
-                values = (time.strftime('%Y-%m-%d %H:%M:%S'), company_id)
-                self.cur.execute(sql, values)
-                self.db.commit()
-                print(self.cur.rowcount, "record(s) affected")
-            except Exception as e:
-                print(e)
-                self.db.rollback()
-            print('------------update dbd_query finished=====================')
+            sql_dbd_new_query    = 'update dbd_new_query set DBD_Status = "Success", DBD_LAST_RUN=%s where DBD_COMPANY_ID = %s'
+            values_dbd_new_query = (time.strftime('%Y-%m-%d %H:%M:%S'), company_id)
+
+            sql_dbd_query        = 'update dbd_query set DBD_Status = "Success", DBD_LAST_RUN=%s where DBD_COMPANY_ID = %s'
+            values_dbd_query     = (time.strftime('%Y-%m-%d %H:%M:%S'), company_id)
+
+            sqls   = (sql_dbdcompany, sql_dbd_new_query, sql_dbd_query)
+            values = (values_dbdcompany, values_dbd_new_query, values_dbd_query)
+
+            #update database
+            self.dbconnector.updateCompanyTransaction(sqls, values, company_id)
+
+            print('------------update finished=====================')
+            return item
 
 
+        #if find data falied
         else:
-            try:
-                sql = 'update dbd_new_query set DBD_Status = "Failed", DBD_LAST_RUN=%s where DBD_COMPANY_ID = %s'
-                values = (time.strftime('%Y-%m-%d %H:%M:%S'), company_id)
-                self.cur.execute(sql, values)
-                self.db.commit()
-                print(self.cur.rowcount, "record(s) affected")
-            except Exception as e:
-                print(e)
-                self.db.rollback()
-            print('------------update dbd_new_query finished=====================')
+            sql_dbd_new_query    = 'update dbd_new_query set DBD_Status = "Failed", DBD_LAST_RUN=%s where DBD_COMPANY_ID = %s'
+            values_dbd_new_query = (time.strftime('%Y-%m-%d %H:%M:%S'), company_id)
 
-            try:
-                sql = 'update dbd_query set DBD_Status = "Failed", DBD_LAST_RUN=%s, DBD_IGNORE=1 where DBD_COMPANY_ID = %s'
-                values = (time.strftime('%Y-%m-%d %H:%M:%S'), company_id)
-                self.cur.execute(sql, values)
-                self.db.commit()
-                print(self.cur.rowcount, "record(s) affected")
-            except Exception as e:
-                print(e)
-                self.db.rollback()
-            print('------------update dbd_query finished=====================')
+            sql_dbd_query        = 'update dbd_query set DBD_Status = "Failed", DBD_LAST_RUN=%s where DBD_COMPANY_ID = %s'
+            values_dbd_query     = (time.strftime('%Y-%m-%d %H:%M:%S'), company_id)
+
+            sqls = (sql_dbd_new_query, sql_dbd_query)
+            values = (values_dbd_new_query, values_dbd_query)
+
+            self.dbconnector.updateCompanyTransaction(sqls, values, company_id)
 
             raise DropItem("cannot find the company %s" %item['company_id'])
-
-        return item
+            return item
 
 
 
 class AnnuallyScrapingtPipeline(object):
     def __init__(self):
-        self.db = mysql.connector.connect(
-                host='dbd_db',
-                user='root',
-                passwd='1234',
-                database='dbd'
-                )
+        self.dbconnector = DbdConnector()
+
     def open_spider(self, spider):
-        self.cur = self.db.cursor(buffered=True)
+        pass
 
     def close_spider(self, spider):
-        self.cur.close()
+        pass
 
     def get_zipcode(self, address):
         zipcode = ''
         try:
             sql = f'SELECT ZIP from zipcodes where (SUBDISTRICT="{address[1]}" AND DISTRICT="{address[2]}" AND PROVINCE="{address[3]}");'
-            self.cur.execute(sql)
-            zipcode = self.cur.fetchone()[0]
+            zipcode = self.dbconnector.read(sql)[0]
             if zipcode == None: zipcode = ''
         except Exception as e:
             print(e)
         return zipcode
             
     def sql_generate(self, d):
-        update_string = ''
+        sql = ''
         for i in d.keys():
-            update_string = update_string + i + '=' + f"'{d[i]}'"+', '
-        update_string = update_string.rstrip(', ')
+            sql = sql + i + '=' + f"'{d[i]}'"+', '
+        sql = sql.rstrip(', ')
 
-        return update_string
+        return sql
+
+    def get_old_data(self, company_id):
+        sql = f'SELECT DBD_NAME_TH, DBD_STATUS, DBD_ADDRESS, DBD_OBJECTIVE, DBD_STREET, DBD_SUBDISTRICT, DBD_DISTRICT, DBD_PROVINCE, DBD_BUSINESS_TYPE_CODE, DBD_BUSINESS_TYPE, DBD_DIRECTORS, DBD_ZIPCODE from dbdcompany where DBD_ID = {company_id};'
+        old_company_info = self.dbconnector.read(sql)
+
+        old_company_dict = {'DBD_NAME_TH':old_company_info[0],
+                            'DBD_STATUS':old_company_info[1],
+                            'DBD_ADDRESS':old_company_info[2],
+                            'DBD_OBJECTIVE':old_company_info[3],
+                            'DBD_STREET':old_company_info[4],
+                            'DBD_SUBDISTRICT':old_company_info[5],
+                            'DBD_DISTRICT':old_company_info[6],
+                            'DBD_PROVINCE':old_company_info[7],
+                            'DBD_BUSINESS_TYPE_CODE':old_company_info[8],
+                            'DBD_BUSINESS_TYPE':old_company_info[9],
+                            'DBD_DIRECTORS':old_company_info[10],
+                            'DBD_ZIPCODE':old_company_info[11]}
+        return old_company_dict
 
 
 
     def process_item(self, item, spider):
         scraping_status = item['scraping_status']
+        company_id      = item['company_id']
         if scraping_status:
-
+            #new datas
             company_type       = item['company_type']
             status             = item['status']
             objective          = item['objective']
             directors          = item['directors']
-            company_id         = item['company_id']
             company_name       = item['company_name']
             raw_bussiness_type = item['bussiness_type']
             raw_address        = item['address']
@@ -161,11 +148,7 @@ class AnnuallyScrapingtPipeline(object):
             address        = address_separater(raw_address)
             zipcode = self.get_zipcode(address)
 
-            sql = f'SELECT DBD_NAME_TH, DBD_STATUS, DBD_ADDRESS, DBD_OBJECTIVE, DBD_STREET, DBD_SUBDISTRICT, DBD_DISTRICT, DBD_PROVINCE, DBD_BUSINESS_TYPE_CODE, DBD_BUSINESS_TYPE, DBD_DIRECTORS, DBD_ZIPCODE from dbdcompany where DBD_ID = {company_id};'
-            self.cur.execute(sql)
-            old_company_info = self.cur.fetchone()
-
-            update_dbdcompany_dict = {
+            new_company_dict = {
                     'DBD_NAME_TH':company_name, 
                     'DBD_STATUS':status, 
                     'DBD_ADDRESS':address[0]+ ' ' +address[1], 
@@ -180,105 +163,101 @@ class AnnuallyScrapingtPipeline(object):
                     'DBD_ZIPCODE':zipcode
                     }
 
-            update_query_dict = {
-                    'C_DBD_NAME_TH':company_name, 
-                    'C_DBD_STATUS':status, 
-                    'C_DBD_ADDRESS':address[0]+address[1], 
-                    'C_DBD_OBJECTIVE':objective, 
-                    'C_DBD_BUSINESS_TYPE':bussiness_type[1], 
-                    }
+            #old datas
+            old_company_dict = self.get_old_data(company_id)
 
-            if update_dbdcompany_dict['DBD_NAME_TH'] == old_company_info[0]:
-                update_dbdcompany_dict.pop('DBD_NAME_TH')
-                update_query_dict.pop('C_DBD_NAME_TH')
-            if update_dbdcompany_dict['DBD_STATUS'] == old_company_info[1]:
-                update_dbdcompany_dict.pop('DBD_STATUS')
-                update_query_dict.pop('C_DBD_STATUS')
-            if update_dbdcompany_dict['DBD_ADDRESS'] == old_company_info[2]:
-                update_dbdcompany_dict.pop('DBD_ADDRESS')
-                update_query_dict.pop('C_DBD_ADDRESS')
-            if update_dbdcompany_dict['DBD_OBJECTIVE'] == old_company_info[3]:
-                update_dbdcompany_dict.pop('DBD_OBJECTIVE')
-                update_query_dict.pop('C_DBD_OBJECTIVE')
-            if update_dbdcompany_dict['DBD_STREET'] == old_company_info[4]:
-                update_dbdcompany_dict.pop('DBD_STREET')
-            if update_dbdcompany_dict['DBD_SUBDISTRICT'] == old_company_info[5]:
-                update_dbdcompany_dict.pop('DBD_SUBDISTRICT')
-            if update_dbdcompany_dict['DBD_DISTRICT'] == old_company_info[6]:
-                update_dbdcompany_dict.pop('DBD_DISTRICT')
-            if update_dbdcompany_dict['DBD_PROVINCE'] == old_company_info[7]:
-                update_dbdcompany_dict.pop('DBD_PROVINCE')
-            if update_dbdcompany_dict['DBD_BUSINESS_TYPE_CODE'] == old_company_info[8]:
-                update_dbdcompany_dict.pop('DBD_BUSINESS_TYPE_CODE')
-            if update_dbdcompany_dict['DBD_BUSINESS_TYPE'] == old_company_info[9]:
-                update_dbdcompany_dict.pop('DBD_BUSINESS_TYPE')
-                update_query_dict.pop('C_DBD_BUSINESS_TYPE')
-            if update_dbdcompany_dict['DBD_DIRECTORS'] == old_company_info[10]:
-                update_dbdcompany_dict.pop('DBD_DIRECTORS')
-            if update_dbdcompany_dict['DBD_ZIPCODE'] == old_company_info[11]:
-                update_dbdcompany_dict.pop('DBD_ZIPCODE')
+            #check datas
+            update_dbdcompany_dict = {}
+
+            update_query_dict = {}
+
+            if new_company_dict['DBD_NAME_TH'] != old_company_dict['DBD_NAME_TH']:
+                update_dbdcompany_dict['DBD_NAME_TH'] = new_company_dict['DBD_NAME_TH']
+                update_query_dict['C_DBD_NAME_TH'] = new_company_dict['DBD_NAME_TH']
+
+            if new_company_dict['DBD_STATUS'] != old_company_dict['DBD_STATUS']:
+                update_dbdcompany_dict['DBD_STATUS'] = new_company_dict['DBD_STATUS']
+                update_query_dict['C_DBD_STATUS'] = new_company_dict['DBD_STATUS']
+
+            if new_company_dict['DBD_ADDRESS'] != old_company_dict['DBD_ADDRESS']:
+                update_dbdcompany_dict['DBD_ADDRESS'] = new_company_dict['DBD_ADDRESS']
+                update_query_dict['C_DBD_ADDRESS'] = new_company_dict['DBD_ADDRESS']
+
+            if new_company_dict['DBD_OBJECTIVE'] != old_company_dict['DBD_OBJECTIVE']:
+                update_dbdcompany_dict['DBD_OBJECTIVE'] = new_company_dict['DBD_OBJECTIVE']
+                update_query_dict['C_DBD_OBJECTIVE'] = new_company_dict['DBD_OBJECTIVE']
+
+            if new_company_dict['DBD_STREET'] != old_company_dict['DBD_STREET']:
+                update_dbdcompany_dict['DBD_STREET'] = new_company_dict['DBD_STREET']
+                update_query_dict['C_DBD_ADDRESS'] = new_company_dict['DBD_ADDRESS']
+
+            if new_company_dict['DBD_SUBDISTRICT'] != old_company_dict['DBD_SUBDISTRICT']:
+                update_dbdcompany_dict['DBD_SUBDISTRICT'] = new_company_dict['DBD_SUBDISTRICT']
+                update_query_dict['C_DBD_ADDRESS'] = new_company_dict['DBD_ADDRESS']
+
+            if new_company_dict['DBD_DISTRICT'] != old_company_dict['DBD_DISTRICT']:
+                update_dbdcompany_dict['DBD_DISTRICT'] = new_company_dict['DBD_DISTRICT']
+                update_query_dict['C_DBD_ADDRESS'] = new_company_dict['DBD_ADDRESS']
+
+            if new_company_dict['DBD_PROVINCE'] != old_company_dict['DBD_PROVINCE']:
+                update_dbdcompany_dict['DBD_PROVINCE'] = new_company_dict['DBD_PROVINCE']
+                update_query_dict['C_DBD_ADDRESS'] = new_company_dict['DBD_ADDRESS']
+
+            if new_company_dict['DBD_BUSINESS_TYPE_CODE'] != old_company_dict['DBD_BUSINESS_TYPE_CODE']:
+                update_dbdcompany_dict['DBD_BUSINESS_TYPE_CODE'] = new_company_dict['DBD_BUSINESS_TYPE_CODE']
+                update_query_dict['C_DBD_BUSINESS_TYPE'] = new_company_dict['DBD_BUSINESS_TYPE']
+
+            if new_company_dict['DBD_BUSINESS_TYPE'] != old_company_dict['DBD_BUSINESS_TYPE']:
+                update_dbdcompany_dict['DBD_BUSINESS_TYPE'] = new_company_dict['DBD_BUSINESS_TYPE']
+                update_query_dict['C_DBD_BUSINESS_TYPE'] = new_company_dict['DBD_BUSINESS_TYPE']
+
+            if new_company_dict['DBD_DIRECTORS'] != old_company_dict['DBD_DIRECTORS']:
+                update_dbdcompany_dict['DBD_DIRECTORS'] = new_company_dict['DBD_DIRECTORS']
+
+            if new_company_dict['DBD_ZIPCODE'] != old_company_dict['DBD_ZIPCODE']:
+                update_dbdcompany_dict['DBD_ZIPCODE'] = new_company_dict['DBD_ZIPCODE']
+
 
             update_dbdcompany_string = self.sql_generate(update_dbdcompany_dict)
-            update_query_string = self.sql_generate(update_query_dict)
+            update_query_string      = self.sql_generate(update_query_dict)
             
 
             #update dbdcompany
             if update_dbdcompany_string is not '':
-                try:
-                    sql = f'UPDATE dbdcompany SET {update_dbdcompany_string} WHERE DBD_ID = {company_id};'
-                    print(sql)
-                    self.cur.execute(sql)
-                    self.db.commit()
-                    print(self.cur.rowcount, "record(s) affected")
-                except Exception as e:
-                    print(e)
-                    self.db.rollback()
-                    return item
-                print('------------update dbd_company finished=====================')
-            else:
-                print('-------------nothing change in dbd_company-------------')
-
-
-            #update dbd_query
-            if update_query_string is not '':
-                try:
+                print(update_dbdcompany_string)
+                sql_dbdcompany = f'UPDATE dbdcompany SET {update_dbdcompany_string} WHERE DBD_ID = {company_id};'
+                if update_query_string is not '':
                     datetime = time.strftime('%Y-%m-%d %H:%M:%S')
-                    sql = f'update dbd_query set DBD_STATUS ="Success", DBD_CHANGE=1, DBD_LAST_RUN="{datetime}", {update_query_string} where DBD_COMPANY_ID = {company_id}'
-                    print(sql)
-                    self.cur.execute(sql)
-                    self.db.commit()
-                    print(self.cur.rowcount, "record(s) affected")
-                except Exception as e:
-                    print(e)
-                    self.db.rollback()
-                print('------------update dbd_query finished=====================')
-            else:
-                try:
+                    sql_dbd_query = f'update dbd_query set DBD_STATUS ="Success", DBD_CHANGE=1, DBD_LAST_RUN="{datetime}", {update_query_string} where DBD_COMPANY_ID = {company_id}'
+                else:
                     datetime = time.strftime('%Y-%m-%d %H:%M:%S')
-                    sql = f'update dbd_query set DBD_STATUS ="Success", DBD_CHANGE=0, DBD_LAST_RUN="{datetime}" where DBD_COMPANY_ID = {company_id}'
-                    self.cur.execute(sql)
-                    self.db.commit()
-                    print(self.cur.rowcount, "record(s) affected")
-                except Exception as e:
-                    print(e)
-                    self.db.rollback()
+                    sql_dbd_query = f'update dbd_query set DBD_STATUS ="Success", DBD_CHANGE=1, DBD_LAST_RUN="{datetime}" where DBD_COMPANY_ID = {company_id}'
+
+                sqls = (sql_dbdcompany, sql_dbd_query)
+                values = (None, None)
+
+                self.dbconnector.updateCompanyTransaction(sqls, values, company_id)
+
+                print(f'============update finieshed company {company_id}--------------')
+            else:
+                datetime = time.strftime('%Y-%m-%d %H:%M:%S')
+                sql_dbd_query = f'update dbd_query set DBD_STATUS ="Success", DBD_CHANGE=0, DBD_LAST_RUN="{datetime}" where DBD_COMPANY_ID = {company_id}'
+                sqls = (sql_dbd_query,)
+                values = (None,)
+
+                self.dbconnector.updateCompanyTransaction(sqls, values, company_id)
                 print('------------nothing change in query=====================')
 
-
+            return item
 
         else:
+            sql_dbd_query        = 'update dbd_query set DBD_Status = "Failed", DBD_LAST_RUN=%s where DBD_COMPANY_ID = %s'
+            values_dbd_query     = (time.strftime('%Y-%m-%d %H:%M:%S'), company_id)
 
-            try:
-                sql = 'update dbd_query set DBD_Status = "Failed", DBD_LAST_RUN=%s, DBD_IGNORE=1 where DBD_COMPANY_ID = %s'
-                values = (time.strftime('%Y-%m-%d %H:%M:%S'), company_id)
-                self.cur.execute(sql, values)
-                self.db.commit()
-                print(self.cur.rowcount, "record(s) affected")
-            except Exception as e:
-                print(e)
-                self.db.rollback()
-            print('------------update dbd_query finished=====================')
+            sqls = (sql_dbd_query,)
+            values = (values_dbd_query,)
+
+            self.dbconnector.updateCompanyTransaction(sqls, values, company_id)
 
             raise DropItem("cannot find the company %s" %item['company_id'])
-
-        return item
+            return item

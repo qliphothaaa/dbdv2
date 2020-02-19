@@ -5,28 +5,25 @@ class DbdConnector(object):
     def __init__(self):
         print('init db')
         self.db = mysql.connector.connect(
-                host='dbd_db', 
+                #host='dbd_db', 
+                host='localhost', 
+                port=3309,
                 user='root', 
                 passwd='1234',
                 database='dbd'
                 )
         
-
-    def insertToDbdcompany(self,values):
+    def insert(self, sql, values):
         try:
             cur = self.db.cursor()
-            query ='''INSERT INTO dbdcompany 
-                        (DBD_ID, DBD_NAME_TH, DBD_REGISTRATION_DATE, DBD_REGISTRATION_MONEY,DBD_BUSINESS_TYPE_CODE,DBD_OBJECTIVE, DBD_STREET, DBD_SUBDISTRICT, DBD_DISTRICT, DBD_PROVINCE, DBD_ZIPCODE, DBD_ADDRESS)
-                        VALUES
-                        (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);
-                    '''
-
-            cur.execute(query, values)
+            cur.execute(sql, values)
             self.db.commit()
-            print('insert into dbdcompany success',end=' ')
-            print(values[1])#if insert success, It print value
+            print('insert succeed',end=' :')
+            if len(values)>5:
+                print(values[1])#if insert success, It print value
+            else:
+                print(values)
         except Exception as e:
-            
             if e.errno == 1062:#the code when the data already in database
                 print('duplicate')
             else:
@@ -37,60 +34,58 @@ class DbdConnector(object):
             cur.close()
 
 
-    def insertToDbdQuery(self,values):
+    def insertTransaction(self, sqls, values):
+        row_count = 0
         try:
             cur = self.db.cursor()
-            query ='''INSERT INTO dbd_query
-                        (DBD_COMPANY_ID, DBD_TYPECODE)
-                        VALUES
-                        (%s, %s);
-                    '''
-
-            cur.execute(query, values)
+            for index, item in enumerate(sqls):
+                cur.execute(item, values[index])
+                row_count += cur.rowcount
             self.db.commit()
-            print('insert into dbd_query success',end='')
-            print(values)
+            for index, item in enumerate(sqls):
+                print('insert succeed',end=' :')
+                if len(values[index])>5:
+                    print(values[index][1])#if insert success, It print value
+                else:
+                    print(values[index])
         except Exception as e:
-            if e.errno == 1062:
+            if e.errno == 1062:#the code when the data already in database
                 print('duplicate')
             else:
                 print(e)
-                print('fail to insert dbd_query, rollback now')
+                print('fail to insert transaction, rollback now')
             self.db.rollback()
         finally:
+            print(row_count, "record(s) affected")
             cur.close()
 
 
-    def insertToDbdNewQuery(self,values):
+    def updateCompanyTransaction(self, sqls, values, company_id):
+        row_count = 0
         try:
             cur = self.db.cursor()
-            query ='''INSERT INTO dbd_new_query
-                        (DBD_COMPANY_ID, DBD_TYPECODE)
-                        VALUES
-                        (%s, %s);
-                    '''
-
-            cur.execute(query, values)
+            for index, item in enumerate(sqls):
+                if values[index]:
+                    cur.execute(item, values[index])
+                else:
+                    cur.execute(item)
+                row_count += cur.rowcount
             self.db.commit()
-            print('insert into dbd_new_query success',end='')
-            print(values)
+            print(company_id)
         except Exception as e:
-            if e.errno == 1062:
-                print('duplicate')
-            else:
-                print(e)
-                print('fail to insert dbd_new_query, rollback now')
+            print(e)
+            print(f'fail to update transaction about company{company_id}, rollback now')
             self.db.rollback()
         finally:
+            print(row_count, "record(s) affected")
             cur.close()
 
 
-
-    def getNewCompanyIdList(self):
+    def readIds(self, sql):
         try:
             cur = self.db.cursor()
-            query = 'select DBD_COMPANY_ID from dbd_new_query Where DBD_STATUS is NULL'
-            cur.execute(query)
+            #sql = 'select DBD_COMPANY_ID from dbd_new_query Where DBD_STATUS is NULL'
+            cur.execute(sql)
             ids = cur.fetchall()
         except Exception as e:
             print(e)
@@ -99,43 +94,85 @@ class DbdConnector(object):
             cur.close()
         return ids
 
-
-    def getCompanyFailedIdList(self):
+    def read(self, sql):
         try:
             cur = self.db.cursor()
-            query = 'select DBD_COMPANY_ID from dbd_new_query Where DBD_STATUS = "Failed"'
-            cur.execute(query)
-            ids = cur.fetchall()
+            cur.execute(sql)
+            result = cur.fetchone()
         except Exception as e:
             print(e)
             print('fail to get information')
         finally:
             cur.close()
-        return ids
+        return result
 
-    def getAllCompanyIdList(self):
+    def clearmdbd(self):
         try:
+            sql = 'TRUNCATE TABLE mdbd'
             cur = self.db.cursor()
-            query = 'select DBD_COMPANY_ID from dbd_query'
-            cur.execute(query)
-            ids = cur.fetchall()
+            cur.execute(sql)
+            print('finish empty mdbd')
         except Exception as e:
             print(e)
-            print('fail to get information')
+            print('fail to empty mdbd')
         finally:
             cur.close()
-        return ids
+
+    def read_exclude_new_company(self):
+        try:
+            sql = 'select dbd_new_query.DBD_COMPANY_ID from dbd_new_query left join mdbd on dbd_new_query.DBD_COMPANY_ID = mdbd.regisid where mdbd.id is null;'
+            cur = self.db.cursor()
+            cur.execute(sql)
+            exclude_company_id = cur.fetchall()
+        except Exception as e:
+            print(e)
+            print('fail to find id')
+        return exclude_company_id
+
+    def read_include_new_company(self):
+        try:
+            sql = 'select dbd_new_query.DBD_COMPANY_ID, mdbd.id from dbd_new_query left join mdbd on dbd_new_query.DBD_COMPANY_ID = mdbd.regisid where mdbd.id;'
+            cur = self.db.cursor()
+            cur.execute(sql)
+            include_company_ids = cur.fetchall()
+        except Exception as e:
+            print(e)
+            print('fail to find id')
+        return include_company_ids
+
+    def read_company_info(self, company_id):
+        try:
+            sql = f'''select 
+            DBD_ID, DBD_TYPE, DBD_REGISTRATION_DATE, DBD_STATUS, DBD_REGISTRATION_MONEY, DBD_STREET, DBD_SUBDISTRICT, DBD_DISTRICT, DBD_PROVINCE, DBD_ZIPCODE, DBD_BUSINESS_TYPE_CODE, DBD_BUSINESS_TYPE, DBD_OBJECTIVE, DBD_NAME_TH
+            from dbdcompany where DBD_ID = {company_id};'''
+            cur = self.db.cursor()
+            cur.execute(sql)
+            company_info = cur.fetchone()
+        except Exception as e:
+            print(e)
+            print('fail to find company info')
+        return company_info
+
+    def find_biggest_id(self, num):
+        try:
+            sql = f'SELECT * FROM mdbd WHERE id < {num} ORDER BY id DESC LIMIT 1'
+            cur = self.db.cursor()
+            cur.execute(sql)
+            biggest = cur.fetchone()
+        except Exception as e:
+            print(e)
+            print('fail to find id')
+        return biggest
+
 
     def dbClose(self):
         self.db.close()
         print("database closed")
 
+
 if __name__ == '__main__':
     db = DbdConnector()
-    '''
-    data = ('123', 'my company', datetime.datetime.now(), 20000, '34522', 'type', 'street', 'subd', 'dist', 'prov', '12345', 'address')
-    db.insertToDbdcompany(data)
-    '''
-    db.getCompanyIdList()
+    for i in db.read_include_new_company():
+        print(db.read_company_info(i[0]))
 
         

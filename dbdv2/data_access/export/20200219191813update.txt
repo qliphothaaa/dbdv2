@@ -1,0 +1,18 @@
+UPDATE vtiger_dbdcompanies SET dbdcompanies = 'บริษัท อินฟราเซท จำกัด (มหาชน)' WHERE dbdcompaniesid ='5471827';
+UPDATE vtiger_dbdcompaniescf SET cf_755 = '0105535060533',cf_757 = 'บริษัทมหาชนจำกัด',cf_763 = '2562-03-22',cf_759 = 'ยังดำเนินกิจการอยู่',cf_761 = '280000000',cf_809 = '165/37-39  ถนนรามอินทรา',cf_811 = 'อนุสาวรีย์',cf_813 = 'บางเขน',cf_815 = 'กรุงเทพมหานคร',cf_817 = '10220',cf_799 = '71102',cf_801 = 'กิจกรรมงานวิศวกรรมและการให้คำปรึกษาทางด้านเทคนิค ที่เกี่ยวข้อง',cf_1995 = 'ประกอบกิจการ สำรวจ ออกแบบ และสร้างโครงข่ายสัญาญาณโทรคมนาคม' WHERE dbdcompaniesid ='5471827';
+UPDATE vtiger_crmentity SET modifiedtime =NOW(), label='บริษัท อินฟราเซท จำกัด (มหาชน)' WHERE crmid='5471827';
+UPDATE vtiger_dbdcompanies SET dbdcompanies = 'None' WHERE dbdcompaniesid ='3559304';
+UPDATE vtiger_dbdcompaniescf SET cf_755 = '0105560049157',cf_757 = 'fsdf',cf_763 = 'None',cf_759 = 'None',cf_761 = 'None',cf_809 = 'None',cf_811 = 'None',cf_813 = 'None',cf_815 = 'None',cf_817 = 'None',cf_799 = 'None',cf_801 = 'None',cf_1995 = 'None' WHERE dbdcompaniesid ='3559304';
+UPDATE vtiger_crmentity SET modifiedtime =NOW(), label='None' WHERE crmid='3559304';
+UPDATE vtiger_dbdcompanies SET dbdcompanies = 'บจ.เทียนผิง คอนซัลแทนท์ จำกัด' WHERE dbdcompaniesid ='5461704';
+UPDATE vtiger_dbdcompaniescf SET cf_755 = '0105562075660',cf_757 = 'None',cf_763 = '2562-04-25',cf_759 = 'None',cf_761 = '1000000',cf_809 = '9/517  ถนนกาญจนาภิเษก',cf_811 = 'คันนายาว',cf_813 = 'คันนายาว',cf_815 = 'กรุงเทพมหานคร',cf_817 = '10230',cf_799 = '70209',cf_801 = 'None',cf_1995 = 'ประกอบกิจการบริการรับเป็นที่ปรึกษาและให้คำแนะนำ' WHERE dbdcompaniesid ='5461704';
+UPDATE vtiger_crmentity SET modifiedtime =NOW(), label='บจ.เทียนผิง คอนซัลแทนท์ จำกัด' WHERE crmid='5461704';
+UPDATE vtiger_dbdcompanies SET dbdcompanies = 'บจ.อีซี่สแปร์ (ไทยแลนด์) จำกัด' WHERE dbdcompaniesid ='5459962';
+UPDATE vtiger_dbdcompaniescf SET cf_755 = '0105562077841',cf_757 = 'None',cf_763 = '2562-04-29',cf_759 = 'None',cf_761 = '1000000',cf_809 = '2  ซอยลาดกระบัง 1',cf_811 = 'ลาดกระบัง',cf_813 = 'ลาดกระบัง',cf_815 = 'กรุงเทพมหานคร',cf_817 = '10520',cf_799 = '46105',cf_801 = 'None',cf_1995 = 'ประกอบกิจการนำเข้า ส่งออก จำหน่าย เครื่องจักรกล เครื่องจักรอุตสาหกรรม รวมถึงชิ้นส่วนอะไหล่ อุปกรณ์' WHERE dbdcompaniesid ='5459962';
+UPDATE vtiger_crmentity SET modifiedtime =NOW(), label='บจ.อีซี่สแปร์ (ไทยแลนด์) จำกัด' WHERE crmid='5459962';
+UPDATE vtiger_dbdcompanies SET dbdcompanies = 'บจ.อีอาร์เอ็กซ์ จำกัด' WHERE dbdcompaniesid ='5471742';
+UPDATE vtiger_dbdcompaniescf SET cf_755 = '0135562011351',cf_757 = 'None',cf_763 = '2562-04-30',cf_759 = 'None',cf_761 = '1000000',cf_809 = '51/599  หมู่บ้าน เมืองเอก หมู่ที่ 7 ถนนพหลโยธิน',cf_811 = 'หลักหก',cf_813 = 'มืองปทุมธานี',cf_815 = 'ปทุมธานี',cf_817 = '12000',cf_799 = '64991',cf_801 = 'None',cf_1995 = 'ศูนย์ซื้อขายคริปเคอร์นเรนซีและศูนย์ซื้อขายโทเคนดิจิทัล อยู่ภายใต้การกำกับของสำนักงานคณะกรรมการกำกับหลักทรัพย์และตลาดหลักทรัพย์ (ก.ล.ต.)' WHERE dbdcompaniesid ='5471742';
+UPDATE vtiger_crmentity SET modifiedtime =NOW(), label='บจ.อีอาร์เอ็กซ์ จำกัด' WHERE crmid='5471742';
+UPDATE vtiger_dbdcompanies SET dbdcompanies = 'บจ.ฟิต เวล เฮลตี้ จำกัด' WHERE dbdcompaniesid ='5479947';
+UPDATE vtiger_dbdcompaniescf SET cf_755 = '0965562000140',cf_757 = 'None',cf_763 = '2562-04-04',cf_759 = 'None',cf_761 = '500000',cf_809 = '36  ถนนจำรูญนรา',cf_811 = 'างนาค',cf_813 = 'มืองนราธิวาส',cf_815 = 'นราธิวาส',cf_817 = '96000',cf_799 = '47721',cf_801 = 'None',cf_1995 = 'ประกอบกิจการขายอาหารเสริมเพื่อสุขภาพทุกชนิด' WHERE dbdcompaniesid ='5479947';
+UPDATE vtiger_crmentity SET modifiedtime =NOW(), label='บจ.ฟิต เวล เฮลตี้ จำกัด' WHERE crmid='5479947';

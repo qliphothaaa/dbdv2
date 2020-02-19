@@ -1,5 +1,6 @@
 import pandas as pd
 import numpy as np
+import datetime
 from rex import address_clear
 try:
     from dbd_connector import DbdConnector
@@ -19,7 +20,11 @@ class DbdExcelReader(object):
         self.readExcel()
         self.checkData()
         self.hanldeData()
+
+        #oldtime=datetime.datetime.now()
         self.insertData()
+        #newtime=datetime.datetime.now()
+        #print(newtime-oldtime)
 
     def readExcel(self):
         #self.data_dict = pd.read_excel(self.path, skiprows=2)
@@ -76,29 +81,24 @@ class DbdExcelReader(object):
             values.append(values[6] +' '+ values[7])
             value_id = (values[0], values[0][3])#values[0] is the company id. The 4th number of company id is typecode
 
-            dbconnector.insertToDbdcompany(values)
-            dbconnector.insertToDbdNewQuery(value_id)
-            dbconnector.insertToDbdQuery(value_id)
+            dbdcompany_sql = '''INSERT INTO dbdcompany 
+                            (DBD_ID, DBD_NAME_TH, DBD_REGISTRATION_DATE, DBD_REGISTRATION_MONEY,DBD_BUSINESS_TYPE_CODE,DBD_OBJECTIVE, DBD_STREET, DBD_SUBDISTRICT, DBD_DISTRICT, DBD_PROVINCE, DBD_ZIPCODE, DBD_ADDRESS)
+                            VALUES
+                            (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);
+                            '''
+            dbd_new_query_sql = '''INSERT INTO dbd_new_query
+                            (DBD_COMPANY_ID, DBD_TYPECODE)
+                            VALUES
+                            (%s, %s);
+                            '''
+            dbd_query_sql = '''INSERT INTO dbd_query
+                            (DBD_COMPANY_ID, DBD_TYPECODE)
+                            VALUES
+                            (%s, %s);
+                            '''
+
+            sqls = (dbdcompany_sql, dbd_new_query_sql, dbd_query_sql)
+            values_tuple = (values, value_id, value_id)
+            dbconnector.insertTransaction(sqls, values_tuple)
             
         dbconnector.dbClose()
-
-
-    #below here is some trash
-
-    '''
-    def check(self, df):
-        if df.empty:
-            print('warning: %s is empty' % (df.columns[0]) )
-        print('%s: %d records' % (df.columns[0], df.shape[0]))
-        #print(df)
-
-
-    def getData(self,num):
-        def getDataFromDF(df):
-            return str(df[df.columns[0]][num])
-        return getDataFromDF
-    '''
-
-
-
-        
