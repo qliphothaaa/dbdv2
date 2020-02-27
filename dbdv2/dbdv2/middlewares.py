@@ -69,15 +69,17 @@ class Dbdv2DownloaderMiddleware(object):
             self.success_count += 1
             request.status = True
         else:
-            print("@@@@@@@@@@@@@@@@@@@@@@@@Get page of company No.%d failed@@@@@@@@@@@@@@@@@@@@@@@@@" % (self.success_count + self.fail_count + 1))
+            print("@@@@@@@@@@@@@@@@@@@@@@@@Fail to Get page of company No.%d @@@@@@@@@@@@@@@@@@@@@@@@@" % (self.success_count + self.fail_count + 1))
             self.fail_count += 1
             request.status = False
 
 
         if code == '404':
             #if the company cannot be found
+            print('cannot find the page in datawarehouse')
             pass
         elif code == '':
+            print('find page time out!')
             #if timeout
             pass
         elif code == '401':

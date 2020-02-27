@@ -56,13 +56,13 @@ class MonthlyScrapingPipeline(object):
             #update database
             self.dbconnector.updateCompanyTransaction(sqls, values, company_id)
 
-            print('------------update finished=====================')
+            print('------------monthly update finished=====================')
             return item
 
 
         #if find data falied
         else:
-            print('failed to get the page')
+            print('monthly scraping, failed to get the page')
             sql_dbd_new_query    = 'update dbd_new_query set DBD_Status = "Failed", DBD_LAST_RUN=%s where DBD_COMPANY_ID = %s'
             values_dbd_new_query = (time.strftime('%Y-%m-%d %H:%M:%S'), company_id)
 
