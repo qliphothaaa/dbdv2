@@ -20,7 +20,7 @@ except:
 def default_options():
     default_args = {
         'owner': 'dbdv2',  
-        'start_date': datetime(2020, 2, 2),  
+        'start_date': datetime(2050, 2, 2),  
         'retries': 1,  
         'retry_delay': timedelta(seconds=5)  
     }
@@ -32,23 +32,24 @@ with DAG(
         schedule_interval="@once"  
 ) as d:
 
-    task_start = start(d, 'monthly_scraping')
+    #task_start = start(d, 'monthly_scraping')
 
     task1 = loadExcel(d, year, month, num)
     task2 = getCookies(d)
     task3 = startMonthlyScraping(d)
 
-    taskf1 = failedEmail(d, task1)
-    taskf2 = failedEmail(d, task2)
-    taskf3 = failedEmail(d, task3)
+    #taskf1 = failedEmail(d, task1)
+    #taskf2 = failedEmail(d, task2)
+    #taskf3 = failedEmail(d, task3)
 
-    task_finished = successEmail(d, 'monthly_scraping')
+    #task_finished = successEmail(d, 'monthly_scraping')
 
-    task_start >> task1 >> task2 >> task3 >> task_finished
+    #task_start >> task1 >> task2 >> task3 >> task_finished
+    task1 >> task2 >> task3
 
-    task1 >> taskf1
-    task2 >> taskf2
-    task3 >> taskf3
+    #task1 >> taskf1
+    #task2 >> taskf2
+    #task3 >> taskf3
 
 
 
