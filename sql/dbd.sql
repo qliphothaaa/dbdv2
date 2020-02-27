@@ -56,3 +56,11 @@ CREATE TABLE `dbd_query` (
   UNIQUE KEY `DBD_COMPANY_ID_UNIQUE` (`DBD_COMPANY_ID`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+CREATE TABLE `mdbd` (
+  `id` int(10) NOT NULL,
+  `regisid` varchar(20) NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `regisid` (`regisid`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+

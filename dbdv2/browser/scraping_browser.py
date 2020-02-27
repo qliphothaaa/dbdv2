@@ -1,7 +1,7 @@
 import os, time, re, pickle, signal
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
-
+from selenium.common.exceptions import TimeoutException, NoSuchElementException
 from .captcha_reader import readCaptcha
 
 class ScrapingBrowser(object):
@@ -47,29 +47,43 @@ class ScrapingBrowser(object):
             self.driver.get(url)
             page = self.driver.page_source
             title = self.driver.title
-            error_code = '200'
-            if 'Error' in title:
-                time.sleep(2)
-                self.driver.save_screenshot('browser/temp/error.png')
-                error_code = self.driver.find_element_by_xpath('/html/body/div/div[4]/div[2]/div/div/div[2]/div/h5').text
+            content_exist = self.checkElements('/html/body/div/div[4]/div[2]/div[1]')
+            search_exist = self.checkElements('//*[@id="textSearch"]')
+
+            if not content_exist:
                 title = ''
                 page = ''
+
+                if search_exist:
+                    error_code = '404'
+                else:
+                    try:
+                        error_code = self.driver.find_element_by_xpath('/html/body/div/div[4]/div[2]/div/div/div[2]/div/h5').text
+                    except:
+                        error_code = '000'
+            else:
+                error_code = '200'
+
         except TimeoutException as e:
             page = ''
             title = ''
+            error_code = ''
         return (page, title, error_code)
+
+    def checkElements(self, xpath):
+        try:
+            self.driver.find_element_by_xpath(xpath)
+        except NoSuchElementException:
+            return False
+        return True
 
 
 
     def close(self):
         pid = self.driver.service.process.pid
-        #print('start to close tabs')
-        #print('start to close driver'+ str(pid))
         try:
             self.driver.close()
             os.kill(int(pid), signal.SIGTERM)
-            #print("killed the chrome using process")
         except ProcessLookupError as ex:
             print(ex)
-        #print('finish close driver')
 

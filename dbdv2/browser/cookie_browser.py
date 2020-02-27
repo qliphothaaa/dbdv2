@@ -1,6 +1,8 @@
 import os, time, re, pickle, signal
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
+from selenium.common.exceptions import TimeoutException
+
 try:
     from captcha_reader import readCaptcha
 except:
@@ -69,7 +71,7 @@ class CookieBrowser(object):
         self.driver.get('https://datawarehouse.dbd.go.th/login')
         #self.driver.get('https://www.google.com')
         print(self.driver.get_cookies())
-        for i in range(5):
+        for i in range(10):
             time.sleep(2)
             captcha_str = self.getCaptcha()
             if len(captcha_str) < 5 or not re.match('^[A-Za-z0-9]+$',captcha_str): 

@@ -62,6 +62,7 @@ class MonthlyScrapingPipeline(object):
 
         #if find data falied
         else:
+            print('failed to get the page')
             sql_dbd_new_query    = 'update dbd_new_query set DBD_Status = "Failed", DBD_LAST_RUN=%s where DBD_COMPANY_ID = %s'
             values_dbd_new_query = (time.strftime('%Y-%m-%d %H:%M:%S'), company_id)
 
@@ -74,7 +75,6 @@ class MonthlyScrapingPipeline(object):
             self.dbconnector.updateCompanyTransaction(sqls, values, company_id)
 
             raise DropItem("cannot find the company %s" %item['company_id'])
-            return item
 
 
 

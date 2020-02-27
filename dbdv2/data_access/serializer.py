@@ -87,7 +87,6 @@ class MdbdSerializer(object):
         sql_crmentity      = f"INSERT INTO vtiger_crmentity(crmid, description, createdtime, modifiedtime, smownerid, smcreatorid, modifiedby, label, setype ) VALUES('{dbdcompaniesid}', '', NOW(), NOW(), 1, 1, 1, '{ci['dbdcompanies']}', 'DBDCompanies');"
         insert_data = sql_dbdcompanies + '\n' + sql_dbdcompaniescf + '\n' + sql_crmentity + '\n'
         return insert_data
-
          
     def generate_update_sql(self, company_info, crm_id):
         ci = company_info

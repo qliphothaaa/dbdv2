@@ -48,6 +48,7 @@ services:
 
         volumes:
             - ./django_api/frontend:/frontend
+            - ./dbdv2/data_access/customer_csv:/frontend/csv_files/
         depends_on:
             - database
         command: ./wait-for-it.sh -t 0 -h dbd_db -p 3306 -- ./run.sh

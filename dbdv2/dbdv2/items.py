@@ -19,6 +19,9 @@ class MonthlyItem(scrapy.Item):
     directors       = scrapy.Field()
     bussiness_type  = scrapy.Field()
 
+class FailedItem(scrapy.Item):
+    scraping_status = scrapy.Field()
+    company_id      = scrapy.Field()
 
 class AnnuallyItem(scrapy.Item):
     scraping_status = scrapy.Field()

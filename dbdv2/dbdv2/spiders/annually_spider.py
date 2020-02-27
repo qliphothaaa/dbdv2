@@ -1,10 +1,11 @@
 import scrapy
 import time
 from data_access.dbd_connector import DbdConnector
-from dbdv2.items import AnnuallyItem
+from dbdv2.items import AnnuallyItem, FailedItem
 
 class AnnuallySpider(scrapy.Spider):
     name = 'annually'
+    close_it = ''
     headers = {
     'User-Agent': 'Mozilla/5.0 (Windows NT 6.2; WOW64) AppleWebKit/537.36 (KHTML like Gecko) Chrome/44.0.2403.155 Safari/537.36',
     }
@@ -32,33 +33,54 @@ class AnnuallySpider(scrapy.Spider):
 
 
     def parse(self, response):
+        if self.close_it:
+            print(close_it)
+            raise CloseSpider(close_it)
 
-        company_name = response.xpath('/html/body/div/div[4]/div[2]/div[1]/div[1]/h2/text()').get()
+        company_id = response.url.split('/')[-1]
 
-        objective = response.xpath('/html/body/div[1]/div[4]/div[2]/div[1]/div[2]/div[2]/div[1]/div[3]/div[5]/div/p/text()').get()
-        if objective == '-':
-            objective = response.xpath('/html/body/div[1]/div[4]/div[2]/div[1]/div[2]/div[2]/div[1]/div[3]/div[3]/div/p/text()').get()
+        print('23145677456'  + str(response.request.status))
 
+        if response.request.status:
+            company_name = response.xpath('/html/body/div/div[4]/div[2]/div[1]/div[1]/h2/text()').get()
 
-        director_list = []
-        directors = response.xpath('/html/body/div[1]/div[4]/div[2]/div[1]/div[2]/div[2]/div[1]/div[2]/div/div/ol/li/text()').getall()
-        for i in directors:
-            director_list.append(i.strip())
+            objective = response.xpath('/html/body/div[1]/div[4]/div[2]/div[1]/div[2]/div[2]/div[1]/div[3]/div[5]/div/p/text()').get()
+            if objective == '-':
+                objective = response.xpath('/html/body/div[1]/div[4]/div[2]/div[1]/div[2]/div[2]/div[1]/div[3]/div[3]/div/p/text()').get()
 
-        raw_bussiness_type = response.xpath('/html/body/div[1]/div[4]/div[2]/div[1]/div[2]/div[2]/div[1]/div[3]/div[4]/div/p/text()').get().strip()
-        if raw_bussiness_type == '-':
-            raw_bussiness_type = response.xpath('/html/body/div/div[4]/div[2]/div[1]/div[2]/div[2]/div[1]/div[3]/div[2]/div/p/text()').get().strip()
+            director_list = []
+            directors = response.xpath('/html/body/div[1]/div[4]/div[2]/div[1]/div[2]/div[2]/div[1]/div[2]/div/div/ol/li/text()').getall()
+            for i in directors:
+                director_list.append(i.strip())
 
-        item = AnnuallyItem()
-        item['scraping_status'] = response.request.status
-        item['company_id']     = response.url.split('/')[-1]
-        item['company_type']   = response.xpath('/html/body/div[1]/div[4]/div[2]/div[1]/div[2]/div[2]/div[1]/div[1]/div[1]/table/tbody/tr[1]/th[2]/text()').get()
-        item['status']         = response.xpath('/html/body/div[1]/div[4]/div[2]/div[1]/div[2]/div[2]/div[1]/div[1]/div[1]/table/tbody/tr[3]/td[2]/text()').get()
-        item['address']        = response.xpath('/html/body/div[1]/div[4]/div[2]/div[1]/div[2]/div[2]/div[1]/div[1]/div[2]/table/tbody/tr[2]/td/text()').get()
-        item['company_name']   = response.xpath('/html/body/div/div[4]/div[2]/div[1]/div[1]/h2/text()').get()
-        item['objective']      = objective
-        item['directors']      = director_list
-        item['bussiness_type'] = raw_bussiness_type
+            raw_bussiness_type = response.xpath('/html/body/div[1]/div[4]/div[2]/div[1]/div[2]/div[2]/div[1]/div[3]/div[4]/div/p/text()').get()
+            try:
+                raw_bussiness_type = raw_bussiness_type.strip()
+            except:
+                raw_bussiness_type = 'ERRRRRRRRRRRRRRRRRRRORRRRRRRRRRRRRRRRRRRRRR:' + response.url.split('/')[-1]
 
+            if raw_bussiness_type == '-':
+                print("this company didn't update type")
+                raw_bussiness_type = response.xpath('/html/body/div/div[4]/div[2]/div[1]/div[2]/div[2]/div[1]/div[3]/div[2]/div/p/text()').get().strip()
+            else:
+                print('this company update his type')
 
-        return item
+            item = AnnuallyItem()
+            item['scraping_status'] = response.request.status
+            #item['company_id']     = response.url.split('/')[-1]
+            item['company_id']     = company_id
+            item['company_type']   = response.xpath('/html/body/div[1]/div[4]/div[2]/div[1]/div[2]/div[2]/div[1]/div[1]/div[1]/table/tbody/tr[1]/th[2]/text()').get()
+            item['status']         = response.xpath('/html/body/div[1]/div[4]/div[2]/div[1]/div[2]/div[2]/div[1]/div[1]/div[1]/table/tbody/tr[3]/td[2]/text()').get()
+            item['address']        = response.xpath('/html/body/div[1]/div[4]/div[2]/div[1]/div[2]/div[2]/div[1]/div[1]/div[2]/table/tbody/tr[2]/td/text()').get()
+            item['company_name']   = response.xpath('/html/body/div/div[4]/div[2]/div[1]/div[1]/h2/text()').get()
+            item['objective']      = objective
+            item['directors']      = director_list
+            item['bussiness_type'] = raw_bussiness_type
+            return item
+
+        else:
+            item = FailedItem()
+            item['scraping_status'] = False
+            item['company_id'] = company_id
+            print('failed item '+company_id)
+            return item

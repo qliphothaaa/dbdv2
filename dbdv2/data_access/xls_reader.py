@@ -1,7 +1,10 @@
 import pandas as pd
 import numpy as np
 import datetime
-from rex import address_clear
+try:
+    from rex import address_clear
+except:
+    from .rex import address_clear
 try:
     from dbd_connector import DbdConnector
 except:
@@ -36,7 +39,6 @@ class DbdExcelReader(object):
             "วันที่\nจดทะเบียน":"REGISTRATION_DATE", 
             "ทุนจดทะเบียน\n(บาท)":"REGISTRATION_MONEY", 
             "รหัส\nวัตถุประสงค์":"BUSINESS_TYPE_CODE", 
-            #"รายละเอียดวัตถุประสงค์":"BUSINESS_TYPE",
             "รายละเอียดวัตถุประสงค์":"OBJECTIVE",
             "ที่ตั้งสำนักงานใหญ่":"STREET",
             "ตำบล":"SUBDISTRICT",
@@ -68,7 +70,6 @@ class DbdExcelReader(object):
         self.data_dict['DISTRICT'] = self.data_dict['DISTRICT'].astype('str')
         self.data_dict['SUBDISTRICT'] = self.data_dict['SUBDISTRICT'].astype('str')
         #code above is to conver the street and district to string. Because some data in excel is wrong. I found there is a record that have datetime as subDistrict.
-        #it lead to error. maybe I will check the data later.
 
         
 

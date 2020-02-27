@@ -7,19 +7,15 @@ from airflow.utils.trigger_rule import TriggerRule
 from airflow.operators.bash_operator import BashOperator
 from airflow.operators.email_operator import EmailOperator
 
-email = 'nanashi.owen@gmail.com'
-year = '2019'
-month   = '03'
-num = '23'
 
+excel_config = Variable.get("excel_setting", deserialize_json=True, default_var={"year":"2019", "month":"03", "num":"0"})
+
+year = excel_config["year"]
+month= excel_config["month"]
 try:
-    excel_config = Variable.get("excel_setting", deserialize_json=True)
-    email = Variable.get("email")
-    year = excel_config['year']
-    month= excel_config['month']
-    num = excel_config['num']
+    num = excel_config["num"]
 except:
-    pass
+    num = '100000'
 
 def default_options():
     default_args = {

@@ -27,7 +27,7 @@ class DbdCSVReader(object):
         self.hanldeData()
 
         oldtime=datetime.datetime.now()
-        #self.insertData()
+        self.insertData()
         newtime=datetime.datetime.now()
         print(newtime-oldtime)
 

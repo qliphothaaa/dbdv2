@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>MonkeyTest</title>
+</head>
+<body>
+    <form method="post" action="" enctype="multipart/form-data">
+        {% csrf_token %}
+        please choose a csv file<input type="file" name="files"><br>
+        <input type="submit" value="upload">
+        <br>
+        <b><small>result</small></b><hr>
+    </form>
+    {% if result %}
+    <h1>{{result}}</h1>
+    {% endif %}
+ 
+</body>
+</html>

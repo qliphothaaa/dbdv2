@@ -5,9 +5,9 @@ class DbdConnector(object):
     def __init__(self):
         print('init db')
         self.db = mysql.connector.connect(
-                #host='dbd_db', 
-                host='localhost', 
-                port=3309,
+                host='dbd_db', 
+                #host='localhost', 
+                #port=3309,
                 user='root', 
                 passwd='1234',
                 database='dbd'
@@ -89,7 +89,7 @@ class DbdConnector(object):
             ids = cur.fetchall()
         except Exception as e:
             print(e)
-            print('fail to get information')
+            print('fail to get new company ids')
         finally:
             cur.close()
         return ids
@@ -126,7 +126,7 @@ class DbdConnector(object):
             exclude_company_id = cur.fetchall()
         except Exception as e:
             print(e)
-            print('fail to find id')
+            print('fail to find id that exclude in mdbd')
         return exclude_company_id
 
     def read_include_new_company(self):
@@ -137,7 +137,7 @@ class DbdConnector(object):
             include_company_ids = cur.fetchall()
         except Exception as e:
             print(e)
-            print('fail to find id')
+            print('fail to find id that include in mdbd')
         return include_company_ids
 
     def read_company_info(self, company_id):
@@ -161,7 +161,7 @@ class DbdConnector(object):
             biggest = cur.fetchone()
         except Exception as e:
             print(e)
-            print('fail to find id')
+            print('fail to find biggest id')
         return biggest
 
 

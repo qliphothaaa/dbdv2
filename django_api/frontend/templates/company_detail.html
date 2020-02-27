@@ -1,0 +1,34 @@
+{% if error_msg %}
+    <p>{{ error_msg }}</p>
+{% endif %}
+
+    <form method="get" action="/search/" target="_blank">
+      {% csrf_token %}
+      <input type="search" name = 'query' placeholder="search" required>
+      <button type="submit">search company by id</button>
+    </form>
+
+{% for company in companys%}
+  <div>
+    <p>id:    {{company.dbd_id}}</p>
+    <p>type:    {{company.dbd_type}}</p>
+    <p>name:    {{company.dbd_name_th}}</p>
+    <p>registration data:    {{company.dbd_registration_date}}</p>
+    <p>registration money:    {{company.dbd_registration_money}}</p>
+    <p>status:    {{company.dbd_status}}</p>
+    <p>address:    {{company.dbd_address}}</p>
+    <p>objective:    {{company.dbd_objective}}</p>
+    <p>street:    {{company.dbd_street}}</p>
+    <p>subdistrict:    {{company.dbd_subdistrict}}</p>
+    <p>district:    {{company.dbd_district}}</p>
+    <p>province:    {{company.dbd_province}}</p>
+    <p>zipcode:    {{company.dbd_zipcode}}</p>
+    <p>business type code:    {{company.dbd_business_type_code}}</p>
+    <p>business type:    {{company.dbd_business_type}}</p>
+    <p>directors{{company.dbd_directors}}</p>
+  </div>
+{% empty %}
+  <div class="no-post">
+      no result
+  </div>
+{% endfor %}

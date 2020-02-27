@@ -7,11 +7,6 @@ from airflow.utils.trigger_rule import TriggerRule
 from airflow.operators.bash_operator import BashOperator
 from airflow.operators.email_operator import EmailOperator
 
-email = 'nanashi.owen@gmail.com'
-try:
-    email = Variable.get("email")
-except:
-    pass
 
 def default_options():
     default_args = {

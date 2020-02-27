@@ -1,5 +1,9 @@
 import unittest
-from browser.cookie_browser import CookieBrowser
+try:
+    from browser.cookie_browser import CookieBrowser
+except:
+    from .browser.cookie_browser import CookieBrowser
+
 from selenium.common import exceptions
 
 class TestBrowser(unittest.TestCase):
@@ -11,7 +15,9 @@ class TestBrowser(unittest.TestCase):
 
     def test_getCookieFromFile(self):
         self.browser.cookie_path = 'tests/test_data/cookie_none.txt'
+
         self.assertEqual(self.browser.getCookieFromFile(),'')
+
 
         self.browser.cookie_path = 'tests/test_data/cookie.txt'
 

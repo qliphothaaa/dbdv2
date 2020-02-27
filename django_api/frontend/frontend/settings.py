@@ -23,9 +23,9 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = '^^l$8%5#9!5@u&o-tli(#&k$w@#yh(u+=7q0upxg4u1ww@sii='
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*',]
 
 CORS_ORIGIN_WHITELIST = ['http://localhost:4200']
 
@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'api',
     'corsheaders',
+    'upload',
 ]
 
 MIDDLEWARE = [

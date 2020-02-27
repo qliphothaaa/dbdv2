@@ -2,10 +2,8 @@ import time
 import os.path
 from scrapy import signals
 from scrapy.http import HtmlResponse
-from scrapy.exceptions import CloseSpider
-
+#from scrapy.exceptions import CloseSpider
 from browser.scraping_browser import ScrapingBrowser
-from .errors import  TargetServerDownError, CookieExpiredError
 
 
 class Dbdv2SpiderMiddleware(object):
@@ -36,11 +34,9 @@ class Dbdv2SpiderMiddleware(object):
 
 
 class Dbdv2DownloaderMiddleware(object):
-    #my code
     def __init__(self):
         print('=============init middleware==============')
         self.fake_browser  = ScrapingBrowser()
-        print('fin br')
         self.success_count = 0
         self.fail_count    = 0
 
@@ -61,23 +57,13 @@ class Dbdv2DownloaderMiddleware(object):
     def process_request(self, request, spider):
         print("@@@@@@@@@@@@@@@@@@@@@@@@get page of company No.%d @@@@@@@@@@@@@@@@@@@@@@@@@" % (self.success_count + self.fail_count + 1))
         
-
         time.sleep(1)
-        page, title, status = self.fake_browser.getPage(request.url)
 
-        request.status = False
+        page, title, code = self.fake_browser.getPage(request.url)
 
-        if status == '401':
-            self.fail_count += 1
-            raise CloseSpider('@@@@@@@@@@@@@@@the cooike expired in scraping@@@@@@@@@@@@@@@@')
-        if status == '500' or status == '503':
-            #self.fake_browser.driver.save_screenshot('failed.png')
-            #print(self.fake_browser.driver.current_url)
-            self.fail_count += 1
-            raise CloseSpider('@@@@@@@@@@@@@@@@@@@@the server is down! Please try to run it later@@@@@@@@@@@@@@@@@')
+        #request.driver_title = title
 
-        request.driver_title = title
-        
+        #if the title exist, mean the get page succeed
         if title:
             print("@@@@@@@@@@@@@@@@@@@@@@@@Successfully got page of company No.%d @@@@@@@@@@@@@@@@@@@@@@@@@" % (self.success_count + self.fail_count + 1))
             self.success_count += 1
@@ -85,10 +71,33 @@ class Dbdv2DownloaderMiddleware(object):
         else:
             print("@@@@@@@@@@@@@@@@@@@@@@@@Get page of company No.%d failed@@@@@@@@@@@@@@@@@@@@@@@@@" % (self.success_count + self.fail_count + 1))
             self.fail_count += 1
+            request.status = False
 
 
-        response = HtmlResponse(url=request.url, body=page, request=request, encoding='utf-8')#, status=200)
+        if code == '404':
+            #if the company cannot be found
+            pass
+        elif code == '':
+            #if timeout
+            pass
+        elif code == '401':
+            #if cookie died
+            #raise CloseSpider('@@@@@@@@@@@@@@@the cooike expired in scraping@@@@@@@@@@@@@@@@')
+            spider.close_it = 'cookie expired!'
 
+        elif  code == '500' or code == '503' or code == '000':
+            #if the server down:500, 503
+            #or some error system does not know: 000
+
+            #self.fake_browser.driver.save_screenshot('failed.png')
+            #raise CloseSpider('@@@@@@@@@@@@@@@@@@@@the server is down! Please try to run it later@@@@@@@@@@@@@@@@@')
+            spider.close_it = 'server is down!'
+        else:
+            pass
+
+        response = HtmlResponse(url=request.url, body=page, request=request, encoding='utf-8')
+
+        #print(title)
         return response
 
     def process_response(self, request, response, spider):

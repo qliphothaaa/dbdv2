@@ -32,4 +32,6 @@ urlpatterns = [
     path('query/', view.list_query),
     path('api/', include(router.urls)),
     path('api-auth/', include('rest_framework.urls', namespace='rest_framework')),
+    path('func/', include('upload.urls')),
+    path('search/', view.search)
 ]

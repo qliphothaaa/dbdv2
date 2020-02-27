@@ -3,7 +3,7 @@ from airflow.operators.email_operator import EmailOperator
 from airflow.models import Variable
 from airflow.utils.trigger_rule import TriggerRule
 
-email = 'nanashi.owen@gmail.com'
+email = Variable.get("email", default_var="nanashi.owen@gmail.com")
 
 def start(dag, dag_name):
     task = EmailOperator(
@@ -15,10 +15,10 @@ def start(dag, dag_name):
     return task
 
 
-def loadExcel(dag, year, date, num):
+def loadExcel(dag, year, month, num):
     task = BashOperator(
             task_id='load_excel',
-            bash_command="cd /dbdv2 && python3 data_access/run_load_excel.py %s %s %s"% (year, date, num),
+            bash_command="cd /dbdv2 && python3 data_access/run_load_excel.py %s %s %s"% (year, month, num),
             dag=dag)
     return task
 
@@ -60,7 +60,7 @@ def clearMdbd(dag):
 def readCSV(dag):
     task = BashOperator(
             task_id='read_csv',
-            bash_command="cd /dbdv2 && python data_access/run_load_csv.py '28012020.csv'",
+            bash_command="cd /dbdv2 && python data_access/run_load_csv.py 'mdbd.csv'",
             dag=dag)
     return task
 

@@ -1,2 +1,2 @@
 #!/bin/bash
-scrapy crawl dbdv2
+scrapy crawl monthly

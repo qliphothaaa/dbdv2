@@ -8,3 +8,4 @@ wget==3.2
 xlrd==1.2.0
 apache-airflow[mysql]==1.10.6
 werkzeug==0.16.0
+flask_bcrypt

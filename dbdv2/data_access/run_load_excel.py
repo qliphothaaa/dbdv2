@@ -13,6 +13,7 @@ if len(sys.argv)>2:
     datetime = year+month
 
     filename = './data_access/company_excel/' + '99_%s.xls' %datetime
+    print(datetime)
 
     if not os.path.isfile(filename):
         try:

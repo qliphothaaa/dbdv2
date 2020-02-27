@@ -11,6 +11,7 @@ from rest_framework.permissions import IsAuthenticated
 class CompanyViewSet(viewsets.ModelViewSet):
     queryset = Dbdcompany.objects.all()
     serializer_class = CompanySerializer
+    permission_classes = (IsAuthenticated,)
     
 class NewQueryViewSet(viewsets.ModelViewSet):
     queryset = DbdNewQuery.objects.all()

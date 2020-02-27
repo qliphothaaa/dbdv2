@@ -7,26 +7,17 @@ class TestExcelReader(unittest.TestCase):
 
     def test_readExcel(self):
         self.excelReader.readExcel()
-        self.assertEqual(list(self.excelReader.data_dict.columns),["ROW","ID", "NAME_TH", "REGISTRATION_DATE", "REGISTRATION_MONEY", "BUSINESS_TYPE_CODE", "BUSINESS_TYPE", "STREET", "SUBDISTRICT", "DISTRICT", "PROVINCE", "ZIPCODE"])
+        #print(list(self.excelReader.data_dict.columns))
+        self.assertEqual(list(self.excelReader.data_dict.columns),["ROW","ID", "NAME_TH", "REGISTRATION_DATE", "REGISTRATION_MONEY", "BUSINESS_TYPE_CODE", "OBJECTIVE", "STREET", "SUBDISTRICT", "DISTRICT", "PROVINCE", "ZIPCODE"])
 
 
     def test_hanldeData(self):
         self.excelReader.readExcel()
-        self.assertEqual(list(self.excelReader.data_dict.columns),["ROW","ID", "NAME_TH", "REGISTRATION_DATE", "REGISTRATION_MONEY", "BUSINESS_TYPE_CODE", "BUSINESS_TYPE", "STREET", "SUBDISTRICT", "DISTRICT", "PROVINCE", "ZIPCODE"])
+        self.assertEqual(list(self.excelReader.data_dict.columns),["ROW","ID", "NAME_TH", "REGISTRATION_DATE", "REGISTRATION_MONEY", "BUSINESS_TYPE_CODE", "OBJECTIVE", "STREET", "SUBDISTRICT", "DISTRICT", "PROVINCE", "ZIPCODE"])
 
         self.excelReader.hanldeData()
-        self.assertEqual(list(self.excelReader.data_dict.columns),["ROW","ID", "NAME_TH", "REGISTRATION_DATE", "REGISTRATION_MONEY", "BUSINESS_TYPE_CODE", "BUSINESS_TYPE", "STREET", "SUBDISTRICT", "DISTRICT", "PROVINCE", "ZIPCODE", "ADDRESS"])
-
-        for i in range(10):
-            self.assertEqual(self.excelReader.data_dict.iloc[i]["ADDRESS"], self.excelReader.data_dict.iloc[i]["STREET"] + ' ' + self.excelReader.data_dict.iloc[i]["SUBDISTRICT"])
+        self.assertEqual(list(self.excelReader.data_dict.columns),["ROW","ID", "NAME_TH", "REGISTRATION_DATE", "REGISTRATION_MONEY", "BUSINESS_TYPE_CODE", "OBJECTIVE", "STREET", "SUBDISTRICT", "DISTRICT", "PROVINCE", "ZIPCODE"])
     
-
-
-
-
-
-
-
 
 
 if __name__ == "__main__":
