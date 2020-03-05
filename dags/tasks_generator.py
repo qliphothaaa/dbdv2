@@ -15,10 +15,10 @@ def start(dag, dag_name):
     return task
 
 
-def loadExcel(dag, year, month, num):
+def loadExcel(dag, url, num, column):
     task = BashOperator(
             task_id='load_excel',
-            bash_command="cd /dbdv2 && python3 data_access/run_load_excel.py %s %s %s"% (year, month, num),
+            bash_command="cd /dbdv2 && python3 data_access/run_load_excel.py %s %s %s"% (url, num, column),
             dag=dag)
     return task
 
@@ -64,13 +64,19 @@ def readCSV(dag):
             dag=dag)
     return task
 
-def exportDB(dag):
+def exportDBMonth(dag):
     task = BashOperator(
-            task_id='export',
+            task_id='export_new_data',
             bash_command="cd /dbdv2 && python3 data_access/run_export_db.py",
             dag=dag)
     return task
 
+def exportDBYear(dag):
+    task = BashOperator(
+            task_id='export_all_data',
+            bash_command="cd /dbdv2 && python3 data_access/run_export_db_all.py",
+            dag=dag)
+    return task
 
 def failedEmail(dag, task):
     task = EmailOperator(

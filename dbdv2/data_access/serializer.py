@@ -19,12 +19,20 @@ class MdbdSerializer(object):
         self.company_template = ("cf_755", "cf_757","cf_763","cf_759","cf_761","cf_809","cf_811","cf_813","cf_815","cf_817","cf_799","cf_801","cf_1995","dbdcompanies")
 
 
-    def start(self):
+    def start_export_newcompany(self):
         include_id_generator = self.get_include_company_data()
         exclude_id_generator = self.get_exclude_company_data()
         self.write_update_file(include_id_generator)
         self.write_insert_file(exclude_id_generator)
         self.db_connector.dbClose()
+
+    def start_export_allcompany(self):
+        include_id_generator = self.get_include_company_data_all()
+        exclude_id_generator = self.get_exclude_company_data_all()
+        self.write_update_file(include_id_generator, 'DBD')
+        self.write_insert_file(exclude_id_generator, 'DBD')
+        self.db_connector.dbClose()
+
 
     def get_include_company_data(self):
         include_company_ids =  self.db_connector.read_include_new_company()
@@ -36,9 +44,19 @@ class MdbdSerializer(object):
         for company_id in exclude_company_ids:
             yield (self.db_connector.read_company_info(company_id[0]), 0)
 
-    def write_insert_file(self, id_generator):
+    def get_include_company_data_all(self):
+        include_company_ids =  self.db_connector.read_include_all_company()
+        for company_id in include_company_ids:
+            yield (self.db_connector.read_company_info(company_id[0]), company_id[1])
+
+    def get_exclude_company_data_all(self):
+        exclude_company_ids =  self.db_connector.read_exclude_all_company()
+        for company_id in exclude_company_ids:
+            yield (self.db_connector.read_company_info(company_id[0]), 0)
+
+    def write_insert_file(self, id_generator, name=''):
         time_str = time.strftime("%Y%m%d%H%M%S", time.localtime())
-        file_name = self.path + time_str + 'insert.txt'
+        file_name = self.path + name + time_str + 'insert.txt'
         try:
             with open(file_name, 'w', encoding='utf-8') as f:
                 while True:
@@ -55,9 +73,9 @@ class MdbdSerializer(object):
         else:
             print(f'save to path {file_name}')
 
-    def write_update_file(self, id_generator):
+    def write_update_file(self, id_generator, name=''):
         time_str = time.strftime("%Y%m%d%H%M%S", time.localtime())
-        file_name = self.path + time_str +'update.txt'
+        file_name = self.path + name + time_str +'update.txt'
         try:
             with open(file_name, 'w', encoding='utf-8') as f:
                 while True:

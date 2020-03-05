@@ -16,6 +16,6 @@ if len(sys.argv)>1:
         a = DbdCSVReader(path , num)
         a.start()
     else:
-        print('cannot find the csv file')
+        raise Exception('cannot find the csv file')
 else:
-    print('not enough parameter')
+    raise Exception('not enough parameters')

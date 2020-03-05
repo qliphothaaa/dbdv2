@@ -11,7 +11,7 @@ from airflow.operators.email_operator import EmailOperator
 def default_options():
     default_args = {
         'owner': 'dbdv2',  
-        'start_date': datetime(2050, 2, 2),  
+        'start_date': datetime(2020, 2, 2),  
         'retries': 1,  
         'retry_delay': timedelta(seconds=5)  
     }

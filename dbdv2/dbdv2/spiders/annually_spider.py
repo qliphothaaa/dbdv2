@@ -62,7 +62,7 @@ class AnnuallySpider(scrapy.Spider):
             if raw_bussiness_type == '-':
                 #print("this company didn't update type")
                 raw_bussiness_type = response.xpath('/html/body/div/div[4]/div[2]/div[1]/div[2]/div[2]/div[1]/div[3]/div[2]/div/p/text()').get().strip()
-            else:
+            #else:
                 #print('this company update his type')
 
             item = AnnuallyItem()

@@ -19,6 +19,7 @@ services:
         depends_on:
             - database
         command: ./wait-for-it.sh -t 0 -h dbd_db -p 3306 -- ./start.sh
+              #command: ./start.sh
 
     python_scheduler:
         build: ./
@@ -35,6 +36,7 @@ services:
             - ./configs/airflow.cfg:/root/airflow/airflow.cfg
         depends_on:
             - database
+              #command: ./start2.sh
         command: ./wait-for-it.sh -t 0 -h dbd_db -p 3306 -- ./start2.sh
 
     django:
@@ -51,7 +53,8 @@ services:
             - ./dbdv2/data_access/customer_csv:/frontend/csv_files/
         depends_on:
             - database
-        command: ./wait-for-it.sh -t 0 -h dbd_db -p 3306 -- ./run.sh
+             #command: ./wait-for-it.sh -t 0 -h dbd_db -p 3306 -- ./run.sh
+        command: ./run.sh
             
 
     database:
@@ -67,3 +70,10 @@ services:
             - ./database:/var/lib/mysql
             - ./configs/my.cnf:/etc/mysql/conf.d/my.cnf
             - ./sql:/docker-entrypoint-initdb.d
+
+    php:
+        image: adminer
+        container_name: php_adminer
+        restart: always
+        ports:
+            - "8083:8080"

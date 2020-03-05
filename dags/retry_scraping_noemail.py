@@ -8,16 +8,10 @@ from airflow.operators.bash_operator import BashOperator
 from airflow.operators.email_operator import EmailOperator
 
 
-excel_config = Variable.get("excel_setting", deserialize_json=True, default_var={"year":"2019", "month":"03", "num":"23"})
-
-year = excel_config["year"]
-month= excel_config["month"]
-num = excel_config["num"]
-
 def default_options():
     default_args = {
         'owner': 'dbdv2',  
-        'start_date': datetime(2050, 2, 2),  
+        'start_date': datetime(2020, 2, 2),  
         'retries': 1,  
         'retry_delay': timedelta(seconds=5)  
     }

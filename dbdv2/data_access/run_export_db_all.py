@@ -12,6 +12,6 @@ if len(sys.argv)>1:
 
 if os.path.isdir(PATH):
     serializer = MdbdSerializer(PATH, limit)
-    serializer.start_export_newcompany()
+    serializer.start_export_allcompany()
 else:
     raise Exception('no path to export file')

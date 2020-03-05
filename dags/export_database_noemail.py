@@ -11,23 +11,31 @@ from airflow.operators.email_operator import EmailOperator
 def default_options():
     default_args = {
         'owner': 'dbdv2',  
-        'start_date': datetime(2050, 2, 2),  
+        'start_date': datetime(2020, 2, 2),  
         'retries': 1,  
         'retry_delay': timedelta(seconds=5)  
     }
     return default_args
 
+def testdag(dag, taskid, command):
+    task = BashOperator(
+            task_id=taskid,
+            bash_command=command,
+            dag=dag)
+    return task
+
 with DAG(
-        'export_database',  
+        'export_database_monthly',  
         default_args=default_options(),  
         schedule_interval="@once"  
 ) as d:
 
     #task_start = start(d, 'export_database')
 
-    task1 = clearMdbd(d)
-    task2 = readCSV(d)
-    task3 = exportDB(d)
+    #task1 = clearMdbd(d)
+    #task2 = readCSV(d)
+    task1 = testdag(d, 'first', 'ls') 
+    task3 = exportDBMonth(d)
 
     #taskf1 = failedEmail(d, task1)
     #taskf2 = failedEmail(d, task2)
@@ -36,7 +44,8 @@ with DAG(
     #task_finished = successEmail(d, 'export_database')
 
     #task_start >> task1 >> task2 >> task3 >> task_finished
-    task1 >> task2 >> task3
+    #task1 >> task2 >> task3
+    task1 >> task3
 
     #task1 >> taskf1
     #task2 >> taskf2

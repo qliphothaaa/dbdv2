@@ -71,7 +71,7 @@ class DbdConnector(object):
                     cur.execute(item)
                 row_count += cur.rowcount
             self.db.commit()
-            print(company_id)
+            print(f'update company: {company_id}')
         except Exception as e:
             print(e)
             print(f'fail to update transaction about company{company_id}, rollback now')
@@ -96,14 +96,16 @@ class DbdConnector(object):
 
     def read(self, sql):
         try:
-            cur = self.db.cursor()
+            cur = self.db.cursor(buffered=True)
             cur.execute(sql)
             result = cur.fetchone()
+            #print(f'read result is: {result}')
         except Exception as e:
             print(e)
             print('fail to get information')
         finally:
             cur.close()
+            #print('read cur closed')
         return result
 
     def clearmdbd(self):
@@ -118,9 +120,12 @@ class DbdConnector(object):
         finally:
             cur.close()
 
+    #####################################
     def read_exclude_new_company(self):
         try:
-            sql = 'select dbd_new_query.DBD_COMPANY_ID from dbd_new_query left join mdbd on dbd_new_query.DBD_COMPANY_ID = mdbd.regisid where mdbd.id is null;'
+            sql = '''select t1.DBD_COMPANY_ID from dbd_new_query as t1 
+                     left join mdbd as t2 on t1.DBD_COMPANY_ID = t2.regisid 
+                     where t2.id is null;'''
             cur = self.db.cursor()
             cur.execute(sql)
             exclude_company_id = cur.fetchall()
@@ -131,7 +136,8 @@ class DbdConnector(object):
 
     def read_include_new_company(self):
         try:
-            sql = 'select dbd_new_query.DBD_COMPANY_ID, mdbd.id from dbd_new_query left join mdbd on dbd_new_query.DBD_COMPANY_ID = mdbd.regisid where mdbd.id;'
+            sql = '''select t1.DBD_COMPANY_ID, t2.id from dbd_new_query as t1
+                     inner join mdbd as t2 on t1.DBD_COMPANY_ID = t2.regisid;'''
             cur = self.db.cursor()
             cur.execute(sql)
             include_company_ids = cur.fetchall()
@@ -139,6 +145,35 @@ class DbdConnector(object):
             print(e)
             print('fail to find id that include in mdbd')
         return include_company_ids
+
+    #####################################
+    def read_exclude_all_company(self):
+        try:
+            sql = '''select t1.DBD_ID from dbdcompany as t1 
+                     left join mdbd as t2 on t1.DBD_ID = t2.regisid 
+                     where t2.id is null;'''
+            cur = self.db.cursor()
+            cur.execute(sql)
+            exclude_company_id = cur.fetchall()
+        except Exception as e:
+            print(e)
+            print('fail to find id that exclude in mdbd')
+        return exclude_company_id
+
+    def read_include_all_company(self):
+        try:
+            sql = '''select t1.DBD_ID, t2.id from dbdcompany as t1 
+                     inner join mdbd as t2 on t1.DBD_ID = t2.regisid where t2.id'''
+            cur = self.db.cursor()
+            cur.execute(sql)
+            include_company_ids = cur.fetchall()
+        except Exception as e:
+            print(e)
+            print('fail to find id that include in mdbd')
+        return include_company_ids
+    #####################################
+
+
 
     def read_company_info(self, company_id):
         try:

@@ -24,25 +24,26 @@ class MonthlyScrapingPipeline(object):
 
         #if find data succeed
         if scraping_status:
-            company_type = item['company_type']
-            status       = item['status']
-            objective    = item['objective']
-            directors    = item['directors']
-            company_name = item['company_name']
+            company_type       = item['company_type']
+            status             = item['status']
+            objective          = item['objective']
+            directors          = item['directors']
+            company_name       = item['company_name']
             raw_bussiness_type = item['bussiness_type']
 
-            directors_text = ''
+            directors_text      = ''
             for index, name in enumerate(directors):
-                directors_text = directors_text + str(index)+'. '+name +'\n'
-            directors_text = directors_text.rstrip()
-            bussiness_type = business_type_separater(raw_bussiness_type)[1]
+                directors_text  = directors_text + str(index)+'. '+name +'\n'
+            directors_text      = directors_text.rstrip()
+            bussiness_type      = business_type_separater(raw_bussiness_type)[1]
+            bussiness_type_code = business_type_separater(raw_bussiness_type)[0]
 
             company_name = re.split(':', company_name)[1].strip()
 
 
             #generate sql and valus
-            sql_dbdcompany       = 'UPDATE dbdcompany SET DBD_TYPE = %s, DBD_STATUS= %s,DBD_OBJECTIVE = %s,DBD_DIRECTORS = %s, DBD_NAME_TH = %s, DBD_BUSINESS_TYPE = %s WHERE DBD_ID = %s;'
-            values_dbdcompany    = (company_type, status, objective, directors_text, company_name, bussiness_type, company_id)
+            sql_dbdcompany       = 'UPDATE dbdcompany SET DBD_TYPE = %s, DBD_STATUS= %s,DBD_OBJECTIVE = %s,DBD_DIRECTORS = %s, DBD_NAME_TH = %s, DBD_BUSINESS_TYPE = %s, DBD_BUSINESS_TYPE_CODE=%s WHERE DBD_ID = %s;'
+            values_dbdcompany    = (company_type, status, objective, directors_text, company_name, bussiness_type, bussiness_type_code, company_id)
 
             sql_dbd_new_query    = 'update dbd_new_query set DBD_Status = "Success", DBD_LAST_RUN=%s where DBD_COMPANY_ID = %s'
             values_dbd_new_query = (time.strftime('%Y-%m-%d %H:%M:%S'), company_id)
@@ -93,10 +94,16 @@ class AnnuallyScrapingtPipeline(object):
         try:
             sql = f'SELECT ZIP from zipcodes where (SUBDISTRICT="{address[1]}" AND DISTRICT="{address[2]}" AND PROVINCE="{address[3]}");'
             zipcode = self.dbconnector.read(sql)[0]
-            if zipcode == None: zipcode = ''
+            if zipcode == None: 
+                sql = f'SELECT ZIP from zipcodes where (SUBDISTRICT="" AND DISTRICT="{address[2]}" AND PROVINCE="{address[3]}");'
+                zipcode = self.dbconnector.read(sql)[0]
+                if zipcode == None:
+                    zipcode = ''
+
         except Exception as e:
             print(e)
         return zipcode
+
             
     def sql_generate(self, d):
         sql = ''
@@ -121,7 +128,8 @@ class AnnuallyScrapingtPipeline(object):
                             'DBD_BUSINESS_TYPE_CODE':old_company_info[8],
                             'DBD_BUSINESS_TYPE':old_company_info[9],
                             'DBD_DIRECTORS':old_company_info[10],
-                            'DBD_ZIPCODE':old_company_info[11]}
+                            'DBD_ZIPCODE':old_company_info[11]
+                            }
         return old_company_dict
 
 
@@ -130,6 +138,9 @@ class AnnuallyScrapingtPipeline(object):
         scraping_status = item['scraping_status']
         company_id      = item['company_id']
         if scraping_status:
+            print('¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥')
+            print(item)
+            print('¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥')
             #new datas
             company_type       = item['company_type']
             status             = item['status']
@@ -173,49 +184,54 @@ class AnnuallyScrapingtPipeline(object):
 
             if new_company_dict['DBD_NAME_TH'] != old_company_dict['DBD_NAME_TH']:
                 update_dbdcompany_dict['DBD_NAME_TH'] = new_company_dict['DBD_NAME_TH']
-                update_query_dict['C_DBD_NAME_TH'] = new_company_dict['DBD_NAME_TH']
+                update_query_dict['C_DBD_NAME_TH'] = old_company_dict['DBD_NAME_TH']
 
             if new_company_dict['DBD_STATUS'] != old_company_dict['DBD_STATUS']:
                 update_dbdcompany_dict['DBD_STATUS'] = new_company_dict['DBD_STATUS']
-                update_query_dict['C_DBD_STATUS'] = new_company_dict['DBD_STATUS']
+                update_query_dict['C_DBD_STATUS'] = old_company_dict['DBD_STATUS']
 
             if new_company_dict['DBD_ADDRESS'] != old_company_dict['DBD_ADDRESS']:
                 update_dbdcompany_dict['DBD_ADDRESS'] = new_company_dict['DBD_ADDRESS']
-                update_query_dict['C_DBD_ADDRESS'] = new_company_dict['DBD_ADDRESS']
+                update_query_dict['C_DBD_ADDRESS'] = old_company_dict['DBD_ADDRESS']
+                ## if the address changed, update the zip
+                update_dbdcompany_dict['DBD_ZIPCODE'] = new_company_dict['DBD_ZIPCODE']
+
 
             if new_company_dict['DBD_OBJECTIVE'] != old_company_dict['DBD_OBJECTIVE']:
                 update_dbdcompany_dict['DBD_OBJECTIVE'] = new_company_dict['DBD_OBJECTIVE']
-                update_query_dict['C_DBD_OBJECTIVE'] = new_company_dict['DBD_OBJECTIVE']
+                update_query_dict['C_DBD_OBJECTIVE'] = old_company_dict['DBD_OBJECTIVE']
 
             if new_company_dict['DBD_STREET'] != old_company_dict['DBD_STREET']:
                 update_dbdcompany_dict['DBD_STREET'] = new_company_dict['DBD_STREET']
-                update_query_dict['C_DBD_ADDRESS'] = new_company_dict['DBD_ADDRESS']
+                #update_query_dict['C_DBD_ADDRESS'] = old_company_dict['DBD_ADDRESS']
 
             if new_company_dict['DBD_SUBDISTRICT'] != old_company_dict['DBD_SUBDISTRICT']:
                 update_dbdcompany_dict['DBD_SUBDISTRICT'] = new_company_dict['DBD_SUBDISTRICT']
-                update_query_dict['C_DBD_ADDRESS'] = new_company_dict['DBD_ADDRESS']
+                #update_query_dict['C_DBD_ADDRESS'] = old_company_dict['DBD_ADDRESS']
 
             if new_company_dict['DBD_DISTRICT'] != old_company_dict['DBD_DISTRICT']:
                 update_dbdcompany_dict['DBD_DISTRICT'] = new_company_dict['DBD_DISTRICT']
-                update_query_dict['C_DBD_ADDRESS'] = new_company_dict['DBD_ADDRESS']
+                #update_query_dict['C_DBD_ADDRESS'] = old_company_dict['DBD_ADDRESS']
 
             if new_company_dict['DBD_PROVINCE'] != old_company_dict['DBD_PROVINCE']:
                 update_dbdcompany_dict['DBD_PROVINCE'] = new_company_dict['DBD_PROVINCE']
-                update_query_dict['C_DBD_ADDRESS'] = new_company_dict['DBD_ADDRESS']
+                #update_query_dict['C_DBD_ADDRESS'] = old_company_dict['DBD_ADDRESS']
 
             if new_company_dict['DBD_BUSINESS_TYPE_CODE'] != old_company_dict['DBD_BUSINESS_TYPE_CODE']:
                 update_dbdcompany_dict['DBD_BUSINESS_TYPE_CODE'] = new_company_dict['DBD_BUSINESS_TYPE_CODE']
-                update_query_dict['C_DBD_BUSINESS_TYPE'] = new_company_dict['DBD_BUSINESS_TYPE']
+                update_query_dict['C_DBD_BUSINESS_TYPE'] = old_company_dict['DBD_BUSINESS_TYPE']
 
             if new_company_dict['DBD_BUSINESS_TYPE'] != old_company_dict['DBD_BUSINESS_TYPE']:
                 update_dbdcompany_dict['DBD_BUSINESS_TYPE'] = new_company_dict['DBD_BUSINESS_TYPE']
-                update_query_dict['C_DBD_BUSINESS_TYPE'] = new_company_dict['DBD_BUSINESS_TYPE']
+                update_query_dict['C_DBD_BUSINESS_TYPE'] = old_company_dict['DBD_BUSINESS_TYPE']
 
             if new_company_dict['DBD_DIRECTORS'] != old_company_dict['DBD_DIRECTORS']:
                 update_dbdcompany_dict['DBD_DIRECTORS'] = new_company_dict['DBD_DIRECTORS']
 
+            '''
             if new_company_dict['DBD_ZIPCODE'] != old_company_dict['DBD_ZIPCODE']:
                 update_dbdcompany_dict['DBD_ZIPCODE'] = new_company_dict['DBD_ZIPCODE']
+            '''
 
 
             update_dbdcompany_string = self.sql_generate(update_dbdcompany_dict)

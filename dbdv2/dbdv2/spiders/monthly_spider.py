@@ -37,8 +37,8 @@ class DbdSpider(scrapy.Spider):
 
     def parse(self, response):
         if self.close_it:
-            print(close_it)
-            raise CloseSpider(close_it)
+            #print(self.close_it)
+            raise CloseSpider(self.close_it)
 
         company_id = response.url.split('/')[-1]
         if response.request.status:
@@ -65,7 +65,7 @@ class DbdSpider(scrapy.Spider):
             if raw_bussiness_type == '-':
                 #print("this company didn't update type")
                 raw_bussiness_type = response.xpath('/html/body/div/div[4]/div[2]/div[1]/div[2]/div[2]/div[1]/div[3]/div[2]/div/p/text()').get().strip()
-            else:
+            #else:
                 #print('this company update his type')
 
             item = MonthlyItem()

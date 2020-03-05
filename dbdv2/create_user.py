@@ -3,9 +3,9 @@ from airflow import models, settings
 from airflow.contrib.auth.backends.password_auth import PasswordUser
 
 user = PasswordUser(models.User())
-user.username = 'admin2'
+user.username = 'admin'
 user.email = 'asdf@example.com'
-user.password = '12345'
+user.password = '123456'
 session = settings.Session()
 session.add(user)
 session.commit()

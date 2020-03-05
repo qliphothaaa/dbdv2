@@ -43,14 +43,22 @@ def address_clear(subdistrict, district, province):
     subdistrict_pattern_b = 'แขวง'
     subdistrict_pattern   = 'ต|ตำบล'
 
+    print(subdistrict)
+
     if province == province_b:
-        district = district.lstrip(district_pattern_b)
-        subdistrict = subdistrict.lstrip(subdistrict_pattern_b)
+        if district_pattern_b in district:
+            district = district[3:]
+        if subdistrict_pattern_b in subdistrict:
+            subdistrict = subdistrict[4:]
+        #district = district.lstrip(district_pattern_b)
+        #subdistrict = subdistrict.lstrip(subdistrict_pattern_b)
     else:
         province = province.lstrip(province_pattern).lstrip('.')
         district = district.lstrip(district_pattern).lstrip('.')
         subdistrict = subdistrict.lstrip(subdistrict_pattern).lstrip('.')
-        #print(subdistrict)
+
+    print(subdistrict)
+    
     return subdistrict, district, province
 
 

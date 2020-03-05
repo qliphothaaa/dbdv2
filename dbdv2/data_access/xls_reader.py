@@ -15,24 +15,12 @@ import sys
 
 
 class DbdExcelReader(object):
-    def __init__(self, path, rows=1):
+    def __init__(self, path, rows=1, column_setting=''):
         self.path = path#the path of to find the excel file
         self.rows = int(rows)
-
-    def start(self):
-        self.readExcel()
-        self.checkData()
-        self.hanldeData()
-
-        #oldtime=datetime.datetime.now()
-        self.insertData()
-        #newtime=datetime.datetime.now()
-        #print(newtime-oldtime)
-
-    def readExcel(self):
-        #self.data_dict = pd.read_excel(self.path, skiprows=2)
-        self.data_dict = pd.read_excel(self.path, skiprows=2, converters={'เลขทะเบียน':str}, nrows=self.rows)# import excel file as pandas dataframe
-        self.data_dict.rename(columns={
+        self.column_setting = column_setting
+        #print(self.column_setting)
+        self.column_dict = {
             "ลำดับ": "ROW",
             "เลขทะเบียน":"ID", 
             "ชื่อนิติบุคคล":"NAME_TH", 
@@ -45,10 +33,45 @@ class DbdExcelReader(object):
             "อำเภอ":"DISTRICT",
             "จังหวัด":"PROVINCE",
             "รหัส\nไปรษณีย์":"ZIPCODE",
-            },inplace=True)#change the column from thai to english
+            }
+        #self.column_dict["ทุนจดทะเบียน"] = "REGISTRATION_MONEY"
+
+    def enableColumnSetting(self):
+        if self.column_setting:
+            self.column_setting = self.column_setting.split(',')
+            #print(self.column_setting)
+            for i in self.column_setting:
+                k, v = i.split(':')
+                k = k.replace(" ", "\n")
+                self.column_dict[k] = v
+            #print(self.column_dict)
+
+
+    def start(self):
+        self.enableColumnSetting()
+        self.readExcel()
+        self.checkData()
+        self.hanldeData()
+
+        #oldtime=datetime.datetime.now()
+        self.insertData()
+        #newtime=datetime.datetime.now()
+        #print(newtime-oldtime)
+
+    def readExcel(self):
+        #self.data_dict = pd.read_excel(self.path, skiprows=2)
+        self.data_dict = pd.read_excel(self.path, skiprows=2, converters={'เลขทะเบียน':str}, nrows=self.rows)# import excel file as pandas dataframe
+        print(self.data_dict.columns)
+        self.data_dict.rename(columns=self.column_dict,inplace=True)#change the column from thai to english
+        print(self.data_dict.columns)
+        #print(self.data_dict)
         
 
     def checkData(self):
+        for i,v in self.column_dict.items():
+            if not v in self.data_dict.columns:
+                raise KeyError(f'can not find key {v} for {i}. Maybe the target changed the excel column, please check the excel file and add the changed column to variable. example:"ทุนจดทะเบียน:REGISTRATION_MONEY"')
+        
         check_nan_df = pd.isnull(self.data_dict)
         position = np.where(check_nan_df)
         for i in range(len(position[0])):

@@ -8,21 +8,6 @@ from airflow.operators.bash_operator import BashOperator
 from airflow.operators.email_operator import EmailOperator
 
 
-excel_config = Variable.get("excel_setting", deserialize_json=True, default_var={"url":"", "num":"0"})
-
-
-url = excel_config["url"]
-
-try:
-    num = excel_config["num"]
-except:
-    num = '100000'
-
-try:
-    column = excel_config["column"]
-except:
-    column = ''
-
 def default_options():
     default_args = {
         'owner': 'dbdv2',  
@@ -32,33 +17,39 @@ def default_options():
     }
     return default_args
 
+def testdag(dag, taskid, command):
+    task = BashOperator(
+            task_id=taskid,
+            bash_command=command,
+            dag=dag)
+    return task
+
 with DAG(
-        'monthly_scraping',  
+        'export_database_annually',  
         default_args=default_options(),  
         schedule_interval="@once"  
 ) as d:
 
-    #task_start = start(d, 'monthly_scraping')
+    #task_start = start(d, 'export_database')
 
-    task1 = loadExcel(d, url, num, column)
-    task2 = getCookies(d)
-    task3 = startMonthlyScraping(d)
+    #task1 = clearMdbd(d)
+    #task2 = readCSV(d)
+
+    task1 = testdag(d, 'first', 'ls') 
+    task3 = exportDBYear(d)
 
     #taskf1 = failedEmail(d, task1)
     #taskf2 = failedEmail(d, task2)
     #taskf3 = failedEmail(d, task3)
 
-    #task_finished = successEmail(d, 'monthly_scraping')
+    #task_finished = successEmail(d, 'export_database')
 
     #task_start >> task1 >> task2 >> task3 >> task_finished
-    task1 >> task2 >> task3
+    #task1 >> task2 >> task3
+    task1 >> task3
 
     #task1 >> taskf1
     #task2 >> taskf2
     #task3 >> taskf3
-
-
-
-
 
 
