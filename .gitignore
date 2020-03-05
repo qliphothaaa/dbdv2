@@ -5,3 +5,4 @@
 /temp/
 *.xls
 *.csv
+/__pycache__/
