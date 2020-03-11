@@ -63,10 +63,7 @@ class DbdSpider(scrapy.Spider):
                 raw_bussiness_type = 'ERRRRRRRRRRRRRRRRRRRORRRRRRRRRRRRRRRRRRRRRR:' + response.url.split('/')[-1]
 
             if raw_bussiness_type == '-':
-                #print("this company didn't update type")
                 raw_bussiness_type = response.xpath('/html/body/div/div[4]/div[2]/div[1]/div[2]/div[2]/div[1]/div[3]/div[2]/div/p/text()').get().strip()
-            #else:
-                #print('this company update his type')
 
             item = MonthlyItem()
             item['scraping_status'] = response.request.status
@@ -78,6 +75,7 @@ class DbdSpider(scrapy.Spider):
             item['directors']    = director_list
             item['company_name'] = company_name
             item['bussiness_type'] = raw_bussiness_type
+            item['address']        = response.xpath('/html/body/div[1]/div[4]/div[2]/div[1]/div[2]/div[2]/div[1]/div[1]/div[2]/table/tbody/tr[2]/td/text()').get()
             print('***************************************parse end**************************')
             return item
 

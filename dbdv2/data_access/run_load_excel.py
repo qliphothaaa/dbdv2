@@ -1,4 +1,5 @@
 from xls_reader import DbdExcelReader
+from pdf_reader import DbdPDFReader
 import wget
 import os
 import sys
@@ -12,25 +13,36 @@ if len(sys.argv)>= 2:
         num = sys.argv[2]
     if len(sys.argv)>=4:
         setting = sys.argv[3]
-    #if len(month)==1 : month = '0'+month
-    #datetime = year+month
     filename = url.split('/')[-1]
-
-    filepath = './data_access/company_excel/' + filename
     print(filename)
 
-    if not os.path.isfile(filepath):
-        try:
-            #url = 'https://www.dbd.go.th/download/document_file/Statisic/2562/XLS/99_%s.xls'% datetime
-            #     'https://www.dbd.go.th/download/document_file/Statisic/2563/XLS/99_202001.xls'
-            wget.download(url, './data_access/company_excel/')
-            print('end')
-        except Exception as e:
-            print(e)
-            print('cannot find the file')
-            raise
-    a = DbdExcelReader(filepath, num, setting)
-    a.start()
+    if 'xls' in filename:
+        filepath = './data_access/company_excel/' + filename
+        if not os.path.isfile(filepath):
+            try:
+                wget.download(url, './data_access/company_excel/')
+                print(f'download {filename} finished')
+            except Exception as e:
+                print(e)
+                print('cannot find the excel file')
+                raise
+        a = DbdExcelReader(filepath, num, setting)
+        a.start()
+
+    elif 'pdf' in filename:
+        filepath = './data_access/company_pdf/' + filename
+        if not os.path.isfile(filepath):
+            try:
+                wget.download(url, './data_access/company_pdf/')
+                print(f'download {filename} finished')
+            except Exception as e:
+                print(e)
+                print('cannot find the pdf file')
+                raise
+        a = DbdPDFReader(filename, num)
+        a.start()
+    else:
+        raise Exception(f'Error: this file ({filename}) is not support!')
 else:
-    raise Exception('not enough parameters')
+    raise Exception('Error: not enough parameters')
     

@@ -5,4 +5,5 @@
 /temp/
 *.xls
 *.csv
+*.pdf
 /__pycache__/

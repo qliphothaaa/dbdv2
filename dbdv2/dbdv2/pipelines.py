@@ -18,6 +18,20 @@ class MonthlyScrapingPipeline(object):
         pass
         #self.cur.close()
 
+    def get_zipcode(self, address):
+        zipcode = ''
+        try:
+            sql = f'SELECT ZIP from zipcodes where (SUBDISTRICT="{address[1]}" AND DISTRICT="{address[2]}" AND PROVINCE="{address[3]}");'
+            zipcode = self.dbconnector.read(sql)[0]
+            if zipcode == None: 
+                sql = f'SELECT ZIP from zipcodes where (SUBDISTRICT="" AND DISTRICT="{address[2]}" AND PROVINCE="{address[3]}");'
+                zipcode = self.dbconnector.read(sql)[0]
+                if zipcode == None:
+                    zipcode = ''
+        except Exception as e:
+            print(e)
+        return zipcode
+
     def process_item(self, item, spider):
         scraping_status = item['scraping_status']
         company_id      = item['company_id']
@@ -31,6 +45,9 @@ class MonthlyScrapingPipeline(object):
             company_name       = item['company_name']
             raw_bussiness_type = item['bussiness_type']
 
+            raw_address        = item['address']#new
+
+
             directors_text      = ''
             for index, name in enumerate(directors):
                 directors_text  = directors_text + str(index)+'. '+name +'\n'
@@ -40,10 +57,13 @@ class MonthlyScrapingPipeline(object):
 
             company_name = re.split(':', company_name)[1].strip()
 
+            address        = address_separater(raw_address)#new
+            zipcode = self.get_zipcode(address)#new
 
             #generate sql and valus
-            sql_dbdcompany       = 'UPDATE dbdcompany SET DBD_TYPE = %s, DBD_STATUS= %s,DBD_OBJECTIVE = %s,DBD_DIRECTORS = %s, DBD_NAME_TH = %s, DBD_BUSINESS_TYPE = %s, DBD_BUSINESS_TYPE_CODE=%s WHERE DBD_ID = %s;'
-            values_dbdcompany    = (company_type, status, objective, directors_text, company_name, bussiness_type, bussiness_type_code, company_id)
+            sql_dbdcompany       = 'UPDATE dbdcompany SET DBD_TYPE = %s, DBD_STATUS= %s,DBD_OBJECTIVE = %s,DBD_DIRECTORS = %s, DBD_NAME_TH = %s, DBD_BUSINESS_TYPE = %s, DBD_BUSINESS_TYPE_CODE=%s, DBD_ADDRESS=%s, DBD_STREET=%s, DBD_SUBDISTRICT=%s, DBD_DISTRICT=%s, DBD_PROVINCE=%s WHERE DBD_ID = %s;'
+
+            values_dbdcompany    = (company_type, status, objective, directors_text, company_name, bussiness_type, bussiness_type_code, address[0]+' '+address[1], address[0], address[1], address[2], address[3], company_id)#new
 
             sql_dbd_new_query    = 'update dbd_new_query set DBD_Status = "Success", DBD_LAST_RUN=%s where DBD_COMPANY_ID = %s'
             values_dbd_new_query = (time.strftime('%Y-%m-%d %H:%M:%S'), company_id)
@@ -138,9 +158,9 @@ class AnnuallyScrapingtPipeline(object):
         scraping_status = item['scraping_status']
         company_id      = item['company_id']
         if scraping_status:
-            print('¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥')
-            print(item)
-            print('¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥')
+            #print('¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥')
+            #print(item)
+            #print('¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥¥')
             #new datas
             company_type       = item['company_type']
             status             = item['status']
@@ -264,7 +284,7 @@ class AnnuallyScrapingtPipeline(object):
                 self.dbconnector.updateCompanyTransaction(sqls, values, company_id)
                 print('------------nothing change in query=====================')
 
-            return item
+            #return item
 
         else:
             sql_dbd_query        = 'update dbd_query set DBD_Status = "Failed", DBD_LAST_RUN=%s where DBD_COMPANY_ID = %s'
@@ -276,4 +296,4 @@ class AnnuallyScrapingtPipeline(object):
             self.dbconnector.updateCompanyTransaction(sqls, values, company_id)
 
             raise DropItem("cannot find the company %s" %item['company_id'])
-            return item
+            #return item

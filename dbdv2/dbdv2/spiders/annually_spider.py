@@ -34,8 +34,8 @@ class AnnuallySpider(scrapy.Spider):
 
     def parse(self, response):
         if self.close_it:
-            print(close_it)
-            raise CloseSpider(close_it)
+            #print(self.close_it)
+            raise CloseSpider(self.close_it)
 
         company_id = response.url.split('/')[-1]
 
