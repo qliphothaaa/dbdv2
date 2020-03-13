@@ -6,4 +6,5 @@
 *.xls
 *.csv
 *.pdf
+*.zip
 /__pycache__/
