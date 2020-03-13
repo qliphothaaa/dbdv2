@@ -110,6 +110,7 @@ class CookieBrowser(object):
         #self.driver.get('https://datawarehouse.dbd.go.th/index')
         self.driver.get(self.target_captcha_url)
         self.driver.add_cookie(cookie)
+        time.sleep(5)
         self.driver.get(self.target_captcha_url)
         if 'Error' in self.driver.title:
             print('the cookie is expired')

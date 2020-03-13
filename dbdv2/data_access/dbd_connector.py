@@ -66,7 +66,7 @@ class DbdConnector(object):
             cur = self.db.cursor()
             for index, item in enumerate(sqls):
                 if values[index]:
-                    print(item % values[index])
+                    #print(item % values[index])
                     cur.execute(item, values[index])
                 else:
                     cur.execute(item)

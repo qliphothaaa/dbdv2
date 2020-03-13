@@ -17,7 +17,7 @@ def start(dag, dag_name):
 
 def loadExcel(dag, url, num, column):
     task = BashOperator(
-            task_id='load_excel',
+            task_id='load_file',
             bash_command="cd /dbdv2 && python3 data_access/run_load_excel.py %s %s %s"% (url, num, column),
             dag=dag)
     return task

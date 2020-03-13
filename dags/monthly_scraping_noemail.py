@@ -8,15 +8,15 @@ from airflow.operators.bash_operator import BashOperator
 from airflow.operators.email_operator import EmailOperator
 
 
-excel_config = Variable.get("excel_setting", deserialize_json=True, default_var={"url":"", "num":"0"})
+excel_config = Variable.get("file_setting", deserialize_json=True, default_var={"filename":"", "num":"0"})
 
 
-url = excel_config["url"]
+filename = excel_config["filename"]
 
 try:
     num = excel_config["num"]
 except:
-    num = '100000'
+    num = '0'
 
 try:
     column = excel_config["column"]
@@ -40,7 +40,7 @@ with DAG(
 
     #task_start = start(d, 'monthly_scraping')
 
-    task1 = loadExcel(d, url, num, column)
+    task1 = loadExcel(d, filename, num, column)
     task2 = getCookies(d)
     task3 = startMonthlyScraping(d)
 

@@ -4,7 +4,6 @@ import wget
 import os
 import sys
 #need parameter url, (num)
-num = 10000000
 setting = ''
 #print(len(sys.argv))
 if len(sys.argv)>= 2:

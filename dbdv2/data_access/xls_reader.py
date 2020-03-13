@@ -2,9 +2,9 @@ import pandas as pd
 import numpy as np
 import datetime
 try:
-    from rex import address_clear
+    from rex import address_clear, date_convert
 except:
-    from .rex import address_clear
+    from .rex import address_clear, date_convert
 try:
     from dbd_connector import DbdConnector
 except:
@@ -15,9 +15,12 @@ import sys
 
 
 class DbdExcelReader(object):
-    def __init__(self, path, rows=1, column_setting=''):
+    def __init__(self, path, rows, column_setting=''):
         self.path = path#the path of to find the excel file
-        self.rows = int(rows)
+        if rows == "0":
+            self.rows = None
+        else:
+            self.rows = int(rows)
         self.column_setting = column_setting
         #print(self.column_setting)
         self.column_dict = {
@@ -33,6 +36,7 @@ class DbdExcelReader(object):
             "อำเภอ":"DISTRICT",
             "จังหวัด":"PROVINCE",
             "รหัส\nไปรษณีย์":"ZIPCODE",
+            "ทุนจดทะเบียน:REGISTRATION_MONEY",
             }
         #self.column_dict["ทุนจดทะเบียน"] = "REGISTRATION_MONEY"
 
@@ -101,6 +105,7 @@ class DbdExcelReader(object):
         
         for i in range(self.data_dict.shape[0]):
             values = list(self.data_dict.loc[i])[1:]#the data_dict.loc[i] get a row of data as list, the first data in list is row number. 
+            values[2] = date_convert(values[2])
             values[7], values[8], values[9] = address_clear(values[7], values[8], values[9])
             values.append(values[6] +' '+ values[7])
             value_id = (values[0], values[0][3])#values[0] is the company id. The 4th number of company id is typecode

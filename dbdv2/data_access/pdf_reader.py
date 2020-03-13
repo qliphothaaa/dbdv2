@@ -7,14 +7,23 @@ try:
     from dbd_connector import DbdConnector
 except:
     from .dbd_connector import DbdConnector
+
+try:
+    from rex import date_convert
+except:
+    from .rex import date_convert
+
 import sys
 
 
 
 class DbdPDFReader(object):
-    def __init__(self, pdf_name, rows=1):
+    def __init__(self, pdf_name, rows):
         self.pdf_name = pdf_name#the name of the pdf file
-        self.rows = int(rows)
+        if rows == "0":
+            self.rows = None
+        else:
+            self.rows = int(rows)
         extension = pdf_name.split('.')[-1]
         self.filename = pdf_name.rstrip('.' + extension)
         self.pdf_path = 'data_access/company_pdf/'
@@ -36,14 +45,14 @@ class DbdPDFReader(object):
         pdf = pdfplumber.open(self.pdf_path + self.pdf_name)
         total_pd = pd.DataFrame()
 
-        if len(pdf.pages) > self.rows:
-            limit = self.rows
-        else:
-            limit = len(pdf.pages)
-            
-        for page in range(limit):
+        finished_rows = 0
+
+        for page in len(pdf.pages):
+            if isinstance(self.rows, int) and finished_rows > rows:
+                break
             print(f'page No.{page}')
             temp_table = pdf.pages[page].extract_table()
+            finished_rows += len(temp_table)-1
             temp_df = pd.DataFrame(temp_table[1:])
             temp_df.replace(to_replace = r'\n', value = '', regex = True, inplace = True)
             total_pd = pd.concat([total_pd, temp_df], ignore_index = True)
@@ -83,8 +92,8 @@ class DbdPDFReader(object):
         
         for i in range(self.data_dict.shape[0]):
             values = list(self.data_dict.loc[i])#the data_dict.loc[i] get a row of data as list, the first data in list is row number. 
-            values[1] = self.date_convert(values[1])
-            values[2] = values[2].replace(',','')
+            values[1] = date_convert(values[1])
+            values[2] = values[2].replace(',','').replace(' ','')
             value_id = (values[0], values[0][3])#values[0] is the company id. The 4th number of company id is typecode
 
             dbdcompany_sql = '''INSERT INTO dbdcompany 
@@ -109,11 +118,14 @@ class DbdPDFReader(object):
         dbconnector.dbClose()
 
 
+'''
     def date_convert(self,time_str):
-        temptime = time.strptime(time_str, '%d/%M/%Y')
-        res = time.strftime('%Y-%m-%d', temptime)
-        print(res)
+        temptime = datetime.datetime.strptime(time_str, '%d/%M/%Y').date()
+        temptime = temptime.replace(year = temptime.year-543)
+        res = datetime.datetime.strftime(temptime , '%Y-%m-%d')
+        #print(res)
         return res
+'''
 
 
 if __name__ == "__main__":

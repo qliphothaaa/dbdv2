@@ -1,4 +1,5 @@
 import re
+import datetime
 def address_separater(s):
     #this method separater the address which from datawarehouse to small part
     province_b    = 'กรุงเทพมหานคร'
@@ -75,6 +76,17 @@ def business_type_separater(s):
         print('error')
 
     return (bussiness_type_code, bussiness_type)
+
+def date_convert(time):
+    if isinstance(time,str):
+        temptime = datetime.datetime.strptime(time_str, '%d/%M/%Y').date()
+        temptime = temptime.replace(year = temptime.year-543)
+        res = datetime.datetime.strftime(temptime , '%Y-%m-%d')
+    elif isinstance(time, datetime.datetime):
+        time = time.replace(year = time.year-543)
+        res = datetime.datetime.strftime(time, '%Y-%m-%d')
+    #print(res)
+    return res
 
 '''
     #print(s)
