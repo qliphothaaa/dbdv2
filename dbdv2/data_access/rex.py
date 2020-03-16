@@ -79,7 +79,7 @@ def business_type_separater(s):
 
 def date_convert(time):
     if isinstance(time,str):
-        temptime = datetime.datetime.strptime(time_str, '%d/%M/%Y').date()
+        temptime = datetime.datetime.strptime(time, '%d/%M/%Y').date()
         temptime = temptime.replace(year = temptime.year-543)
         res = datetime.datetime.strftime(temptime , '%Y-%m-%d')
     elif isinstance(time, datetime.datetime):

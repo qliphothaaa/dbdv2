@@ -47,8 +47,8 @@ class DbdPDFReader(object):
 
         finished_rows = 0
 
-        for page in len(pdf.pages):
-            if isinstance(self.rows, int) and finished_rows > rows:
+        for page in range(len(pdf.pages)):
+            if isinstance(self.rows, int) and finished_rows > self.rows:
                 break
             print(f'page No.{page}')
             temp_table = pdf.pages[page].extract_table()
