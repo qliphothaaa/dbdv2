@@ -78,15 +78,3 @@ services:
         restart: always
         ports:
             - "8083:8080"
-
-    smtp:
-        image: namshi/smtp
-        container_name: smtp
-        restart: always
-        ports:
-            - "587:587"
-        environment:
-            - PORT=587
-            - RELAY_NETWORKS=:0.0.0.0/0
-            - GMAIL_USER=Teddy.teddy9527@gmail
-            - GMAIL_PASSWORD=wpxwiykoydbiynkl

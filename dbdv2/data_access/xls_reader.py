@@ -36,7 +36,7 @@ class DbdExcelReader(object):
             "อำเภอ":"DISTRICT",
             "จังหวัด":"PROVINCE",
             "รหัส\nไปรษณีย์":"ZIPCODE",
-            "ทุนจดทะเบียน:REGISTRATION_MONEY",
+            "ทุนจดทะเบียน":"REGISTRATION_MONEY",
             }
         #self.column_dict["ทุนจดทะเบียน"] = "REGISTRATION_MONEY"
 

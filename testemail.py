@@ -6,8 +6,9 @@ from email.header import Header
  
 # 第三方 SMTP 服务
 mail_host="smtp.gmail.com"  #设置服务器
-mail_user="paradox.qliphoth@gmail.com"    #用户名
-mail_pass="uwdwkboghhdclyum"   #口令 
+mail_user="teddy.teddy9527@gmail.com"    #用户名
+mail_pass="gedaqubxmmmhswcv"   #口令 
+port = 587
  
  
 sender = 'smtp.gmail.com'
@@ -23,7 +24,7 @@ message['Subject'] = Header(subject, 'utf-8')
  
 try:
     smtpObj = smtplib.SMTP(mail_host) 
-    smtpObj.connect(mail_host, 25)    # 25 为 SMTP 端口号
+    smtpObj.connect(mail_host, port)    # 25 为 SMTP 端口号
     smtpObj.ehlo()
     smtpObj.starttls()
     smtpObj.login(mail_user,mail_pass)

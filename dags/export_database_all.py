@@ -25,30 +25,29 @@ def testdag(dag, taskid, command):
     return task
 
 with DAG(
-        'export_database_monthly',  
+        'export_database_annually',  
         default_args=default_options(),  
         schedule_interval="@once"  
 ) as d:
 
-    #task_start = start(d, 'export_database')
+    task_start = start(d, 'export_database_all')
 
-    #task1 = clearMdbd(d)
-    #task2 = readCSV(d)
-    task1 = testdag(d, 'first', 'ls') 
-    task3 = exportDBMonth(d)
+    task1 = clearMdbd(d)
+    task2 = readCSV(d)
+    task3 = exportDBYear(d)
 
-    #taskf1 = failedEmail(d, task1)
-    #taskf2 = failedEmail(d, task2)
-    #taskf3 = failedEmail(d, task3)
+    taskf1 = failedEmail(d, task1)
+    taskf2 = failedEmail(d, task2)
+    taskf3 = failedEmail(d, task3)
 
-    #task_finished = successEmail(d, 'export_database')
+    task_finished = successEmail(d, 'export_database_all')
 
-    #task_start >> task1 >> task2 >> task3 >> task_finished
-    #task1 >> task2 >> task3
-    task1 >> task3
 
-    #task1 >> taskf1
-    #task2 >> taskf2
-    #task3 >> taskf3
+    task_start >> task1 >> task2 >> task3 >> task_finished
+    #task_start >> task3 >> task_finished
+
+    task1 >> taskf1
+    task2 >> taskf2
+    task3 >> taskf3
 
 

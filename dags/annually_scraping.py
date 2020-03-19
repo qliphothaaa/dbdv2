@@ -18,26 +18,26 @@ def default_options():
     return default_args
 
 with DAG(
-        'retry_monthly_scraping',  
+        'annually_scraping',  
         default_args=default_options(),  
         schedule_interval="@once"  
 ) as d:
 
-    #task_start = start(d, 'retry_scraping')
+    task_start = start(d, 'annually_scraping')
 
     task1 = getCookies(d)
-    task2 = scrapingFailedData(d)
+    task2 = startAnnuallyScraping(d)
 
-    #taskf1 = failedEmail(d, task1)
-    #taskf2 = failedEmail(d, task2)
+    taskf1 = failedEmail(d, task1)
+    taskf2 = failedEmail(d, task2)
 
-    #tasks = successEmail(d, 'retry_scraping')
+    task_finished = successEmail(d, 'annually_scraping')
 
-    #task_start >> task1 >> task2 >> tasks
-    task1 >> task2
+    task_start >> task1 >> task2 >> task_finished
+    #task1 >> task2
 
-    #task1 >> taskf1
-    #task2 >> taskf2
+    task1 >> taskf1
+    task2 >> taskf2
 
 
 
