@@ -7,4 +7,5 @@
 *.csv
 *.pdf
 *.zip
+*.pyc
 /__pycache__/
