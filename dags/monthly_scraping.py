@@ -40,19 +40,22 @@ with DAG(
 
     task_start = start(d, 'monthly_scraping')
 
+    task0 = clearNewQuery(d)
     task1 = loadExcel(d, filename, num, column)
     task2 = getCookies(d)
     task3 = startMonthlyScraping(d)
 
+    taskf0 = failedEmail(d, task0)
     taskf1 = failedEmail(d, task1)
     taskf2 = failedEmail(d, task2)
     taskf3 = failedEmail(d, task3)
 
     task_finished = successEmail(d, 'monthly_scraping')
 
-    task_start >> task1 >> task2 >> task3 >> task_finished
+    task_start >>task0 >>  task1 >> task2 >> task3 >> task_finished
     #task_start>>task1>> task2>>task3>>task_finished
 
+    task0 >> taskf0
     task1 >> taskf1
     task2 >> taskf2
     task3 >> taskf3

@@ -121,6 +121,18 @@ class DbdConnector(object):
         finally:
             cur.close()
 
+    def clearNewQuery(self):
+        try:
+            sql = 'TRUNCATE TABLE dbd_new_query'
+            cur = self.db.cursor()
+            cur.execute(sql)
+            print('finish empty dbd_new_query')
+        except Exception as e:
+            print(e)
+            print('fail to empty dbd_new_query')
+        finally:
+            cur.close()
+
     #####################################
     def read_exclude_new_company(self):
         try:

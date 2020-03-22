@@ -70,6 +70,13 @@ def clearMdbd(dag):
             dag=dag)
     return task
 
+def clearNewQuery(dag):
+    task = BashOperator(
+            task_id='clear_new_query',
+            bash_command="cd /dbdv2 && python data_access/run_clear_new_query.py",
+            dag=dag)
+    return task
+
 def readCSV(dag):
     task = BashOperator(
             task_id='read_csv',

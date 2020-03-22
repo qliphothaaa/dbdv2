@@ -35,7 +35,6 @@ class Dbdv2SpiderMiddleware(object):
 
 class Dbdv2DownloaderMiddleware(object):
     def __init__(self):
-        print('=============init middleware==============')
         self.fake_browser  = ScrapingBrowser()
         self.success_count = 0
         self.fail_count    = 0
@@ -43,10 +42,8 @@ class Dbdv2DownloaderMiddleware(object):
 
     def __del__(self):
 
-        print("===============finish scraping, Totally %d companys, %d data completed, %d data failed==========" %(self.success_count + self.fail_count, self.success_count, self.fail_count))
+        print("Downloader(finished): finish scraping, Totally %d companys, %d data completed, %d data failed==========" %(self.success_count + self.fail_count, self.success_count, self.fail_count))
         self.fake_browser.close()
-
-
 
     @classmethod
     def from_crawler(cls, crawler):
@@ -55,7 +52,7 @@ class Dbdv2DownloaderMiddleware(object):
         return s
 
     def process_request(self, request, spider):
-        print("@@@@@@@@@@@@@@@@@@@@@@@@get page of company No.%d @@@@@@@@@@@@@@@@@@@@@@@@@" % (self.success_count + self.fail_count + 1))
+        print("Downloader: get page of company No.%d " % (self.success_count + self.fail_count + 1))
         
         time.sleep(1)
 
@@ -65,26 +62,27 @@ class Dbdv2DownloaderMiddleware(object):
 
         #if the title exist, mean the get page succeed
         if title:
-            print("@@@@@@@@@@@@@@@@@@@@@@@@Successfully got page of company No.%d @@@@@@@@@@@@@@@@@@@@@@@@@" % (self.success_count + self.fail_count + 1))
+            print("Downloader: Successfully got page of company No.%d " % (self.success_count + self.fail_count + 1))
             self.success_count += 1
             request.status = True
         else:
-            print("@@@@@@@@@@@@@@@@@@@@@@@@Fail to Get page of company No.%d @@@@@@@@@@@@@@@@@@@@@@@@@" % (self.success_count + self.fail_count + 1))
+            print("Downloader: Fail to Get page of company No.%d" % (self.success_count + self.fail_count + 1))
             self.fail_count += 1
             request.status = False
 
 
         if code == '404':
             #if the company cannot be found
-            print('cannot find the page in datawarehouse')
+            print('Downloader: cannot find the page in datawarehouse')
             pass
         elif code == '':
-            print('find page time out!')
+            print('Downloader: find page time out!')
             #if timeout
             pass
         elif code == '401':
             #if cookie died
             #raise CloseSpider('@@@@@@@@@@@@@@@the cooike expired in scraping@@@@@@@@@@@@@@@@')
+            print('Downloader: cookie expired!')
             spider.close_it = 'cookie expired!'
 
         elif  code == '500' or code == '503' or code == '000':
@@ -93,14 +91,15 @@ class Dbdv2DownloaderMiddleware(object):
 
             #self.fake_browser.driver.save_screenshot('failed.png')
             #raise CloseSpider('@@@@@@@@@@@@@@@@@@@@the server is down! Please try to run it later@@@@@@@@@@@@@@@@@')
-            spider.close_it = 'server is down!'
+            print(f'Downloader: server is down! code{code}')
+            spider.close_it = f'server is down! code{code}'
         else:
+            #spider.close_it = 'nothing I just want to see'
             pass
 
         response = HtmlResponse(url=request.url, body=page, request=request, encoding='utf-8')
-
-        #print(title)
         return response
+        #return None
 
     def process_response(self, request, response, spider):
         # Called with the response returned from the downloader.

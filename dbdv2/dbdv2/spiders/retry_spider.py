@@ -72,13 +72,14 @@ class DbdSpider(scrapy.Spider):
             item = MonthlyItem()
             item['scraping_status'] = response.request.status
             #item['company_id'] = response.url.split('/')[-1]
-            item['company_id'] = company_id
-            item['company_type'] = response.xpath('/html/body/div[1]/div[4]/div[2]/div[1]/div[2]/div[2]/div[1]/div[1]/div[1]/table/tbody/tr[1]/th[2]/text()').get()
-            item['status']       = response.xpath('/html/body/div[1]/div[4]/div[2]/div[1]/div[2]/div[2]/div[1]/div[1]/div[1]/table/tbody/tr[3]/td[2]/text()').get()
-            item['objective']    = objective
-            item['directors']    = director_list
-            item['company_name'] = company_name
+            item['company_id']     = company_id
+            item['company_type']   = response.xpath('/html/body/div[1]/div[4]/div[2]/div[1]/div[2]/div[2]/div[1]/div[1]/div[1]/table/tbody/tr[1]/th[2]/text()').get()
+            item['status']         = response.xpath('/html/body/div[1]/div[4]/div[2]/div[1]/div[2]/div[2]/div[1]/div[1]/div[1]/table/tbody/tr[3]/td[2]/text()').get()
+            item['objective']      = objective
+            item['directors']      = director_list
+            item['company_name']   = company_name
             item['bussiness_type'] = raw_bussiness_type
+            item['address']        = response.xpath('/html/body/div[1]/div[4]/div[2]/div[1]/div[2]/div[2]/div[1]/div[1]/div[2]/table/tbody/tr[2]/td/text()').get()
             print('***************************************parse end**************************')
             return item
 

@@ -63,8 +63,9 @@ class MdbdSerializer(object):
                     try:
                         two_id = next(id_generator)
                         info = self.company_info_to_dict(two_id[0])
-                        data = self.generate_insert_sql(info)
-                        f.write(data)
+                        if info:
+                            data = self.generate_insert_sql(info)
+                            f.write(data)
                     except StopIteration:
                         break
         except Exception as e:
@@ -82,8 +83,9 @@ class MdbdSerializer(object):
                     try:
                         two_id = next(id_generator)
                         info = self.company_info_to_dict(two_id[0])
-                        data = self.generate_update_sql(info, two_id[1])
-                        f.write(data)
+                        if info:
+                            data = self.generate_update_sql(info, two_id[1])
+                            f.write(data)
                     except StopIteration:
                         break
         except Exception as e:
@@ -93,7 +95,11 @@ class MdbdSerializer(object):
             print(f'save to path {file_name}')
 
     def company_info_to_dict(self, company_info):
-        company_info = dict(zip(self.company_template, company_info))
+        try:
+            company_info = dict(zip(self.company_template, company_info))
+        except:
+            print('can not find company')
+            company_info = None
         return company_info
 
     def generate_insert_sql(self, company_info):

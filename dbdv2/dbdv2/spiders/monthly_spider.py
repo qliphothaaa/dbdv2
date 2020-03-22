@@ -1,6 +1,5 @@
 import scrapy
 import time
-#from browser.session_requester import Requester
 from data_access.dbd_connector import DbdConnector
 from dbdv2.items import MonthlyItem, FailedItem
 from scrapy.exceptions import CloseSpider
@@ -37,12 +36,11 @@ class DbdSpider(scrapy.Spider):
 
     def parse(self, response):
         if self.close_it:
-            #print(self.close_it)
             raise CloseSpider(self.close_it)
 
         company_id = response.url.split('/')[-1]
         if response.request.status:
-            print(f'***************************************spider parse start ({company_id})**************************')
+            print(f'Spider: spider parse start ({company_id})')
 
             company_name = response.xpath('/html/body/div/div[4]/div[2]/div[1]/div[1]/h2/text()').get()
 
@@ -67,15 +65,14 @@ class DbdSpider(scrapy.Spider):
 
             item = MonthlyItem()
             item['scraping_status'] = response.request.status
-            #item['company_id'] = response.url.split('/')[-1]
-            item['company_id'] = company_id
-            item['company_type'] = response.xpath('/html/body/div[1]/div[4]/div[2]/div[1]/div[2]/div[2]/div[1]/div[1]/div[1]/table/tbody/tr[1]/th[2]/text()').get()
-            item['status']       = response.xpath('/html/body/div[1]/div[4]/div[2]/div[1]/div[2]/div[2]/div[1]/div[1]/div[1]/table/tbody/tr[3]/td[2]/text()').get()
-            item['objective']    = objective
-            item['directors']    = director_list
-            item['company_name'] = company_name
-            item['bussiness_type'] = raw_bussiness_type
-            item['address']        = response.xpath('/html/body/div[1]/div[4]/div[2]/div[1]/div[2]/div[2]/div[1]/div[1]/div[2]/table/tbody/tr[2]/td/text()').get()
+            item['company_id']      = company_id
+            item['company_type']    = response.xpath('/html/body/div[1]/div[4]/div[2]/div[1]/div[2]/div[2]/div[1]/div[1]/div[1]/table/tbody/tr[1]/th[2]/text()').get()
+            item['status']          = response.xpath('/html/body/div[1]/div[4]/div[2]/div[1]/div[2]/div[2]/div[1]/div[1]/div[1]/table/tbody/tr[3]/td[2]/text()').get()
+            item['objective']       = objective
+            item['directors']       = director_list
+            item['company_name']    = company_name
+            item['bussiness_type']  = raw_bussiness_type
+            item['address']         = response.xpath('/html/body/div[1]/div[4]/div[2]/div[1]/div[2]/div[2]/div[1]/div[1]/div[2]/table/tbody/tr[2]/td/text()').get()
             print('***************************************parse end**************************')
             return item
 
