@@ -212,6 +212,18 @@ class DbdConnector(object):
             print('fail to find biggest id')
         return biggest
 
+    def clear_status_before_annually(self):
+        try:
+            sql = 'update dbd_query set DBD_STATUS = null'
+            cur = self.db.cursor()
+            cur.execute(sql)
+            print('finish set dbd_query.status to null')
+        except Exception as e:
+            print(e)
+            print('fail to set dbd_query status')
+        finally:
+            cur.close()
+
 
     def dbClose(self):
         self.db.close()

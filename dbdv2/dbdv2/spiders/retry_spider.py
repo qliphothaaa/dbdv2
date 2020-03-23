@@ -25,8 +25,6 @@ class DbdSpider(scrapy.Spider):
         company_ids = db.readIds(query)
         query = 'select DBD_COMPANY_ID from dbd_new_query Where DBD_STATUS is NULL'
         company_ids2 = db.readIds(query)
-        print(company_ids)
-        print(company_ids2)
         company_ids.extend(company_ids2)
 
         if len(company_ids) > 0:

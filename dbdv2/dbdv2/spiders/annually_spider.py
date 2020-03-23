@@ -19,6 +19,7 @@ class AnnuallySpider(scrapy.Spider):
 
     def start_requests(self):
         db = DbdConnector()
+        db.clear_status_before_annually()
         query = 'select DBD_COMPANY_ID from dbd_query'
         company_ids = db.readIds(query)
         if len(company_ids) > 0:

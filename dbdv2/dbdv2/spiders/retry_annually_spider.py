@@ -18,9 +18,15 @@ class AnnuallySpider(scrapy.Spider):
     }
 
     def start_requests(self):
+
         db = DbdConnector()
-        query = 'select DBD_COMPANY_ID from dbd_query'
+        query = 'select DBD_COMPANY_ID from dbd_query where DBD_STATUS is Null'
         company_ids = db.readIds(query)
+        query = 'select DBD_COMPANY_ID from dbd_query where DBD_STATUS = "Failed"'
+        company_ids2 = db.readIds(query)
+
+        company_ids.extend(company_ids2)
+
         if len(company_ids) > 0:
             print("======================Strat scraping! There are %d company in schedule=================" % len(company_ids))
         else:
