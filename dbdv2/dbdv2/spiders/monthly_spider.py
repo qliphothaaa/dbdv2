@@ -36,13 +36,19 @@ class DbdSpider(scrapy.Spider):
 
     def parse(self, response):
         if self.close_it:
+            print(self.close_it)
             raise CloseSpider(self.close_it)
-
         company_id = response.url.split('/')[-1]
+
         if response.request.status:
             print(f'Spider: spider parse start ({company_id})')
 
             company_name = response.xpath('/html/body/div/div[4]/div[2]/div[1]/div[1]/h2/text()').get()
+            if not company_name:
+                item = FailedItem()
+                item['scraping_status'] = False
+                item['company_id'] = company_id
+                return item
 
             objective = response.xpath('/html/body/div[1]/div[4]/div[2]/div[1]/div[2]/div[2]/div[1]/div[3]/div[5]/div/p/text()').get()
             if objective == '-':
@@ -66,14 +72,14 @@ class DbdSpider(scrapy.Spider):
             item = MonthlyItem()
             item['scraping_status'] = response.request.status
             item['company_id']      = company_id
-            item['company_type']    = response.xpath('/html/body/div[1]/div[4]/div[2]/div[1]/div[2]/div[2]/div[1]/div[1]/div[1]/table/tbody/tr[1]/th[2]/text()').get()
-            item['status']          = response.xpath('/html/body/div[1]/div[4]/div[2]/div[1]/div[2]/div[2]/div[1]/div[1]/div[1]/table/tbody/tr[3]/td[2]/text()').get()
+            item['company_type']    = response.xpath('/html/body/div[1]/div[4]/div[2]/div[1]/div[2]/div[2]/div[1]/div[1]/div[1]/table/tr[1]/th[2]/text()').get()
+            item['status']          = response.xpath('/html/body/div[1]/div[4]/div[2]/div[1]/div[2]/div[2]/div[1]/div[1]/div[1]/table/tr[3]/td[2]/text()').get()
             item['objective']       = objective
             item['directors']       = director_list
             item['company_name']    = company_name
             item['bussiness_type']  = raw_bussiness_type
-            item['address']         = response.xpath('/html/body/div[1]/div[4]/div[2]/div[1]/div[2]/div[2]/div[1]/div[1]/div[2]/table/tbody/tr[2]/td/text()').get()
-            print('***************************************parse end**************************')
+            item['address']         = response.xpath('/html/body/div[1]/div[4]/div[2]/div[1]/div[2]/div[2]/div[1]/div[1]/div[2]/table/tr[2]/td/text()').get()
+            print(f'Spider: spider parse end ({company_id})')
             return item
 
         else:

@@ -1,9 +1,12 @@
 import time
 import os.path
+import requests
+import pickle
+import os
 from scrapy import signals
 from scrapy.http import HtmlResponse
-#from scrapy.exceptions import CloseSpider
 from browser.scraping_browser import ScrapingBrowser
+from requests.exceptions import Timeout
 
 
 class Dbdv2SpiderMiddleware(object):
@@ -35,15 +38,16 @@ class Dbdv2SpiderMiddleware(object):
 
 class Dbdv2DownloaderMiddleware(object):
     def __init__(self):
-        self.fake_browser  = ScrapingBrowser()
         self.success_count = 0
         self.fail_count    = 0
 
 
+    '''
     def __del__(self):
 
         print("Downloader(finished): finish scraping, Totally %d companys, %d data completed, %d data failed==========" %(self.success_count + self.fail_count, self.success_count, self.fail_count))
         self.fake_browser.close()
+    '''
 
     @classmethod
     def from_crawler(cls, crawler):
@@ -52,6 +56,7 @@ class Dbdv2DownloaderMiddleware(object):
         return s
 
     def process_request(self, request, spider):
+        '''
         print("Downloader: get page of company No.%d " % (self.success_count + self.fail_count + 1))
         
         time.sleep(1)
@@ -99,7 +104,69 @@ class Dbdv2DownloaderMiddleware(object):
 
         response = HtmlResponse(url=request.url, body=page, request=request, encoding='utf-8')
         return response
-        #return None
+        '''
+        #load cookie from local
+        cookie_path = 'browser/temp/cookie.txt'
+        if os.path.isfile(cookie_path):
+            try:
+                with open(cookie_path, 'rb') as f: 
+                    #cookies = pickle.load(f)
+                    cookies = pickle.load(f)
+            except EOFError:
+                cookies = None
+
+        cookies = cookies[-1]['value']
+
+
+
+        try:
+            response = requests.get(request.url, cookies = {'JSESSIONID':cookies}, timeout=10)
+        except Timeout:
+            print('Get page time out!')
+            request.status = False
+            response = HtmlResponse(url=request.url, body='', request=request, encoding='utf-8')
+            return response
+
+
+
+        #check the status
+        code = response.status_code
+        if code == 404:
+            #if the company cannot be found
+            print('Downloader: cannot find the page in datawarehouse')
+            request.status = False
+        elif code == 200:
+
+            request.status = True
+
+
+        elif code == 401:
+            #if cookie died
+            #raise CloseSpider('@@@@@@@@@@@@@@@the cooike expired in scraping@@@@@@@@@@@@@@@@')
+            print('Downloader: cookie expired!')
+            spider.close_it = 'cookie expired!'
+
+        elif  code == 500 or code == 503:
+            #if the server down:500, 503
+            #or some error system does not know: 000
+
+            #self.fake_browser.driver.save_screenshot('failed.png')
+            #raise CloseSpider('@@@@@@@@@@@@@@@@@@@@the server is down! Please try to run it later@@@@@@@@@@@@@@@@@')
+            print(f'Downloader: server is down! code{code}')
+            spider.close_it = f'server is down! code{code}'
+        else:
+            print(f'Downloader: unexpect error! code {code}')
+            spider.close_it = f'unexpect error! code{code}'
+            pass
+        ###################
+
+
+        #create the body of the response to spider
+        html = str(response.content,'utf-8')
+        page =  html
+        response = HtmlResponse(url=request.url, body=page, request=request, encoding='utf-8')
+
+        return response
 
     def process_response(self, request, response, spider):
         # Called with the response returned from the downloader.

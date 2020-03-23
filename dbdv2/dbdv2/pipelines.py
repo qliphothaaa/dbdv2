@@ -216,6 +216,9 @@ class AnnuallyScrapingtPipeline(object):
                 ## if the address changed, update the zip
                 update_dbdcompany_dict['DBD_ZIPCODE'] = new_company_dict['DBD_ZIPCODE']
 
+            if new_company_dict['DBD_ZIPCODE'] != old_company_dict['DBD_ZIPCODE']:
+                update_dbdcompany_dict['DBD_ZIPCODE'] = new_company_dict['DBD_ZIPCODE']
+
 
             if new_company_dict['DBD_OBJECTIVE'] != old_company_dict['DBD_OBJECTIVE']:
                 update_dbdcompany_dict['DBD_OBJECTIVE'] = new_company_dict['DBD_OBJECTIVE']
@@ -223,19 +226,15 @@ class AnnuallyScrapingtPipeline(object):
 
             if new_company_dict['DBD_STREET'] != old_company_dict['DBD_STREET']:
                 update_dbdcompany_dict['DBD_STREET'] = new_company_dict['DBD_STREET']
-                #update_query_dict['C_DBD_ADDRESS'] = old_company_dict['DBD_ADDRESS']
 
             if new_company_dict['DBD_SUBDISTRICT'] != old_company_dict['DBD_SUBDISTRICT']:
                 update_dbdcompany_dict['DBD_SUBDISTRICT'] = new_company_dict['DBD_SUBDISTRICT']
-                #update_query_dict['C_DBD_ADDRESS'] = old_company_dict['DBD_ADDRESS']
 
             if new_company_dict['DBD_DISTRICT'] != old_company_dict['DBD_DISTRICT']:
                 update_dbdcompany_dict['DBD_DISTRICT'] = new_company_dict['DBD_DISTRICT']
-                #update_query_dict['C_DBD_ADDRESS'] = old_company_dict['DBD_ADDRESS']
 
             if new_company_dict['DBD_PROVINCE'] != old_company_dict['DBD_PROVINCE']:
                 update_dbdcompany_dict['DBD_PROVINCE'] = new_company_dict['DBD_PROVINCE']
-                #update_query_dict['C_DBD_ADDRESS'] = old_company_dict['DBD_ADDRESS']
 
             if new_company_dict['DBD_BUSINESS_TYPE_CODE'] != old_company_dict['DBD_BUSINESS_TYPE_CODE']:
                 update_dbdcompany_dict['DBD_BUSINESS_TYPE_CODE'] = new_company_dict['DBD_BUSINESS_TYPE_CODE']
