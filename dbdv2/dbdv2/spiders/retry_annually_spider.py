@@ -3,8 +3,8 @@ import time
 from data_access.dbd_connector import DbdConnector
 from dbdv2.items import AnnuallyItem, FailedItem
 
-class AnnuallySpider(scrapy.Spider):
-    name = 'annually'
+class RetryAnnuallySpider(scrapy.Spider):
+    name = 'retry_annually'
     close_it = ''
     headers = {
     'User-Agent': 'Mozilla/5.0 (Windows NT 6.2; WOW64) AppleWebKit/537.36 (KHTML like Gecko) Chrome/44.0.2403.155 Safari/537.36',
