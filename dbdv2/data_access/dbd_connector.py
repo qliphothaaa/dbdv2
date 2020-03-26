@@ -9,7 +9,7 @@ class DbdConnector(object):
                 #host='localhost', 
                 #port=3309,
                 user='root', 
-                passwd='1234',
+                passwd='opencloud1',
                 database='dbd'
                 )
         
