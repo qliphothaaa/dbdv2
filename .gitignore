@@ -8,5 +8,6 @@
 *.pdf
 *.zip
 *.pyc
+*.txt
 *.sqlite3
 /__pycache__/
