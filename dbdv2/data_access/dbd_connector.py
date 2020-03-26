@@ -188,7 +188,7 @@ class DbdConnector(object):
 
 
 
-    def read_company_info(self, company_id):
+    def read_company_info_old(self, company_id):
         try:
             sql = f'''select 
             DBD_ID, DBD_TYPE, DBD_REGISTRATION_DATE, DBD_STATUS, DBD_REGISTRATION_MONEY, DBD_STREET, DBD_SUBDISTRICT, DBD_DISTRICT, DBD_PROVINCE, DBD_ZIPCODE, DBD_BUSINESS_TYPE_CODE, DBD_BUSINESS_TYPE, DBD_OBJECTIVE, DBD_NAME_TH
@@ -196,6 +196,27 @@ class DbdConnector(object):
             cur = self.db.cursor()
             cur.execute(sql)
             company_info = cur.fetchone()
+        except Exception as e:
+            print(e)
+            print('fail to find company info')
+        return company_info
+
+    def read_company_info(self, company_ids):
+        try:
+            id_str = ''
+            for company_id in company_ids:
+                id_str += '"' + str(company_id[0]) + '",'
+            id_str = id_str.rstrip(',')
+            #print(id_str)
+
+            sql = f'''select 
+            DBD_ID, DBD_TYPE, DBD_REGISTRATION_DATE, DBD_STATUS, DBD_REGISTRATION_MONEY, DBD_STREET, DBD_SUBDISTRICT, DBD_DISTRICT, DBD_PROVINCE, DBD_ZIPCODE, DBD_BUSINESS_TYPE_CODE, DBD_BUSINESS_TYPE, DBD_OBJECTIVE, DBD_NAME_TH
+            from dbdcompany where DBD_ID in ({id_str});'''
+            #print(sql)
+            cur = self.db.cursor()
+            cur.execute(sql)
+            company_info = cur.fetchall()
+            #print(company_info)
         except Exception as e:
             print(e)
             print('fail to find company info')

@@ -56,10 +56,10 @@ class MonthlyScrapingPipeline(object):
 
             values_dbdcompany    = (company_type, status, objective, directors_text, company_name, bussiness_type, bussiness_type_code, address[0]+' '+address[1], address[0], address[1], address[2], address[3], zipcode, company_id)#new
 
-            sql_dbd_new_query    = 'update dbd_new_query set DBD_Status = "Success", DBD_LAST_RUN=%s where DBD_COMPANY_ID = "%s"'
+            sql_dbd_new_query    = 'update dbd_new_query set DBD_Status = "Success", DBD_LAST_RUN=%s where DBD_COMPANY_ID = %s'
             values_dbd_new_query = (time.strftime('%Y-%m-%d %H:%M:%S'), company_id)
 
-            sql_dbd_query        = 'update dbd_query set DBD_Status = "Success", DBD_LAST_RUN=%s where DBD_COMPANY_ID = "%s"'
+            sql_dbd_query        = 'update dbd_query set DBD_Status = "Success", DBD_LAST_RUN=%s where DBD_COMPANY_ID = %s'
             values_dbd_query     = (time.strftime('%Y-%m-%d %H:%M:%S'), company_id)
 
             sqls   = (sql_dbdcompany, sql_dbd_new_query, sql_dbd_query)
@@ -76,10 +76,10 @@ class MonthlyScrapingPipeline(object):
         else:
             print(f'pipline, add {company_id} failed information to database')
 
-            sql_dbd_new_query    = 'update dbd_new_query set DBD_Status = "Failed", DBD_LAST_RUN=%s where DBD_COMPANY_ID = "%s"'
+            sql_dbd_new_query    = 'update dbd_new_query set DBD_Status = "Failed", DBD_LAST_RUN=%s where DBD_COMPANY_ID = %s'
             values_dbd_new_query = (time.strftime('%Y-%m-%d %H:%M:%S'), company_id)
 
-            sql_dbd_query        = 'update dbd_query set DBD_Status = "Failed", DBD_LAST_RUN=%s where DBD_COMPANY_ID = "%s"'
+            sql_dbd_query        = 'update dbd_query set DBD_Status = "Failed", DBD_LAST_RUN=%s where DBD_COMPANY_ID = %s'
             values_dbd_query     = (time.strftime('%Y-%m-%d %H:%M:%S'), company_id)
 
             sqls = (sql_dbd_new_query, sql_dbd_query)
@@ -286,7 +286,7 @@ class AnnuallyScrapingtPipeline(object):
             #return item
 
         else:
-            sql_dbd_query        = 'update dbd_query set DBD_Status = "Failed", DBD_LAST_RUN=%s where DBD_COMPANY_ID = "%s"'
+            sql_dbd_query        = 'update dbd_query set DBD_Status = "Failed", DBD_LAST_RUN=%s where DBD_COMPANY_ID = %s'
             values_dbd_query     = (time.strftime('%Y-%m-%d %H:%M:%S'), company_id)
 
             sqls = (sql_dbd_query,)

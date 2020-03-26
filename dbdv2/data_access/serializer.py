@@ -37,22 +37,26 @@ class MdbdSerializer(object):
     def get_include_company_data(self):
         include_company_ids =  self.db_connector.read_include_new_company()
         for company_id in include_company_ids:
-            yield (self.db_connector.read_company_info(company_id[0]), company_id[1])
+            #yield (self.db_connector.read_company_info(company_id[0]), company_id[1])
+            yield company_id
 
     def get_exclude_company_data(self):
         exclude_company_ids =  self.db_connector.read_exclude_new_company()
         for company_id in exclude_company_ids:
-            yield (self.db_connector.read_company_info(company_id[0]), 0)
+            #yield (self.db_connector.read_company_info(company_id[0]), 0)
+            yield company_id
 
     def get_include_company_data_all(self):
         include_company_ids =  self.db_connector.read_include_all_company()
         for company_id in include_company_ids:
-            yield (self.db_connector.read_company_info(company_id[0]), company_id[1])
+            #yield (self.db_connector.read_company_info(company_id[0]), company_id[1])
+            yield company_id
 
     def get_exclude_company_data_all(self):
         exclude_company_ids =  self.db_connector.read_exclude_all_company()
         for company_id in exclude_company_ids:
-            yield (self.db_connector.read_company_info(company_id[0]), 0)
+            #yield (self.db_connector.read_company_info(company_id[0]), 0)
+            yield company_id
 
     def write_insert_file(self, id_generator, name=''):
         time_str = time.strftime("%Y%m%d%H%M%S", time.localtime())
@@ -60,14 +64,15 @@ class MdbdSerializer(object):
         try:
             with open(file_name, 'w', encoding='utf-8') as f:
                 while True:
-                    try:
-                        two_id = next(id_generator)
-                        info = self.company_info_to_dict(two_id[0])
-                        if info:
-                            data = self.generate_insert_sql(info)
-                            f.write(data)
-                    except StopIteration:
+                    id_group = self.get_id_group(id_generator)
+                    if id_group == []:
                         break
+                    company_group = self.db_connector.read_company_info(id_group)
+                    for i in range(len(company_group)):
+                        #print(company_group[i])
+                        print(type(i))
+                        data = self.generate_insert_sql(company_group[i])
+                        f.write(data)
         except Exception as e:
             print(e)
             print(f'save file failed: {file_name}')
@@ -80,14 +85,14 @@ class MdbdSerializer(object):
         try:
             with open(file_name, 'w', encoding='utf-8') as f:
                 while True:
-                    try:
-                        two_id = next(id_generator)
-                        info = self.company_info_to_dict(two_id[0])
-                        if info:
-                            data = self.generate_update_sql(info, two_id[1])
-                            f.write(data)
-                    except StopIteration:
+                    id_group = self.get_id_group(id_generator)
+                    if id_group == []:
                         break
+                    company_group = self.db_connector.read_company_info(id_group)
+                    for i in range(len(company_group)):
+                        print(type(i))
+                        data = self.generate_update_sql(company_group[i], id_group[i][1])
+                        f.write(data)
         except Exception as e:
             print(e)
             print(f'save file failed: {file_name}')
@@ -103,7 +108,7 @@ class MdbdSerializer(object):
         return company_info
 
     def generate_insert_sql(self, company_info):
-        ci = company_info
+        ci = self.company_info_to_dict(company_info)
         self.recent_id += 1
         dbdcompaniesid = self.recent_id
         sql_dbdcompanies   = f"INSERT INTO vtiger_dbdcompanies(dbdcompaniesid,dbdcompanies) VALUES('{dbdcompaniesid}','{ci['dbdcompanies']}');"
@@ -113,7 +118,7 @@ class MdbdSerializer(object):
         return insert_data
          
     def generate_update_sql(self, company_info, crm_id):
-        ci = company_info
+        ci = self.company_info_to_dict(company_info)
         dbdcompaniesid = crm_id
         sql_dbdcompanies   = f"UPDATE vtiger_dbdcompanies SET dbdcompanies = '{ci['dbdcompanies']}' WHERE dbdcompaniesid ='{dbdcompaniesid}';"
         sql_dbdcompaniescf = f"UPDATE vtiger_dbdcompaniescf SET cf_755 = '{ci['cf_755']}',cf_757 = '{ci['cf_757']}',cf_763 = '{ci['cf_763']}',cf_759 = '{ci['cf_759']}',cf_761 = '{ci['cf_761']}',cf_809 = '{ci['cf_809']}',cf_811 = '{ci['cf_811']}',cf_813 = '{ci['cf_813']}',cf_815 = '{ci['cf_815']}',cf_817 = '{ci['cf_817']}',cf_799 = '{ci['cf_799']}',cf_801 = '{ci['cf_801']}',cf_1995 = '{ci['cf_1995']}' WHERE dbdcompaniesid ='{dbdcompaniesid}';"
@@ -122,4 +127,12 @@ class MdbdSerializer(object):
         insert_data = sql_dbdcompanies + '\n' + sql_dbdcompaniescf + '\n' + sql_crmentity + '\n'
         return insert_data
 
+    def get_id_group(self, id_generator):
+        group = []
+        for i in range(100):
+            try:
+                group.append(next(id_generator))
+            except StopIteration:
+                return group
+        return group
 

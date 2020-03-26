@@ -1,0 +1,6 @@
+UPDATE vtiger_dbdcompanies SET dbdcompanies = 'บริษัท สุธานี จำกัด' WHERE dbdcompaniesid ='123';
+UPDATE vtiger_dbdcompaniescf SET cf_755 = '0105562021811',cf_757 = 'บริษัทจำกัด',cf_763 = '2019-02-01',cf_759 = 'ยังดำเนินกิจการอยู่',cf_761 = '110000000',cf_809 = '53,55,57,59,61,63,65,67,69  ซอยเอกชัย 69/2',cf_811 = 'คลองบางบอน',cf_813 = 'บางบอน',cf_815 = 'กรุงเทพมหานคร',cf_817 = '10150',cf_799 = '14112',cf_801 = 'การผลิตเสื้อผ้าชั้นนอก',cf_1995 = 'ผลิตและรับจ้างผลิต ซื้อ ขาย นำเข้า-ส่งออก สินค้าเสื้อผ้าทุกชนิด และเครื่องอุปโภคบริโภคอื่น ๆ' WHERE dbdcompaniesid ='123';
+UPDATE vtiger_crmentity SET modifiedtime =NOW(), label='บริษัท สุธานี จำกัด' WHERE crmid='123';
+UPDATE vtiger_dbdcompanies SET dbdcompanies = 'บริษัท ราม่า เอ็นเตอร์ไพร้ส จำกัด' WHERE dbdcompaniesid ='234';
+UPDATE vtiger_dbdcompaniescf SET cf_755 = '0105562022663',cf_757 = 'บริษัทจำกัด',cf_763 = '2019-02-04',cf_759 = 'ยังดำเนินกิจการอยู่',cf_761 = '20000000',cf_809 = '44/3 ซอยปราโมทย์ 2 ถนนมเหสักข์',cf_811 = 'สุริยวงศ์',cf_813 = 'บางรัก',cf_815 = 'กรุงเทพมหานคร',cf_817 = '10500',cf_799 = '47732',cf_801 = 'ร้านขายปลีกเครื่องประดับ',cf_1995 = 'ประกอบกิจการค้าทอง นาก เงิน เพชร พลอย และอัญมณีอื่น รวมทั้งวัตถุทำเทียมสิ่งดังกล่าว' WHERE dbdcompaniesid ='234';
+UPDATE vtiger_crmentity SET modifiedtime =NOW(), label='บริษัท ราม่า เอ็นเตอร์ไพร้ส จำกัด' WHERE crmid='234';
