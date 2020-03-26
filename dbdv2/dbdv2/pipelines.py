@@ -52,14 +52,14 @@ class MonthlyScrapingPipeline(object):
             address             = address_separater(raw_address)#new
             zipcode             = self.get_zipcode(address)#new
             #generate sql and valus
-            sql_dbdcompany       = 'UPDATE dbdcompany SET DBD_TYPE = %s, DBD_STATUS= %s,DBD_OBJECTIVE = %s,DBD_DIRECTORS = %s, DBD_NAME_TH = %s, DBD_BUSINESS_TYPE = %s, DBD_BUSINESS_TYPE_CODE=%s, DBD_ADDRESS=%s, DBD_STREET=%s, DBD_SUBDISTRICT=%s, DBD_DISTRICT=%s, DBD_PROVINCE=%s, DBD_ZIPCODE=%s WHERE DBD_ID = %s;'
+            sql_dbdcompany       = 'UPDATE dbdcompany SET DBD_TYPE = %s, DBD_STATUS= %s,DBD_OBJECTIVE = %s,DBD_DIRECTORS = %s, DBD_NAME_TH = %s, DBD_BUSINESS_TYPE = %s, DBD_BUSINESS_TYPE_CODE=%s, DBD_ADDRESS=%s, DBD_STREET=%s, DBD_SUBDISTRICT=%s, DBD_DISTRICT=%s, DBD_PROVINCE=%s, DBD_ZIPCODE=%s WHERE DBD_ID = "%s";'
 
             values_dbdcompany    = (company_type, status, objective, directors_text, company_name, bussiness_type, bussiness_type_code, address[0]+' '+address[1], address[0], address[1], address[2], address[3], zipcode, company_id)#new
 
-            sql_dbd_new_query    = 'update dbd_new_query set DBD_Status = "Success", DBD_LAST_RUN=%s where DBD_COMPANY_ID = %s'
+            sql_dbd_new_query    = 'update dbd_new_query set DBD_Status = "Success", DBD_LAST_RUN=%s where DBD_COMPANY_ID = "%s"'
             values_dbd_new_query = (time.strftime('%Y-%m-%d %H:%M:%S'), company_id)
 
-            sql_dbd_query        = 'update dbd_query set DBD_Status = "Success", DBD_LAST_RUN=%s where DBD_COMPANY_ID = %s'
+            sql_dbd_query        = 'update dbd_query set DBD_Status = "Success", DBD_LAST_RUN=%s where DBD_COMPANY_ID = "%s"'
             values_dbd_query     = (time.strftime('%Y-%m-%d %H:%M:%S'), company_id)
 
             sqls   = (sql_dbdcompany, sql_dbd_new_query, sql_dbd_query)
@@ -76,10 +76,10 @@ class MonthlyScrapingPipeline(object):
         else:
             print(f'pipline, add {company_id} failed information to database')
 
-            sql_dbd_new_query    = 'update dbd_new_query set DBD_Status = "Failed", DBD_LAST_RUN=%s where DBD_COMPANY_ID = %s'
+            sql_dbd_new_query    = 'update dbd_new_query set DBD_Status = "Failed", DBD_LAST_RUN=%s where DBD_COMPANY_ID = "%s"'
             values_dbd_new_query = (time.strftime('%Y-%m-%d %H:%M:%S'), company_id)
 
-            sql_dbd_query        = 'update dbd_query set DBD_Status = "Failed", DBD_LAST_RUN=%s where DBD_COMPANY_ID = %s'
+            sql_dbd_query        = 'update dbd_query set DBD_Status = "Failed", DBD_LAST_RUN=%s where DBD_COMPANY_ID = "%s"'
             values_dbd_query     = (time.strftime('%Y-%m-%d %H:%M:%S'), company_id)
 
             sqls = (sql_dbd_new_query, sql_dbd_query)
@@ -123,7 +123,7 @@ class AnnuallyScrapingtPipeline(object):
 
     def get_old_data(self, company_id):
         #print(f'get old data of {company_id}')
-        sql = f'SELECT DBD_NAME_TH, DBD_STATUS, DBD_ADDRESS, DBD_OBJECTIVE, DBD_STREET, DBD_SUBDISTRICT, DBD_DISTRICT, DBD_PROVINCE, DBD_BUSINESS_TYPE_CODE, DBD_BUSINESS_TYPE, DBD_DIRECTORS, DBD_ZIPCODE from dbdcompany where DBD_ID = {company_id};'
+        sql = f'SELECT DBD_NAME_TH, DBD_STATUS, DBD_ADDRESS, DBD_OBJECTIVE, DBD_STREET, DBD_SUBDISTRICT, DBD_DISTRICT, DBD_PROVINCE, DBD_BUSINESS_TYPE_CODE, DBD_BUSINESS_TYPE, DBD_DIRECTORS, DBD_ZIPCODE from dbdcompany where DBD_ID = "{company_id}";'
         old_company_info = self.dbconnector.read(sql)
 
         old_company_dict = {'DBD_NAME_TH':old_company_info[0],
@@ -259,14 +259,14 @@ class AnnuallyScrapingtPipeline(object):
             #update dbdcompany
             if update_dbdcompany_string is not '':
                 #print(update_dbdcompany_string)
-                sql_dbdcompany = f'UPDATE dbdcompany SET {update_dbdcompany_string} WHERE DBD_ID = {company_id};'
+                sql_dbdcompany = f'UPDATE dbdcompany SET {update_dbdcompany_string} WHERE DBD_ID = "{company_id}";'
 
                 if update_query_string is not '':
                     datetime = time.strftime('%Y-%m-%d %H:%M:%S')
-                    sql_dbd_query = f'update dbd_query set DBD_STATUS ="Success", DBD_CHANGE=1, DBD_LAST_RUN="{datetime}", {update_query_string} where DBD_COMPANY_ID = {company_id}'
+                    sql_dbd_query = f'update dbd_query set DBD_STATUS ="Success", DBD_CHANGE=1, DBD_LAST_RUN="{datetime}", {update_query_string} where DBD_COMPANY_ID = "{company_id}"'
                 else:
                     datetime = time.strftime('%Y-%m-%d %H:%M:%S')
-                    sql_dbd_query = f'update dbd_query set DBD_STATUS ="Success", DBD_CHANGE=1, DBD_LAST_RUN="{datetime}" where DBD_COMPANY_ID = {company_id}'
+                    sql_dbd_query = f'update dbd_query set DBD_STATUS ="Success", DBD_CHANGE=1, DBD_LAST_RUN="{datetime}" where DBD_COMPANY_ID = "{company_id}"'
 
                 sqls = (sql_dbdcompany, sql_dbd_query)
                 values = (None, None)
@@ -276,7 +276,7 @@ class AnnuallyScrapingtPipeline(object):
                 print(f'============update finieshed company {company_id}--------------')
             else:
                 datetime = time.strftime('%Y-%m-%d %H:%M:%S')
-                sql_dbd_query = f'update dbd_query set DBD_STATUS ="Success", DBD_CHANGE=0, DBD_LAST_RUN="{datetime}" where DBD_COMPANY_ID = {company_id}'
+                sql_dbd_query = f'update dbd_query set DBD_STATUS ="Success", DBD_CHANGE=0, DBD_LAST_RUN="{datetime}" where DBD_COMPANY_ID = "{company_id}"'
                 sqls = (sql_dbd_query,)
                 values = (None,)
 
@@ -286,7 +286,7 @@ class AnnuallyScrapingtPipeline(object):
             #return item
 
         else:
-            sql_dbd_query        = 'update dbd_query set DBD_Status = "Failed", DBD_LAST_RUN=%s where DBD_COMPANY_ID = %s'
+            sql_dbd_query        = 'update dbd_query set DBD_Status = "Failed", DBD_LAST_RUN=%s where DBD_COMPANY_ID = "%s"'
             values_dbd_query     = (time.strftime('%Y-%m-%d %H:%M:%S'), company_id)
 
             sqls = (sql_dbd_query,)

@@ -192,7 +192,7 @@ class DbdConnector(object):
         try:
             sql = f'''select 
             DBD_ID, DBD_TYPE, DBD_REGISTRATION_DATE, DBD_STATUS, DBD_REGISTRATION_MONEY, DBD_STREET, DBD_SUBDISTRICT, DBD_DISTRICT, DBD_PROVINCE, DBD_ZIPCODE, DBD_BUSINESS_TYPE_CODE, DBD_BUSINESS_TYPE, DBD_OBJECTIVE, DBD_NAME_TH
-            from dbdcompany where DBD_ID = {company_id};'''
+            from dbdcompany where DBD_ID = '{company_id}';'''
             cur = self.db.cursor()
             cur.execute(sql)
             company_info = cur.fetchone()

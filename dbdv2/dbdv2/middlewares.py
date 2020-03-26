@@ -115,7 +115,7 @@ class Dbdv2DownloaderMiddleware(object):
 
 
         try:
-            time.sleep(0.4)
+            time.sleep(0.1)
             response = requests.get(request.url, cookies = {'JSESSIONID':cookies}, timeout=10)
         except Timeout:
             print('Get page time out!')

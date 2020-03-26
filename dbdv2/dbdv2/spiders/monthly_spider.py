@@ -50,7 +50,7 @@ class DbdSpider(scrapy.Spider):
         company_id = response.url.split('/')[-1]
 
         if response.request.status:
-            print(f'Spider: spider parse start ({company_id})')
+            #print(f'Spider: spider parse start ({company_id})')
 
             company_name = response.xpath('/html/body/div/div[4]/div[2]/div[1]/div[1]/h2/text()').get()
             if not company_name:
@@ -88,7 +88,7 @@ class DbdSpider(scrapy.Spider):
             item['company_name']    = company_name
             item['bussiness_type']  = raw_bussiness_type
             item['address']         = response.xpath('/html/body/div[1]/div[4]/div[2]/div[1]/div[2]/div[2]/div[1]/div[1]/div[2]/table/tr[2]/td/text()').get()
-            print(f'Spider: spider parse end ({company_id})')
+            #print(f'Spider: spider parse end ({company_id})')
             return item
 
         else:
