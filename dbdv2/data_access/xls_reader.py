@@ -102,6 +102,7 @@ class DbdExcelReader(object):
 
     def insertData(self):
         dbconnector = DbdConnector()
+        print(f'insert {self.data_dict.shape[0]} datas to database')
         
         for i in range(self.data_dict.shape[0]):
             values = list(self.data_dict.loc[i])[1:]#the data_dict.loc[i] get a row of data as list, the first data in list is row number. 

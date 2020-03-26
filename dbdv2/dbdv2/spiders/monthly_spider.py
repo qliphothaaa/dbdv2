@@ -21,10 +21,19 @@ class DbdSpider(scrapy.Spider):
 
     def start_requests(self):
         db = DbdConnector()
-        query = 'select DBD_COMPANY_ID from dbd_new_query Where DBD_STATUS is NULL'
-        company_ids = db.readIds(query)
+        if int(self.retry) == 0:
+            query = 'select DBD_COMPANY_ID from dbd_new_query Where DBD_STATUS is NULL'
+            company_ids = db.readIds(query)
+        elif int(self.retry) == 1:
+            query = 'select DBD_COMPANY_ID from dbd_new_query Where DBD_STATUS = "Failed"'
+            company_ids = db.readIds(query)
+            query = 'select DBD_COMPANY_ID from dbd_new_query Where DBD_STATUS is NULL'
+            company_ids2 = db.readIds(query)
+            company_ids.extend(company_ids2)
+
+        db.dbClose()
         if len(company_ids) > 0:
-            print("======================Start scraping! There are %d company in schedule=================" % len(company_ids))
+            print(f"======================Start scraping! There are {len(company_ids)} company in schedule=================")
         else:
             print("======================Start scraping! no company in schedule! All data are complete====================")
 

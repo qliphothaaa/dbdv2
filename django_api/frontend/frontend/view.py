@@ -1,13 +1,14 @@
 from django.shortcuts import render
-from CompanyModel import models
-from django.core.paginator import Paginator
+#from CompanyModel import models
+#from django.core.paginator import Paginator
 
 
 '''
 def list_company(request):
     company_list = models.Dbdcompany.objects.all()
     return render(request, 'company.html', {"company_list":company_list})
-'''
+#
+
 
 def list_newquery(request):
     new_query_list = models.DbdNewQuery.objects.all()
@@ -37,4 +38,4 @@ def search(request):
 
     companys = models.Dbdcompany.objects.filter(dbd_id__exact=query)
     return render(request, 'company_detail.html', {'error_msg':error_msg,'companys': companys})
-        
+'''

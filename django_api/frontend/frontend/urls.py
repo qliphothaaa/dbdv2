@@ -15,23 +15,23 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
-from . import view
-from api import views
-from rest_framework.routers import DefaultRouter
+#from . import view
+#from api import views
+#from rest_framework.routers import DefaultRouter
 
-router = DefaultRouter()
-router.register(r'company', views.CompanyViewSet)
-router.register(r'newquery', views.NewQueryViewSet)
-router.register(r'query', views.QueryViewSet)
+#router = DefaultRouter()
+#router.register(r'company', views.CompanyViewSet)
+#router.register(r'newquery', views.NewQueryViewSet)
+#router.register(r'query', views.QueryViewSet)
 #router.register(r'unfinished', views.UnfinishedList, basename='')
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
-    path('company/', view.list_company),
-    path('newquery/', view.list_newquery),
-    path('query/', view.list_query),
-    path('api/', include(router.urls)),
-    path('api-auth/', include('rest_framework.urls', namespace='rest_framework')),
+    #path('admin/', admin.site.urls),
+    #path('company/', view.list_company),
+    #path('newquery/', view.list_newquery),
+    #path('query/', view.list_query),
+    #path('api/', include(router.urls)),
+    #path('api-auth/', include('rest_framework.urls', namespace='rest_framework')),
     path('func/', include('upload.urls')),
-    path('search/', view.search)
+    #path('search/', view.search)
 ]

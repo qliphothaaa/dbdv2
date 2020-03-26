@@ -88,27 +88,25 @@ def date_convert(time):
     #print(res)
     return res
 
-'''
-    #print(s)
-    if province_b in s:
-        pattern = f'(.*){subdistrict_b}(.*){district_b}(.*){province_b}'
-        matchObject = re.match(pattern, s)
+def directors_convert(directors):
+        directors_text      = ''
 
-        company_street      = matchObject.group(1).strip()
-        company_subdistrict = matchObject.group(2).strip()
-        company_district    = matchObject.group(3).strip()
-        company_province    = province_b
-    else:
-        pattern = f'(.*)({subdistrict})(.*)({district})(.*){province}(.*)'
-        matchObject = re.match(pattern, s)
+        count = 0
 
-        company_street      = matchObject.group(1).strip()
-        company_subdistrict = matchObject.group(3).strip()
-        company_district    = matchObject.group(5).strip()
-        company_province    = matchObject.group(6).strip()
-        
-    return [company_subdistrict, company_district, company_province]
-'''
+        for line in directors:
+            if 'ลงหุ้นด้วย' in line:
+                directors_text  = directors_text + line+'\n'
+            else:
+                directors_text  = directors_text + str(count+1)+'. '+ line+'\n'
+                count += 1
+        directors_text      = directors_text.rstrip()
+
+        return directors_text
+
+
+
+
+
 if __name__ == "__main__":
     strings = ['857 ซอยเพชรเกษม94 แขวงบางแคเหนือ เขตบางแค กรุงเทพมหานคร', '39 หมู่ที่ 5 ต.นิคมพัฒนา อ.นิคมพัฒนา จ.ระยอง', '122/2หมู่ที่12 ตำบลสันกำแพงอำเภอสันกำแพงจ.เชียงใหม่']
 

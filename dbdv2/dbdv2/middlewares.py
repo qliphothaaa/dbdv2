@@ -42,12 +42,8 @@ class Dbdv2DownloaderMiddleware(object):
         self.fail_count    = 0
 
 
-    '''
     def __del__(self):
-
         print("Downloader(finished): finish scraping, Totally %d companys, %d data completed, %d data failed==========" %(self.success_count + self.fail_count, self.success_count, self.fail_count))
-        self.fake_browser.close()
-    '''
 
     @classmethod
     def from_crawler(cls, crawler):
@@ -110,7 +106,6 @@ class Dbdv2DownloaderMiddleware(object):
         if os.path.isfile(cookie_path):
             try:
                 with open(cookie_path, 'rb') as f: 
-                    #cookies = pickle.load(f)
                     cookies = pickle.load(f)
             except EOFError:
                 cookies = None
@@ -120,9 +115,11 @@ class Dbdv2DownloaderMiddleware(object):
 
 
         try:
+            time.sleep(0.4)
             response = requests.get(request.url, cookies = {'JSESSIONID':cookies}, timeout=10)
         except Timeout:
             print('Get page time out!')
+            self.fail_count += 1
             request.status = False
             response = HtmlResponse(url=request.url, body='', request=request, encoding='utf-8')
             return response
@@ -131,13 +128,16 @@ class Dbdv2DownloaderMiddleware(object):
 
         #check the status
         code = response.status_code
+
         if code == 404:
             #if the company cannot be found
             print('Downloader: cannot find the page in datawarehouse')
             request.status = False
-        elif code == 200:
+            self.fail_count += 1
 
+        elif code == 200:
             request.status = True
+            self.success_count += 1
 
 
         elif code == 401:
@@ -158,7 +158,6 @@ class Dbdv2DownloaderMiddleware(object):
             print(f'Downloader: unexpect error! code {code}')
             spider.close_it = f'unexpect error! code{code}'
             pass
-        ###################
 
 
         #create the body of the response to spider

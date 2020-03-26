@@ -45,28 +45,28 @@ def getCookies(dag):
 def startMonthlyScraping(dag):
     task = BashOperator(
             task_id='monthly_scraping',
-            bash_command="cd /dbdv2 && scrapy crawl monthly",
+            bash_command="cd /dbdv2 && scrapy crawl monthly -a retry=0",
             dag=dag)
     return task
 
 def startAnnuallyScraping(dag):
     task = BashOperator(
             task_id='annually_scraping',
-            bash_command="cd /dbdv2 && scrapy crawl annually",
+            bash_command="cd /dbdv2 && scrapy crawl annually -a retry=0",
             dag=dag)
     return task
 
 def scrapingFailedDataAnnually(dag):
     task = BashOperator(
             task_id='retry_annually',
-            bash_command="cd /dbdv2 && scrapy crawl retry_annually",
+            bash_command="cd /dbdv2 && scrapy crawl annually -a retry=1",
             dag=dag)
     return task
 
 def scrapingFailedData(dag):
     task = BashOperator(
             task_id='retry_monthly',
-            bash_command="cd /dbdv2 && scrapy crawl retry",
+            bash_command="cd /dbdv2 && scrapy crawl monthly -a retry=1",
             dag=dag)
     return task
 
