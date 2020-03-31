@@ -1,0 +1,22 @@
+{% extends 'airflow/master.html' %}
+
+{% block body %}
+
+	{{super()}}
+    <p>upload file page<p>
+    <form method="post" action="{{ url_for("airflow.fileimport") }}" enctype="multipart/form-data">
+        {% if csrf_token %}
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+        {% endif %}
+
+        please choose a company information file (.pdf or .xls or csv)<input type="file" name="files"><br>
+        <input type="submit" value="upload">
+        <br>
+    </form>
+
+    <b><small>result</small></b><hr>
+    {% if text %}
+    <h1>{{text}}</h1>
+    {% endif %}
+
+{% endblock %}

@@ -1,5 +1,6 @@
 from xls_reader import DbdExcelReader
 from pdf_reader import DbdPDFReader
+from dbd_connector import DbdConnector
 import wget
 import os
 import sys
@@ -12,8 +13,24 @@ if len(sys.argv)>= 2:
         num = sys.argv[2]
     if len(sys.argv)>=4:
         setting = sys.argv[3]
+
     filename = url.split('/')[-1]
     print(filename)
+
+    try:
+        db = DbdConnector()
+
+        sql = 'select count(*) from dbd_new_query where DBD_STATUS is null'
+        if db.read(sql)[0] > 0:
+            raise Exception(f'Error: There is unfinish work in new query!')
+
+        sql = 'select count(*) from dbd_new_query where DBD_STATUS = "Failed"'
+        if db.read(sql)[0] > 0:
+            raise Exception(f'Error: There is unfinish work in new query!')
+    finally:
+        db.dbClose()
+    
+
 
     if 'xls' in filename:
         filepath = './data_access/company_excel/' + filename

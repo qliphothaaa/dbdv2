@@ -59,8 +59,13 @@ class MdbdSerializer(object):
             yield company_id
 
     def write_insert_file(self, id_generator, name=''):
+        #set the file name
         time_str = time.strftime("%Y%m%d%H%M%S", time.localtime())
         file_name = self.path + name + time_str + 'insert.txt'
+        #
+
+
+        #write to file
         try:
             with open(file_name, 'w', encoding='utf-8') as f:
                 while True:
@@ -70,7 +75,7 @@ class MdbdSerializer(object):
                     company_group = self.db_connector.read_company_info(id_group)
                     for i in range(len(company_group)):
                         #print(company_group[i])
-                        print(type(i))
+                        #print(type(i))
                         data = self.generate_insert_sql(company_group[i])
                         f.write(data)
         except Exception as e:
@@ -78,6 +83,7 @@ class MdbdSerializer(object):
             print(f'save file failed: {file_name}')
         else:
             print(f'save to path {file_name}')
+        #
 
     def write_update_file(self, id_generator, name=''):
         time_str = time.strftime("%Y%m%d%H%M%S", time.localtime())
@@ -90,7 +96,7 @@ class MdbdSerializer(object):
                         break
                     company_group = self.db_connector.read_company_info(id_group)
                     for i in range(len(company_group)):
-                        print(type(i))
+                        #print(type(i))
                         data = self.generate_update_sql(company_group[i], id_group[i][1])
                         f.write(data)
         except Exception as e:

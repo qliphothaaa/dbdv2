@@ -1,0 +1,11 @@
+{% extends 'airflow/master.html' %}
+
+{% block body %}
+
+<ul>
+    {% for file in files %}
+    <li><a href="{{ url_for("airflow.fileexport", filename = file) }}">{{ file }}</a></li>
+    {% endfor %}
+</ul>
+
+{% endblock %}

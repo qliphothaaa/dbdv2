@@ -52,7 +52,7 @@ class MonthlyScrapingPipeline(object):
             address             = address_separater(raw_address)#new
             zipcode             = self.get_zipcode(address)#new
             #generate sql and valus
-            sql_dbdcompany       = 'UPDATE dbdcompany SET DBD_TYPE = %s, DBD_STATUS= %s,DBD_OBJECTIVE = %s,DBD_DIRECTORS = %s, DBD_NAME_TH = %s, DBD_BUSINESS_TYPE = %s, DBD_BUSINESS_TYPE_CODE=%s, DBD_ADDRESS=%s, DBD_STREET=%s, DBD_SUBDISTRICT=%s, DBD_DISTRICT=%s, DBD_PROVINCE=%s, DBD_ZIPCODE=%s WHERE DBD_ID = "%s";'
+            sql_dbdcompany       = 'UPDATE dbdcompany SET DBD_TYPE = %s, DBD_STATUS= %s,DBD_OBJECTIVE = %s,DBD_DIRECTORS = %s, DBD_NAME_TH = %s, DBD_BUSINESS_TYPE = %s, DBD_BUSINESS_TYPE_CODE=%s, DBD_ADDRESS=%s, DBD_STREET=%s, DBD_SUBDISTRICT=%s, DBD_DISTRICT=%s, DBD_PROVINCE=%s, DBD_ZIPCODE=%s WHERE DBD_ID = %s;'
 
             values_dbdcompany    = (company_type, status, objective, directors_text, company_name, bussiness_type, bussiness_type_code, address[0]+' '+address[1], address[0], address[1], address[2], address[3], zipcode, company_id)#new
 

@@ -16,6 +16,9 @@ services:
             - ./dags:/root/airflow/dags
             - ./logs:/root/airflow/logs
             - ./configs/airflow.cfg:/root/airflow/airflow.cfg
+            - ./www/app.py:/usr/local/lib/python3.7/site-packages/airflow/www/app.py
+            - ./www/views.py:/usr/local/lib/python3.7/site-packages/airflow/www/views.py
+            - ./www/templates:/usr/local/lib/python3.7/site-packages/airflow/www/templates
         depends_on:
             - database
         command: ./wait-for-it.sh -t 0 -h dbd_db -p 3306 -- ./start.sh
@@ -39,23 +42,23 @@ services:
               #command: ./start2.sh
         command: ./wait-for-it.sh -t 0 -h dbd_db -p 3306 -- ./start2.sh
 
-    django:
-        build: ./django_api
-        container_name: dbd_django
-        tty: true
-        restart: always
-        ports:
-            - "8000:8000"
-        working_dir: /frontend
+        #django:
+        #build: ./django_api
+        #container_name: dbd_django
+        #tty: true
+        #restart: always
+        #ports:
+        #- "8000:8000"
+        #working_dir: /frontend
 
-        volumes:
-            - ./django_api/frontend:/frontend
-            - ./dbdv2/data_access/customer_csv:/frontend/csv_files/
-            - ./dbdv2/data_access/company_pdf:/frontend/pdf_files/
-        depends_on:
-            - database
-             #command: ./wait-for-it.sh -t 0 -h dbd_db -p 3306 -- ./run.sh
-        command: ./run.sh
+        #volumes:
+        #- ./django_api/frontend:/frontend
+        #    - ./dbdv2/data_access/customer_csv:/frontend/csv_files/
+        #- ./dbdv2/data_access/company_pdf:/frontend/pdf_files/
+        #depends_on:
+        #    - database
+        #     #command: ./wait-for-it.sh -t 0 -h dbd_db -p 3306 -- ./run.sh
+        #command: ./run.sh
             
 
     database:
