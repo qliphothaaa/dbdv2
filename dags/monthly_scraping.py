@@ -8,18 +8,18 @@ from airflow.operators.bash_operator import BashOperator
 from airflow.operators.email_operator import EmailOperator
 
 
-excel_config = Variable.get("file_setting", deserialize_json=True, default_var={"filename":"", "num":"0"})
+file_config = Variable.get("file_setting", deserialize_json=True, default_var={"filename":"", "num":"0"})
 
 
-filename = excel_config["filename"]
+filename = file_config["filename"]
 
 try:
-    num = excel_config["num"]
+    num = file_config["num"]
 except:
     num = '0'
 
 try:
-    column = excel_config["column"]
+    column = file_config["column"]
 except:
     column = ''
 

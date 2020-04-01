@@ -5,6 +5,8 @@ try:
 except:
     from .dbd_connector import DbdConnector
 
+RECORD_NUM_ONCE = 100
+RECORD_NUM_IN_FILE = 100000
 class MdbdSerializer(object):
     def __init__(self, path, limit):
         self.path = path
@@ -20,17 +22,19 @@ class MdbdSerializer(object):
 
 
     def start_export_newcompany(self):
+        self.time_str = time.strftime("%Y%m%d%H%M%S", time.localtime())
         include_id_generator = self.get_include_company_data()
         exclude_id_generator = self.get_exclude_company_data()
-        self.write_update_file(include_id_generator)
-        self.write_insert_file(exclude_id_generator)
+        self.write_update_file(include_id_generator, 'M')
+        self.write_insert_file(exclude_id_generator, 'M')
         self.db_connector.dbClose()
 
     def start_export_allcompany(self):
+        self.time_str = time.strftime("%Y%m%d%H%M%S", time.localtime())
         include_id_generator = self.get_include_company_data_all()
         exclude_id_generator = self.get_exclude_company_data_all()
-        self.write_update_file(include_id_generator, 'DBD')
-        self.write_insert_file(exclude_id_generator, 'DBD')
+        self.write_update_file(include_id_generator, 'A')
+        self.write_insert_file(exclude_id_generator, 'A')
         self.db_connector.dbClose()
 
 
@@ -58,10 +62,9 @@ class MdbdSerializer(object):
             #yield (self.db_connector.read_company_info(company_id[0]), 0)
             yield company_id
 
-    def write_insert_file(self, id_generator, name=''):
+    def write_insert_file(self, id_generator, head):
         #set the file name
-        time_str = time.strftime("%Y%m%d%H%M%S", time.localtime())
-        file_name = self.path + name + time_str + 'insert.txt'
+        file_name = self.path + head + self.time_str + 'insert.txt'
         #
 
 
@@ -78,6 +81,7 @@ class MdbdSerializer(object):
                         #print(type(i))
                         data = self.generate_insert_sql(company_group[i])
                         f.write(data)
+
         except Exception as e:
             print(e)
             print(f'save file failed: {file_name}')
@@ -85,25 +89,39 @@ class MdbdSerializer(object):
             print(f'save to path {file_name}')
         #
 
-    def write_update_file(self, id_generator, name=''):
-        time_str = time.strftime("%Y%m%d%H%M%S", time.localtime())
-        file_name = self.path + name + time_str +'update.txt'
+    def write_update_file(self, id_generator, head):
+        file_count = 1
+        finished = False
+
         try:
-            with open(file_name, 'w', encoding='utf-8') as f:
-                while True:
-                    id_group = self.get_id_group(id_generator)
-                    if id_group == []:
-                        break
-                    company_group = self.db_connector.read_company_info(id_group)
-                    for i in range(len(company_group)):
-                        #print(type(i))
-                        data = self.generate_update_sql(company_group[i], id_group[i][1])
-                        f.write(data)
+
+            while not finished:
+                file_name = self.path + head + self.time_str + f'update{file_count}.txt'
+                row_count = 0
+                with open(file_name, 'w', encoding='utf-8') as f:
+                    while True:
+                        id_group = self.get_id_group(id_generator)
+                        if id_group == []:
+                            finished = True
+                            break
+                        else:
+                            company_group = self.db_connector.read_company_info(id_group)
+
+                        for i in range(len(company_group)):
+                            data = self.generate_update_sql(company_group[i], id_group[i][1])
+                            f.write(data)
+                        row_count += RECORD_NUM_ONCE
+
+                        if row_count >= RECORD_NUM_IN_FILE:
+                            file_count += 1
+                            break
+                print(f'save to path {file_name}')
         except Exception as e:
             print(e)
             print(f'save file failed: {file_name}')
         else:
-            print(f'save to path {file_name}')
+            print(f'finished write all update files: totally {file_count} files')
+
 
     def company_info_to_dict(self, company_info):
         try:
@@ -135,7 +153,7 @@ class MdbdSerializer(object):
 
     def get_id_group(self, id_generator):
         group = []
-        for i in range(100):
+        for i in range(RECORD_NUM_ONCE):
             try:
                 group.append(next(id_generator))
             except StopIteration:

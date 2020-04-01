@@ -2,6 +2,7 @@ import scrapy
 import time
 from data_access.dbd_connector import DbdConnector
 from dbdv2.items import AnnuallyItem, FailedItem
+from scrapy.exceptions import CloseSpider
 
 class AnnuallySpider(scrapy.Spider):
     name = 'annually'
@@ -20,9 +21,17 @@ class AnnuallySpider(scrapy.Spider):
     def start_requests(self):
         db = DbdConnector()
 
+
+        #check it is retry or not
         if int(self.retry) == 0:
             db.clear_status_before_annually()
-            query = 'select DBD_COMPANY_ID from dbd_query'
+            try:
+                query = f'select DBD_COMPANY_ID from dbd_query limit {int(self.start)-1},{int(self.end)-int(self.start)+1}'
+                print(query)
+            except Exception as e:
+                print(e)
+                query = 'select DBD_COMPANY_ID from dbd_query'
+            print(query)
             company_ids = db.readIds(query)
         elif int(self.retry) == 1:
             query = 'select DBD_COMPANY_ID from dbd_query where DBD_STATUS is Null'
@@ -30,7 +39,6 @@ class AnnuallySpider(scrapy.Spider):
             query = 'select DBD_COMPANY_ID from dbd_query where DBD_STATUS = "Failed"'
             company_ids2 = db.readIds(query)
             company_ids.extend(company_ids2)
-
         db.dbClose()
 
         if len(company_ids) > 0:

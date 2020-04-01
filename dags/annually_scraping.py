@@ -7,6 +7,17 @@ from airflow.utils.trigger_rule import TriggerRule
 from airflow.operators.bash_operator import BashOperator
 from airflow.operators.email_operator import EmailOperator
 
+excel_config = Variable.get("file_setting", deserialize_json=True, default_var={"filename":"", "num":"0"})
+
+try:
+    start_row = excel_config["start"]
+except:
+    start_row = None
+
+try:
+    end_row = excel_config["end"]
+except:
+    end_row = None
 
 def default_options():
     default_args = {
@@ -26,7 +37,7 @@ with DAG(
     task_start = start(d, 'annually_scraping')
 
     task1 = getCookies(d)
-    task2 = startAnnuallyScraping(d)
+    task2 = startAnnuallyScraping(d, start_row, end_row)
 
     taskf1 = failedEmail(d, task1)
     taskf2 = failedEmail(d, task2)

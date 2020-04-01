@@ -49,11 +49,18 @@ def startMonthlyScraping(dag):
             dag=dag)
     return task
 
-def startAnnuallyScraping(dag):
-    task = BashOperator(
-            task_id='annually_scraping',
-            bash_command="cd /dbdv2 && scrapy crawl annually -a retry=0",
-            dag=dag)
+def startAnnuallyScraping(dag, start, end):
+    if end and start:
+        task = BashOperator(
+                task_id='annually_scraping',
+                bash_command=f"cd /dbdv2 && scrapy crawl annually -a retry=0 -a start={start} -a end={end}",
+                dag=dag)
+
+    else:
+        task = BashOperator(
+                task_id='annually_scraping',
+                bash_command="cd /dbdv2 && scrapy crawl annually -a retry=0",
+                dag=dag)
     return task
 
 def scrapingFailedDataAnnually(dag):
