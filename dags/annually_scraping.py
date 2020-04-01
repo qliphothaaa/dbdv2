@@ -7,15 +7,15 @@ from airflow.utils.trigger_rule import TriggerRule
 from airflow.operators.bash_operator import BashOperator
 from airflow.operators.email_operator import EmailOperator
 
-excel_config = Variable.get("file_setting", deserialize_json=True, default_var={"filename":"", "num":"0"})
+scrapy_config = Variable.get("annually_setting", deserialize_json=True, default_var={"aaa":None})
 
 try:
-    start_row = excel_config["start"]
+    start_row = scrapy_config["start"]
 except:
     start_row = None
 
 try:
-    end_row = excel_config["end"]
+    end_row = scrapy_config["end"]
 except:
     end_row = None
 

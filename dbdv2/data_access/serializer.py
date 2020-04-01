@@ -64,7 +64,7 @@ class MdbdSerializer(object):
 
     def write_insert_file(self, id_generator, head):
         #set the file name
-        file_name = self.path + head + self.time_str + 'insert.txt'
+        file_name = self.path + head + self.time_str + 'insert.sql'
         #
 
 
@@ -96,7 +96,7 @@ class MdbdSerializer(object):
         try:
 
             while not finished:
-                file_name = self.path + head + self.time_str + f'update{file_count}.txt'
+                file_name = self.path + head + self.time_str + f'update{file_count}.sql'
                 row_count = 0
                 with open(file_name, 'w', encoding='utf-8') as f:
                     while True:

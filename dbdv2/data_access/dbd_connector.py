@@ -10,7 +10,7 @@ class DbdConnector(object):
                 #port=3309,
                 user='root', 
                 passwd='1234',
-                database='dbd'
+                database='dbd',
                 )
         
     def insert(self, sql, values):
@@ -233,7 +233,7 @@ class DbdConnector(object):
             print('fail to find biggest id')
         return biggest
 
-    def clear_status_before_annually(self):
+    def clear_status_before_annually(self, start, end):
         try:
             sql = 'update dbd_query set DBD_STATUS = null'
             cur = self.db.cursor()
