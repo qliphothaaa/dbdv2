@@ -21,12 +21,15 @@ class AnnuallySpider(scrapy.Spider):
     def start_requests(self):
         db = DbdConnector()
 
-
         #check it is retry or not
         if int(self.retry) == 0:
             db.clear_status_before_annually()
             try:
-                query = f'select DBD_COMPANY_ID from dbd_query limit {int(self.start)-1},{int(self.end)-int(self.start)+1}'
+                self.start = int(self.start)
+                self.end =  int(self.end)
+                if self.start>self.end:
+                    self.end = self.start
+                query = f'select DBD_COMPANY_ID from dbd_query limit {self.start-1},{self.end-self.start+1}'
                 print(query)
             except Exception as e:
                 print(e)
