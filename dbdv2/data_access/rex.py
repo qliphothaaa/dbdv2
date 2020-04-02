@@ -2,6 +2,8 @@ import re
 import datetime
 def address_separater(s):
     #this method separater the address which from datawarehouse to small part
+    s = s.replace('\'', '')
+
     province_b    = 'กรุงเทพมหานคร'
     province      = 'จ\\.'
 
@@ -37,13 +39,12 @@ def address_separater(s):
         pattern = f'(.*)({subdistrict})(.*)({district})(.*){province}(.*)'
         matchObject = re.match(pattern, s)
 
-        company_street      = matchObject.group(1).strip() if matchObject else 'None'
-        company_subdistrict = matchObject.group(3).strip() if matchObject else 'None'
-        company_district    = matchObject.group(5).strip() if matchObject else 'None'
-        company_province    = matchObject.group(6).strip() if matchObject else 'None'
+        company_street      = matchObject.group(1).strip() if matchObject else None
+        company_subdistrict = matchObject.group(3).strip() if matchObject else None
+        company_district    = matchObject.group(5).strip() if matchObject else None
+        company_province    = matchObject.group(6).strip() if matchObject else None
 
-        result = [company_street, company_subdistrict, company_district, company_province]
-
+    result = [company_street, company_subdistrict, company_district, company_province]
     for i in range(4):
         if result[i]:
             result[i] = result[i].replace('\'', '')

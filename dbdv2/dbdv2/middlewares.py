@@ -52,55 +52,6 @@ class Dbdv2DownloaderMiddleware(object):
         return s
 
     def process_request(self, request, spider):
-        '''
-        print("Downloader: get page of company No.%d " % (self.success_count + self.fail_count + 1))
-        
-        time.sleep(1)
-
-        page, title, code = self.fake_browser.getPage(request.url)
-
-        #request.driver_title = title
-
-        #if the title exist, mean the get page succeed
-        if title:
-            print("Downloader: Successfully got page of company No.%d " % (self.success_count + self.fail_count + 1))
-            self.success_count += 1
-            request.status = True
-        else:
-            print("Downloader: Fail to Get page of company No.%d" % (self.success_count + self.fail_count + 1))
-            self.fail_count += 1
-            request.status = False
-
-
-        if code == '404':
-            #if the company cannot be found
-            print('Downloader: cannot find the page in datawarehouse')
-            pass
-        elif code == '':
-            print('Downloader: find page time out!')
-            #if timeout
-            pass
-        elif code == '401':
-            #if cookie died
-            #raise CloseSpider('@@@@@@@@@@@@@@@the cooike expired in scraping@@@@@@@@@@@@@@@@')
-            print('Downloader: cookie expired!')
-            spider.close_it = 'cookie expired!'
-
-        elif  code == '500' or code == '503' or code == '000':
-            #if the server down:500, 503
-            #or some error system does not know: 000
-
-            #self.fake_browser.driver.save_screenshot('failed.png')
-            #raise CloseSpider('@@@@@@@@@@@@@@@@@@@@the server is down! Please try to run it later@@@@@@@@@@@@@@@@@')
-            print(f'Downloader: server is down! code{code}')
-            spider.close_it = f'server is down! code{code}'
-        else:
-            #spider.close_it = 'nothing I just want to see'
-            pass
-
-        response = HtmlResponse(url=request.url, body=page, request=request, encoding='utf-8')
-        return response
-        '''
         #load cookie from local
         cookie_path = 'browser/temp/cookie.txt'
         if os.path.isfile(cookie_path):

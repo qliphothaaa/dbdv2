@@ -49,8 +49,11 @@ class MonthlyScrapingPipeline(object):
             company_name        = re.split(':', raw_company_name)[1].strip()
             address             = address_separater(raw_address)#new
             zipcode             = self.get_zipcode(address)#new
-            if not address[0]:
-                scraping_status = 'AddressMissing'
+
+            if not address[0] and scraping_status:
+                scraping_status = 'FailedAddr'
+            elif not raw_company_name and scraping_status:
+                scraping_status = 'FailedNotFound'
             else:
                 scraping_status = 'Success'
 
@@ -165,16 +168,18 @@ class AnnuallyScrapingtPipeline(object):
             address        = address_separater(raw_address)
             zipcode = self.get_zipcode(address)
 
-            if not address[0]:
-                scraping_status = 'AddressMissing'
+
+            if not address[0] and scraping_status:
+                scraping_status = 'FailedAddr'
+            elif not raw_company_name and scraping_status:
+                scraping_status = 'FailedNotFound'
             else:
                 scraping_status = 'Success'
-
 
             new_company_dict = {
                     'DBD_NAME_TH':company_name, 
                     'DBD_STATUS':status, 
-                    'DBD_ADDRESS':address[0]+ ' ' +address[1], 
+                    'DBD_ADDRESS':str(address[0])+ ' ' +str(address[1]), 
                     'DBD_OBJECTIVE':objective, 
                     'DBD_STREET':address[0], 
                     'DBD_SUBDISTRICT':address[1], 
