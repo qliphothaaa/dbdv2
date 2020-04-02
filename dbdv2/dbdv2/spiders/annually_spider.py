@@ -68,6 +68,7 @@ class AnnuallySpider(scrapy.Spider):
             if not company_name:
                 item = FailedItem()
                 item['scraping_status'] = False
+                item['found']= True
                 item['company_id'] = company_id
                 return item
 
@@ -108,6 +109,7 @@ class AnnuallySpider(scrapy.Spider):
         else:
             item = FailedItem()
             item['scraping_status'] = False
-            item['company_id'] = company_id
+            item['found']           = False
+            item['company_id']      = company_id
             print('failed item '+company_id)
             return item

@@ -23,6 +23,7 @@ class MonthlyItem(scrapy.Item):
 
 class FailedItem(scrapy.Item):
     scraping_status = scrapy.Field()
+    found           = scrapy.Field()
     company_id      = scrapy.Field()
 
 class AnnuallyItem(scrapy.Item):

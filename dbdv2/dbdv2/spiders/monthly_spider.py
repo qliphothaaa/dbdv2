@@ -56,6 +56,7 @@ class DbdSpider(scrapy.Spider):
             if not company_name:
                 item = FailedItem()
                 item['scraping_status'] = False
+                item['found']= True
                 item['company_id'] = company_id
                 return item
 
@@ -94,5 +95,6 @@ class DbdSpider(scrapy.Spider):
         else:
             item = FailedItem()
             item['scraping_status'] = False
+            item['found']= False
             item['company_id'] = company_id
             return item

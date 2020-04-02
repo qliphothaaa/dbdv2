@@ -52,8 +52,6 @@ class MonthlyScrapingPipeline(object):
 
             if not address[0] and scraping_status:
                 scraping_status = 'FailedAddr'
-            elif not raw_company_name and scraping_status:
-                scraping_status = 'FailedNotFound'
             else:
                 scraping_status = 'Success'
 
@@ -82,11 +80,17 @@ class MonthlyScrapingPipeline(object):
         else:
             print(f'pipline, add {company_id} failed information to database')
 
-            sql_dbd_new_query    = 'update dbd_new_query set DBD_Status = "Failed", DBD_LAST_RUN=%s where DBD_COMPANY_ID = %s'
-            values_dbd_new_query = (time.strftime('%Y-%m-%d %H:%M:%S'), company_id)
+            if item['found']:
+                scraping_status = 'FailedAddr'
+            else:
+                scraping_status = 'Failed'
 
-            sql_dbd_query        = 'update dbd_query set DBD_Status = "Failed", DBD_LAST_RUN=%s where DBD_COMPANY_ID = %s'
-            values_dbd_query     = (time.strftime('%Y-%m-%d %H:%M:%S'), company_id)
+
+            sql_dbd_new_query    = 'update dbd_new_query set DBD_Status = %s, DBD_LAST_RUN=%s where DBD_COMPANY_ID = %s'
+            values_dbd_new_query = (scraping_status, time.strftime('%Y-%m-%d %H:%M:%S'), company_id)
+
+            sql_dbd_query        = 'update dbd_query set DBD_Status = %s, DBD_LAST_RUN=%s where DBD_COMPANY_ID = %s'
+            values_dbd_query     = (scraping_status, time.strftime('%Y-%m-%d %H:%M:%S'), company_id)
 
             sqls = (sql_dbd_new_query, sql_dbd_query)
             values = (values_dbd_new_query, values_dbd_query)
@@ -299,8 +303,14 @@ class AnnuallyScrapingtPipeline(object):
             #return item
 
         else:
-            sql_dbd_query        = 'update dbd_query set DBD_Status = "Failed", DBD_LAST_RUN=%s where DBD_COMPANY_ID = %s'
-            values_dbd_query     = (time.strftime('%Y-%m-%d %H:%M:%S'), company_id)
+
+            if item['found']:
+                scraping_status = 'FailedAddr'
+            else:
+                scraping_status = 'Failed'
+
+            sql_dbd_query        = 'update dbd_query set DBD_Status = %s, DBD_LAST_RUN=%s where DBD_COMPANY_ID = %s'
+            values_dbd_query     = (scraping_status, time.strftime('%Y-%m-%d %H:%M:%S'), company_id)
 
             sqls = (sql_dbd_query,)
             values = (values_dbd_query,)
