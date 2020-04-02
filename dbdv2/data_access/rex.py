@@ -18,20 +18,37 @@ def address_separater(s):
         pattern = f'(.*){subdistrict_b}(.*){district_b}(.*){province_b}'
         matchObject = re.match(pattern, s)
 
-        company_street      = matchObject.group(1).strip()
-        company_subdistrict = matchObject.group(2).strip()
-        company_district    = matchObject.group(3).strip()
+        company_street      = matchObject.group(1).strip() if matchObject else None
+        company_subdistrict = matchObject.group(2).strip() if matchObject else None
+        company_district    = matchObject.group(3).strip() if matchObject else None
         company_province    = province_b
+
+        '''
+            matchObject         = re.search(f'(.*){subdistrict_b}',s)
+            company_street      = matchObject.group(1).strip() if matchObject else 'Null'
+
+            matchObject         = re.search(f'{subdistrict_b}(.*){district_b}',s)
+            company_subdistrict = matchObject.group(1).strip() if matchObject else 'Null'
+
+            matchObject         = re.search(f'{district_b}(.*){province_b}',s)
+            company_district    = matchObject.group(1).strip() if matchObject else 'Null'
+        '''
     else:
         pattern = f'(.*)({subdistrict})(.*)({district})(.*){province}(.*)'
         matchObject = re.match(pattern, s)
 
-        company_street      = matchObject.group(1).strip()
-        company_subdistrict = matchObject.group(3).strip()
-        company_district    = matchObject.group(5).strip()
-        company_province    = matchObject.group(6).strip()
-        
-    return [company_street, company_subdistrict, company_district, company_province]
+        company_street      = matchObject.group(1).strip() if matchObject else 'None'
+        company_subdistrict = matchObject.group(3).strip() if matchObject else 'None'
+        company_district    = matchObject.group(5).strip() if matchObject else 'None'
+        company_province    = matchObject.group(6).strip() if matchObject else 'None'
+
+        result = [company_street, company_subdistrict, company_district, company_province]
+
+    for i in range(4):
+        if result[i]:
+            result[i] = result[i].replace('\'', '')
+
+    return result
 
 def address_clear(subdistrict, district, province):
     #this method clear the prefix of the address from excel file
@@ -80,15 +97,11 @@ def business_type_separater(s):
 def date_convert(time):
     if isinstance(time,str):
         temptime = datetime.datetime.strptime(time, '%d/%m/%Y').date()
-        print(temptime)
         temptime = temptime.replace(year = temptime.year-543)
-        print(temptime)
         res = datetime.datetime.strftime(temptime , '%Y-%m-%d')
-        print(res)
     elif isinstance(time, datetime.datetime):
         time = time.replace(year = time.year-543)
         res = datetime.datetime.strftime(time, '%Y-%m-%d')
-    #print(res)
     return res
 
 def directors_convert(directors):
