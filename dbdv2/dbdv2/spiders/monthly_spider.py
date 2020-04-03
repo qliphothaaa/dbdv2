@@ -20,6 +20,7 @@ class DbdSpider(scrapy.Spider):
     }
 
     def start_requests(self):
+
         db = DbdConnector()
         if int(self.retry) == 0:
             query = 'select DBD_COMPANY_ID from dbd_new_query Where DBD_STATUS is NULL'
@@ -30,12 +31,12 @@ class DbdSpider(scrapy.Spider):
             query = 'select DBD_COMPANY_ID from dbd_new_query Where DBD_STATUS is NULL'
             company_ids2 = db.readIds(query)
             company_ids.extend(company_ids2)
-
         db.dbClose()
+
         if len(company_ids) > 0:
-            print(f"======================Start scraping! There are {len(company_ids)} company in schedule=================")
+            self.logger.info(f"======================Start scraping! There are {len(company_ids)} company in schedule=================")
         else:
-            print("======================Start scraping! no company in schedule! All data are complete====================")
+            self.logger.info("======================Start scraping! no company in schedule! All data are complete====================")
 
         for i in company_ids:
             company_id = i[0]
@@ -45,18 +46,18 @@ class DbdSpider(scrapy.Spider):
 
     def parse(self, response):
         if self.close_it:
-            print(self.close_it)
+            self.logger.warning(self.close_it)
             raise CloseSpider(self.close_it)
         company_id = response.url.split('/')[-1]
 
         if response.request.status:
-            #print(f'Spider: spider parse start ({company_id})')
+            self.logger.debug(f'Spider: spider parse start ({company_id})')
 
             company_name = response.xpath('/html/body/div/div[4]/div[2]/div[1]/div[1]/h2/text()').get()
             if not company_name:
                 item = FailedItem()
                 item['scraping_status'] = False
-                item['found']= True
+                item['found']= False
                 item['company_id'] = company_id
                 return item
 
@@ -89,7 +90,7 @@ class DbdSpider(scrapy.Spider):
             item['company_name']    = company_name
             item['bussiness_type']  = raw_bussiness_type
             item['address']         = response.xpath('/html/body/div[1]/div[4]/div[2]/div[1]/div[2]/div[2]/div[1]/div[1]/div[2]/table/tr[2]/td/text()').get()
-            #print(f'Spider: spider parse end ({company_id})')
+            self.logger.debug(f'Spider: spider parse end ({company_id})')
             return item
 
         else:

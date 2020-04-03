@@ -68,8 +68,9 @@ class AnnuallySpider(scrapy.Spider):
             if not company_name:
                 item = FailedItem()
                 item['scraping_status'] = False
-                item['found']= True
+                item['found']= False
                 item['company_id'] = company_id
+                print('failed item company name'+company_id)
                 return item
 
             objective = response.xpath('/html/body/div[1]/div[4]/div[2]/div[1]/div[2]/div[2]/div[1]/div[3]/div[5]/div/p/text()').get()

@@ -7,6 +7,8 @@ from scrapy import signals
 from scrapy.http import HtmlResponse
 from browser.scraping_browser import ScrapingBrowser
 from requests.exceptions import Timeout
+from scrapy.downloadermiddlewares.retry import RetryMiddleware
+import logging
 
 
 class Dbdv2SpiderMiddleware(object):
@@ -36,10 +38,12 @@ class Dbdv2SpiderMiddleware(object):
         spider.logger.info('Spider opened: %s' % spider.name)
 
 
-class Dbdv2DownloaderMiddleware(object):
+class Dbdv2DownloaderMiddleware(RetryMiddleware):
     def __init__(self):
         self.success_count = 0
         self.fail_count    = 0
+        self.max_retry_times = 2
+        self.priority_adjust =  -39
 
 
     def __del__(self):
@@ -63,22 +67,38 @@ class Dbdv2DownloaderMiddleware(object):
 
         cookies = cookies[-1]['value']
 
-
-
         try:
             time.sleep(0.1)
             response = requests.get(request.url, cookies = {'JSESSIONID':cookies}, timeout=10)
+            html = str(response.content,'utf-8')
+            page =  html
+            scrapy_response = HtmlResponse(url=request.url, body=page, request=request, encoding='utf-8')
+            scrapy_response.status_code = response.status_code
+
         except Timeout:
             print('Get page time out!')
             self.fail_count += 1
             request.status = False
-            response = HtmlResponse(url=request.url, body='', request=request, encoding='utf-8')
+            scrapy_response = HtmlResponse(url=request.url, body='', request=request, encoding='utf-8')
+            scrapy_response.status_code = 'timeout'
             return response
 
+        return scrapy_response
 
-
-        #check the status
+    def process_response(self, request, response, spider):
         code = response.status_code
+
+        #find the search bar
+        search_bar = response.xpath('/html/body/div/div[4]/div[1]')
+        if search_bar:
+            # if search bar exist but the name is not exist. the company is not exist
+            company_name = response.xpath('/html/body/div/div[4]/div[2]/div[1]/div[1]/h2/text()').get()
+            check = response.xpath('/html/body/div/div[4]/div[2]/div[1]/div[2]/div[2]/div[2]/div/div/h2/text()').get()
+            if not check or not company_name:
+                code = 404
+        else:
+            #if not search bar it mean timeout, internet problem
+            code = 'timeout'
 
         if code == 404:
             #if the company cannot be found
@@ -90,13 +110,16 @@ class Dbdv2DownloaderMiddleware(object):
             request.status = True
             self.success_count += 1
 
+        elif code == 'timeout':
+            print(f'time out {request.url}')
+            request.status = False
+            return self._retry(request, response, spider) or response
 
         elif code == 401:
             #if cookie died
             #raise CloseSpider('@@@@@@@@@@@@@@@the cooike expired in scraping@@@@@@@@@@@@@@@@')
             print('Downloader: cookie expired!')
             spider.close_it = 'cookie expired!'
-
         elif  code == 500 or code == 503:
             #if the server down:500, 503
             #or some error system does not know: 000
@@ -112,19 +135,7 @@ class Dbdv2DownloaderMiddleware(object):
 
 
         #create the body of the response to spider
-        html = str(response.content,'utf-8')
-        page =  html
-        response = HtmlResponse(url=request.url, body=page, request=request, encoding='utf-8')
 
-        return response
-
-    def process_response(self, request, response, spider):
-        # Called with the response returned from the downloader.
-
-        # Must either;
-        # - return a Response object
-        # - return a Request object
-        # - or raise IgnoreRequest
         return response
 
     def process_exception(self, request, exception, spider):

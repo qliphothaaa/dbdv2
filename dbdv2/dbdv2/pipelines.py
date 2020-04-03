@@ -50,10 +50,7 @@ class MonthlyScrapingPipeline(object):
             address             = address_separater(raw_address)#new
             zipcode             = self.get_zipcode(address)#new
 
-            if not address[0] and scraping_status:
-                scraping_status = 'FailedAddr'
-            else:
-                scraping_status = 'Success'
+            scraping_status = 'Success'
 
             #generate sql and valus
             sql_dbdcompany       = 'UPDATE dbdcompany SET DBD_TYPE = %s, DBD_STATUS= %s,DBD_OBJECTIVE = %s,DBD_DIRECTORS = %s, DBD_NAME_TH = %s, DBD_BUSINESS_TYPE = %s, DBD_BUSINESS_TYPE_CODE=%s, DBD_ADDRESS=%s, DBD_STREET=%s, DBD_SUBDISTRICT=%s, DBD_DISTRICT=%s, DBD_PROVINCE=%s, DBD_ZIPCODE=%s WHERE DBD_ID = %s;'
@@ -80,10 +77,10 @@ class MonthlyScrapingPipeline(object):
         else:
             print(f'pipline, add {company_id} failed information to database')
 
-            if item['found']:
-                scraping_status = 'FailedAddr'
-            else:
-                scraping_status = 'Failed'
+            #if item['found']:
+                #scraping_status = 'FailedNotFound'
+            #else:
+            scraping_status = 'Failed'
 
 
             sql_dbd_new_query    = 'update dbd_new_query set DBD_Status = %s, DBD_LAST_RUN=%s where DBD_COMPANY_ID = %s'
@@ -173,12 +170,10 @@ class AnnuallyScrapingtPipeline(object):
             zipcode = self.get_zipcode(address)
 
 
-            if not address[0] and scraping_status:
-                scraping_status = 'FailedAddr'
-            elif not raw_company_name and scraping_status:
-                scraping_status = 'FailedNotFound'
-            else:
-                scraping_status = 'Success'
+            #if not address[0] and scraping_status:
+                #scraping_status = 'FailedAddr'
+            #else:
+            scraping_status = 'Success'
 
             new_company_dict = {
                     'DBD_NAME_TH':company_name, 
@@ -206,62 +201,62 @@ class AnnuallyScrapingtPipeline(object):
             if new_company_dict['DBD_NAME_TH'] != old_company_dict['DBD_NAME_TH']:
                 update_dbdcompany_dict['DBD_NAME_TH'] = new_company_dict['DBD_NAME_TH']
                 update_query_dict['C_DBD_NAME_TH'] = old_company_dict['DBD_NAME_TH']
-                print('company name changed!')
+                #print('company name changed!')
 
             if new_company_dict['DBD_STATUS'] != old_company_dict['DBD_STATUS']:
                 update_dbdcompany_dict['DBD_STATUS'] = new_company_dict['DBD_STATUS']
                 update_query_dict['C_DBD_STATUS'] = old_company_dict['DBD_STATUS']
-                print('company status changed!')
+                #print('company status changed!')
 
             if new_company_dict['DBD_ADDRESS'] != old_company_dict['DBD_ADDRESS']:
                 update_dbdcompany_dict['DBD_ADDRESS'] = new_company_dict['DBD_ADDRESS']
                 update_query_dict['C_DBD_ADDRESS'] = old_company_dict['DBD_ADDRESS']
                 ## if the address changed, update the zip
                 update_dbdcompany_dict['DBD_ZIPCODE'] = new_company_dict['DBD_ZIPCODE']
-                print('company address changed!')
+                #print('company address changed!')
 
 
             if new_company_dict['DBD_ZIPCODE'] != old_company_dict['DBD_ZIPCODE']:
-                print(f'old: {old_company_dict["DBD_ZIPCODE"]}')
-                print(f'new: {new_company_dict["DBD_ZIPCODE"]}')
+                #print(f'old: {old_company_dict["DBD_ZIPCODE"]}')
+                #print(f'new: {new_company_dict["DBD_ZIPCODE"]}')
                 update_dbdcompany_dict['DBD_ZIPCODE'] = new_company_dict['DBD_ZIPCODE']
-                print('company zipcode changed!')
+                #print('company zipcode changed!')
 
 
             if new_company_dict['DBD_OBJECTIVE'] != old_company_dict['DBD_OBJECTIVE']:
                 update_dbdcompany_dict['DBD_OBJECTIVE'] = new_company_dict['DBD_OBJECTIVE']
                 update_query_dict['C_DBD_OBJECTIVE'] = old_company_dict['DBD_OBJECTIVE']
-                print('company object changed!')
+                #print('company object changed!')
 
             if new_company_dict['DBD_STREET'] != old_company_dict['DBD_STREET']:
                 update_dbdcompany_dict['DBD_STREET'] = new_company_dict['DBD_STREET']
-                print('company street changed!')
+                #print('company street changed!')
 
             if new_company_dict['DBD_SUBDISTRICT'] != old_company_dict['DBD_SUBDISTRICT']:
                 update_dbdcompany_dict['DBD_SUBDISTRICT'] = new_company_dict['DBD_SUBDISTRICT']
-                print('company subdistrict changed!')
+                #print('company subdistrict changed!')
 
             if new_company_dict['DBD_DISTRICT'] != old_company_dict['DBD_DISTRICT']:
                 update_dbdcompany_dict['DBD_DISTRICT'] = new_company_dict['DBD_DISTRICT']
-                print('company district changed!')
+                #print('company district changed!')
 
             if new_company_dict['DBD_PROVINCE'] != old_company_dict['DBD_PROVINCE']:
                 update_dbdcompany_dict['DBD_PROVINCE'] = new_company_dict['DBD_PROVINCE']
-                print('company province changed!')
+                #print('company province changed!')
 
             if new_company_dict['DBD_BUSINESS_TYPE_CODE'] != old_company_dict['DBD_BUSINESS_TYPE_CODE']:
                 update_dbdcompany_dict['DBD_BUSINESS_TYPE_CODE'] = new_company_dict['DBD_BUSINESS_TYPE_CODE']
                 update_query_dict['C_DBD_BUSINESS_TYPE'] = old_company_dict['DBD_BUSINESS_TYPE']
-                print('company bussiness type code changed!')
+                #print('company bussiness type code changed!')
 
             if new_company_dict['DBD_BUSINESS_TYPE'] != old_company_dict['DBD_BUSINESS_TYPE']:
                 update_dbdcompany_dict['DBD_BUSINESS_TYPE'] = new_company_dict['DBD_BUSINESS_TYPE']
                 update_query_dict['C_DBD_BUSINESS_TYPE'] = old_company_dict['DBD_BUSINESS_TYPE']
-                print('company bussiness type changed!')
+                #print('company bussiness type changed!')
 
             if new_company_dict['DBD_DIRECTORS'] != old_company_dict['DBD_DIRECTORS']:
                 update_dbdcompany_dict['DBD_DIRECTORS'] = new_company_dict['DBD_DIRECTORS']
-                print('company directors changed!')
+                #print('company directors changed!')
 
             '''
             if new_company_dict['DBD_ZIPCODE'] != old_company_dict['DBD_ZIPCODE']:
@@ -304,10 +299,10 @@ class AnnuallyScrapingtPipeline(object):
 
         else:
 
-            if item['found']:
-                scraping_status = 'FailedAddr'
-            else:
-                scraping_status = 'Failed'
+            #if item['found']:
+                #scraping_status = 'FailedNotFound'
+            #else:
+            scraping_status = 'Failed'
 
             sql_dbd_query        = 'update dbd_query set DBD_Status = %s, DBD_LAST_RUN=%s where DBD_COMPANY_ID = %s'
             values_dbd_query     = (scraping_status, time.strftime('%Y-%m-%d %H:%M:%S'), company_id)
