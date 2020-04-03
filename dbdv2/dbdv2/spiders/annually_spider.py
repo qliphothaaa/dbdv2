@@ -25,6 +25,8 @@ class AnnuallySpider(scrapy.Spider):
         if int(self.retry) == 0:
             try:
                 self.start = int(self.start)
+                if self.start <=0:
+                    self.start = 1
                 self.end =  int(self.end)
                 if self.start>self.end:
                     self.end = self.start
@@ -89,10 +91,7 @@ class AnnuallySpider(scrapy.Spider):
                 raw_bussiness_type = 'ERRRRRRRRRRRRRRRRRRRORRRRRRRRRRRRRRRRRRRRRR:' + response.url.split('/')[-1]
 
             if raw_bussiness_type == '-':
-                #print("this company didn't update type")
                 raw_bussiness_type = response.xpath('/html/body/div/div[4]/div[2]/div[1]/div[2]/div[2]/div[1]/div[3]/div[2]/div/p/text()').get().strip()
-            #else:
-                #print('this company update his type')
 
             item = AnnuallyItem()
             item['scraping_status'] = response.request.status

@@ -72,13 +72,12 @@ class DbdConnector(object):
                     cur.execute(item)
                 row_count += cur.rowcount
             self.db.commit()
-            print(f'update company: {company_id}')
         except Exception as e:
             print(e)
             print(f'fail to update transaction about company{company_id}, rollback now')
             self.db.rollback()
         finally:
-            print(row_count, "record(s) affected")
+            print(row_count, f"record(s) affected in {company_id}")
             cur.close()
 
 

@@ -88,17 +88,6 @@ class Dbdv2DownloaderMiddleware(RetryMiddleware):
     def process_response(self, request, response, spider):
         code = response.status_code
 
-        #find the search bar
-        search_bar = response.xpath('/html/body/div/div[4]/div[1]')
-        if search_bar:
-            # if search bar exist but the name is not exist. the company is not exist
-            company_name = response.xpath('/html/body/div/div[4]/div[2]/div[1]/div[1]/h2/text()').get()
-            check = response.xpath('/html/body/div/div[4]/div[2]/div[1]/div[2]/div[2]/div[2]/div/div/h2/text()').get()
-            if not check or not company_name:
-                code = 404
-        else:
-            #if not search bar it mean timeout, internet problem
-            code = 'timeout'
 
         if code == 404:
             #if the company cannot be found
@@ -107,8 +96,21 @@ class Dbdv2DownloaderMiddleware(RetryMiddleware):
             self.fail_count += 1
 
         elif code == 200:
-            request.status = True
-            self.success_count += 1
+            #find the search bar
+            search_bar = response.xpath('/html/body/div/div[4]/div[1]')
+            if search_bar:
+                # if search bar exist but the name is not exist. the company is not exist
+                check = response.xpath('/html/body/div/div[4]/div[2]/div[1]/div[2]/div[2]/div[2]/div/div/h2/text()')
+                if not check:
+                    request.status = False
+                    self.fail_count += 1
+                else:
+                    request.status = True
+                    self.success_count += 1
+            else:
+                print(f'time out {request.url}')
+                request.status = False
+                return self._retry(request, response, spider) or response
 
         elif code == 'timeout':
             print(f'time out {request.url}')
@@ -131,10 +133,8 @@ class Dbdv2DownloaderMiddleware(RetryMiddleware):
         else:
             print(f'Downloader: unexpect error! code {code}')
             spider.close_it = f'unexpect error! code{code}'
-            pass
 
 
-        #create the body of the response to spider
 
         return response
 
