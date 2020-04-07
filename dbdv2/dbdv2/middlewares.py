@@ -81,7 +81,7 @@ class Dbdv2DownloaderMiddleware(RetryMiddleware):
             request.status = False
             scrapy_response = HtmlResponse(url=request.url, body='', request=request, encoding='utf-8')
             scrapy_response.status_code = 'timeout'
-            return response
+            return scrapy_response
 
         return scrapy_response
 
@@ -91,7 +91,7 @@ class Dbdv2DownloaderMiddleware(RetryMiddleware):
 
         if code == 404:
             #if the company cannot be found
-            print('Downloader: cannot find the page in datawarehouse')
+            print(f'Downloader: cannot find the page in datawarehouse {response.url}')
             request.status = False
             self.fail_count += 1
 

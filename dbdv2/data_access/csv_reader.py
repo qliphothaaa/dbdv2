@@ -19,9 +19,9 @@ class DbdCSVReader(object):
 
     def start(self):
         oldtime=datetime.datetime.now()
-        self.read()
+        self.readCSV()
         newtime=datetime.datetime.now()
-        #print(newtime-oldtime)
+        print(newtime-oldtime)
 
         self.checkData()
         self.hanldeData()
@@ -31,8 +31,8 @@ class DbdCSVReader(object):
         newtime=datetime.datetime.now()
         print(newtime-oldtime)
 
-    def read(self):
-        self.data_dict = pd.read_csv(self.path, nrows=self.rows)
+    def readCSV(self):
+        self.data_dict = pd.read_csv(self.path, nrows=self.rows, dtype=str)
         print(self.data_dict.shape)
         #for i in range(0, self.data_dict.shape[0]):
             #print(self.data_dict.iloc[i])
@@ -52,7 +52,7 @@ class DbdCSVReader(object):
         
     def hanldeData(self):
         self.data_dict['dbdcompaniesid'] = self.data_dict['dbdcompaniesid'].astype('str')
-        self.data_dict['cf_755'] = '0'+ self.data_dict['cf_755'].astype('str')
+        #self.data_dict['cf_755'] = '0'+ self.data_dict['cf_755'].astype('str')
         #self.data_dict.sort_values(by=['dbdcompaniesid'], ascending=True, inplace=True)
 
         
@@ -67,13 +67,14 @@ class DbdCSVReader(object):
         vl = []
         for i in range(self.data_dict.shape[0]):
             values = list(self.data_dict.loc[i])#the data_dict.loc[i] get a row of data as list, the first data in list is row number. 
-            vl.append(values[0])
+            vl.append(int(values[0]))
             vl.append(values[1])
-            #print(values)
+            #print(vl)
             count += 1
             a += 1
             if a == 5000:
                 sql = "INSERT INTO mdbd(id, regisid)VALUES" + '(%s, %s),'*a
+                #print(sql)
                 sql = sql.rstrip(',')
                 dbconnector.insert(sql, vl)
                 a = 0
@@ -82,8 +83,16 @@ class DbdCSVReader(object):
         sql = "INSERT INTO mdbd(id, regisid)VALUES" + '(%s, %s),'*a
         sql = sql.rstrip(',')
         dbconnector.insert(sql, vl)
-
-        #dbconnector.insert("INSERT INTO mdbd(id, regisid)VALUES(%s, %s);", values)
+        #
+        '''
+        for i in range(self.data_dict.shape[0]):
+            values = list(self.data_dict.loc[i])
+            values[0] = int(values[0])
+            print(values)
+            dbconnector.insert("INSERT INTO mdbd(id, regisid)VALUES(%s, %s);", values)
+            count += 1
+        '''
+        #
         print(f'totally {count} datas')
             
         dbconnector.dbClose()

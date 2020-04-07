@@ -36,8 +36,8 @@ class MonthlyScrapingPipeline(object):
             company_type       = item['company_type']
             status             = item['status']
             objective          = item['objective']
-            raw_directors          = item['directors']
-            raw_company_name       = item['company_name']
+            raw_directors      = item['directors']
+            raw_company_name   = item['company_name']
             raw_bussiness_type = item['bussiness_type']
             raw_address        = item['address']#new
 

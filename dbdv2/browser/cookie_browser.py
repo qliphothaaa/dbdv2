@@ -2,11 +2,9 @@ import os, time, re, pickle, signal
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 from selenium.common.exceptions import TimeoutException
+import pytesseract
+from PIL import Image
 
-try:
-    from captcha_reader import readCaptcha
-except:
-    from .captcha_reader import readCaptcha
 
 class CookieBrowser(object):
     def __init__(self):
@@ -69,7 +67,6 @@ class CookieBrowser(object):
     def getCookieFromWeb(self):
         print("%%%%start get cookie from website")
         self.driver.get('https://datawarehouse.dbd.go.th/login')
-        #self.driver.get('https://www.google.com')
         print(self.driver.get_cookies())
         for i in range(10):
             time.sleep(2)
@@ -118,8 +115,32 @@ class CookieBrowser(object):
             return False
         else:
             return True
+        
+    def readCaptcha(self,img_path):
+        result = ''
 
+        try:
+            screen = Image.open(img_path)
+        except:
+            print('no Image')
+            return result
 
+        width, height = screen.size
+        captcha = screen.crop((370/1600*width, 1120/1200*height, 600/1600*width, height))
+        captcha = captcha.convert('RGB')
+        color = captcha.getpixel((2,2))
+        width, height = captcha.size
+        pixels = captcha.load()
+        for i in range(width):
+            for j in range(height):
+                if pixels[i, j] != color:
+                    pixels[i, j] = (0,0,0)
+                else:
+                    pixels[i, j] = (255,255,255)
+
+        result = pytesseract.image_to_string(captcha, lang='eng', config='--dpi 100 --psm 7')
+
+        return result
 
 
 
