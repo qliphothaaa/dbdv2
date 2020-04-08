@@ -55,7 +55,7 @@ class MonthlyScrapingPipeline(object):
             #generate sql and valus
             sql_dbdcompany       = 'UPDATE dbdcompany SET DBD_TYPE = %s, DBD_STATUS= %s,DBD_OBJECTIVE = %s,DBD_DIRECTORS = %s, DBD_NAME_TH = %s, DBD_BUSINESS_TYPE = %s, DBD_BUSINESS_TYPE_CODE=%s, DBD_ADDRESS=%s, DBD_STREET=%s, DBD_SUBDISTRICT=%s, DBD_DISTRICT=%s, DBD_PROVINCE=%s, DBD_ZIPCODE=%s WHERE DBD_ID = %s;'
 
-            values_dbdcompany    = (company_type, status, objective, directors_text, company_name, bussiness_type, bussiness_type_code, str(address[0])+' '+str(address[1]), str(address[0]), str(address[1]), str(address[2]), str(address[3]), zipcode, company_id)#new
+            values_dbdcompany    = (company_type, status, objective, directors_text, company_name, bussiness_type, bussiness_type_code, address[4], address[0], address[1], address[2], address[3], zipcode, company_id)#new
 
             sql_dbd_new_query    = 'update dbd_new_query set DBD_Status = %s, DBD_LAST_RUN=%s where DBD_COMPANY_ID = %s'
             values_dbd_new_query = (scraping_status, time.strftime('%Y-%m-%d %H:%M:%S'), company_id)
@@ -153,6 +153,7 @@ class AnnuallyScrapingtPipeline(object):
     def process_item(self, item, spider):
         scraping_status = item['scraping_status']
         company_id      = item['company_id']
+        #print(item)
         if scraping_status:
             company_type       = item['company_type']
             status             = item['status']
@@ -178,7 +179,7 @@ class AnnuallyScrapingtPipeline(object):
             new_company_dict = {
                     'DBD_NAME_TH':company_name, 
                     'DBD_STATUS':status, 
-                    'DBD_ADDRESS':str(address[0])+ ' ' +str(address[1]), 
+                    'DBD_ADDRESS':address[4], 
                     'DBD_OBJECTIVE':objective, 
                     'DBD_STREET':address[0], 
                     'DBD_SUBDISTRICT':address[1], 
@@ -270,7 +271,7 @@ class AnnuallyScrapingtPipeline(object):
 
             #update dbdcompany
             if update_dbdcompany_string:
-                #print(update_dbdcompany_string)
+                print(update_dbdcompany_string)
                 sql_dbdcompany = f'UPDATE dbdcompany SET {update_dbdcompany_string} WHERE DBD_ID = "{company_id}";'
 
                 if update_query_string:
