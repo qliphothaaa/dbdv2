@@ -15,36 +15,91 @@ def address_separater(s):
 
 
 
-    #print(s)
     if province_b in s:
+        #if the address is a bangkok address
         pattern = f'(.*){subdistrict_b}(.*){district_b}(.*){province_b}'
         matchObject = re.match(pattern, s)
-
-        company_street      = matchObject.group(1).strip() if matchObject else None
-        company_subdistrict = matchObject.group(2).strip() if matchObject else None
-        company_district    = matchObject.group(3).strip() if matchObject else None
         company_province    = province_b
 
-        '''
-            matchObject         = re.search(f'(.*){subdistrict_b}',s)
-            company_street      = matchObject.group(1).strip() if matchObject else 'Null'
-
-            matchObject         = re.search(f'{subdistrict_b}(.*){district_b}',s)
-            company_subdistrict = matchObject.group(1).strip() if matchObject else 'Null'
-
+        if matchObject:
+            #if match pattern success, the address is correct format
+            company_street      = matchObject.group(1).strip() 
+            company_subdistrict = matchObject.group(2).strip() 
+            company_district    = matchObject.group(3).strip() 
+        else:
+            #if the format is wrong
             matchObject         = re.search(f'{district_b}(.*){province_b}',s)
-            company_district    = matchObject.group(1).strip() if matchObject else 'Null'
-        '''
+            company_district    = matchObject.group(1).strip() if matchObject else None
+
+            if company_district:
+                matchObject         = re.search(f'{subdistrict_b}(.*){district_b}',s)
+                company_subdistrict = matchObject.group(1).strip() if matchObject else None
+            else:
+                #if the district is lost in address, find subdistrict between subdistrict and province
+                matchObject         = re.search(f'{subdistrict_b}(.*){province_b}',s)
+                company_subdistrict = matchObject.group(1).strip() if matchObject else None
+
+            if company_subdistrict:
+                matchObject         = re.search(f'(.*){subdistrict_b}',s)
+                company_street      = matchObject.group(1).strip() if matchObject else None
+            elif company_district:
+                #if subdistrict not exist but district exit, find street
+                matchObject         = re.search(f'(.*){district_b}',s)
+                company_street      = matchObject.group(1).strip() if matchObject else None
+            else:
+                matchObject         = re.search(f'(.*){province_b}',s)
+                company_street      = matchObject.group(1).strip() if matchObject else None
+
     else:
+        #if the address is not bangkok address
         pattern = f'(.*)({subdistrict})(.*)({district})(.*){province}(.*)'
         matchObject = re.match(pattern, s)
 
-        company_street      = matchObject.group(1).strip() if matchObject else None
-        company_subdistrict = matchObject.group(3).strip() if matchObject else None
-        company_district    = matchObject.group(5).strip() if matchObject else None
-        company_province    = matchObject.group(6).strip() if matchObject else None
+        if matchObject:
+            #if the format is correct
+            company_street      = matchObject.group(1).strip() 
+            company_subdistrict = matchObject.group(3).strip() 
+            company_district    = matchObject.group(5).strip() 
+            company_province    = matchObject.group(6).strip() 
+        else:
+            #if the format is wrong
+            matchObject = re.search(f'({province})(.*)',s)
+            company_province = matchObject.group(2).strip() if matchObject else None # find the province 
+
+            matchObject         = re.search(f'({district})(.*)({province})',s)
+            company_district    = matchObject.group(2).strip() if matchObject else None# find the district
+
+            if company_district:
+                matchObject         = re.search(f'({subdistrict})(.*)({district})',s)
+                company_subdistrict = matchObject.group(2).strip() if matchObject else None
+            else:
+                #if the district is lost in address, find subdistrict between subdistrict and province
+                matchObject         = re.search(f'({subdistrict})(.*)({province})',s)
+                company_subdistrict = matchObject.group(2).strip() if matchObject else None
+
+
+            if company_subdistrict:
+                #if subdistrict  is exist
+                matchObject         = re.search(f'(.*)({subdistrict})',s)
+                company_street      = matchObject.group(1).strip() if matchObject else None
+            elif company_district:
+                #if subdistrict not exist but district exit
+                matchObject         = re.search(f'(.*)({district})',s)
+                company_street      = matchObject.group(1).strip() if matchObject else None
+            else:
+                #if subdistrict and district both lost
+                matchObject         = re.search(f'(.*)({province})',s)
+                company_street      = matchObject.group(1).strip() if matchObject else None
+
+
+    # if can not find anything, return raw address in company_street
+    if not company_street and not company_subdistrict and not company_district and not company_province:        
+        company_street = s
+        company_subdistrict = ''#subdistrict set to empty string, which make it easy to combine string
 
     result = [company_street, company_subdistrict, company_district, company_province]
+
+    #remove some special sign ex: '
     for i in range(4):
         if result[i]:
             result[i] = result[i].replace('\'', '')

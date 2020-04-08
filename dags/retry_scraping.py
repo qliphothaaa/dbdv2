@@ -38,8 +38,3 @@ with DAG(
     task1 >> taskf1
     task2 >> taskf2
 
-
-
-
-
-

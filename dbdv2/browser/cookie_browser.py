@@ -97,7 +97,7 @@ class CookieBrowser(object):
     def getCaptcha(self):
         #print("%%%%start read captcha")
         self.driver.save_screenshot(self.screenshot_path)
-        captcha_str = readCaptcha(self.screenshot_path)[0:5]
+        captcha_str = self.readCaptcha(self.screenshot_path)[0:5]
         #print('captcha string is: '+captcha_str)
         return captcha_str
 

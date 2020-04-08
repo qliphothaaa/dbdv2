@@ -42,7 +42,6 @@ from airflow.utils.net import get_hostname
 
 csrf = CSRFProtect()
 
-
 def create_app(config=None, testing=False):
     app = Flask(__name__)
     if conf.getboolean('webserver', 'ENABLE_PROXY_FIX'):
