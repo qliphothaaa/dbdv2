@@ -1,0 +1,3 @@
+UPDATE vtiger_dbdcompanies SET dbdcompanies = 'ห้างหุ้นส่วนสามัญนิติบุคคล ห้างขายยาย่งเซ้งตงซัว' WHERE dbdcompaniesid ='540392';
+UPDATE vtiger_dbdcompaniescf SET cf_755 = '0102500000663',cf_757 = 'ห้างหุ้นส่วนสามัญนิติบุคคล',cf_763 = 'None',cf_759 = 'ยังดำเนินกิจการอยู่',cf_761 = 'None',cf_809 = '708 ถนนเจริญกรุง',cf_811 = '',cf_813 = 'สัมพันธวงศ์',cf_815 = 'กรุงเทพมหานคร',cf_817 = '10100',cf_799 = '47721',cf_801 = 'ร้านขายปลีกสินค้าทางเภสัชภัณฑ์และเวชภัณฑ์',cf_1995 = 'ขายยา' WHERE dbdcompaniesid ='540392';
+UPDATE vtiger_crmentity SET modifiedtime =NOW(), label='ห้างหุ้นส่วนสามัญนิติบุคคล ห้างขายยาย่งเซ้งตงซัว' WHERE crmid='540392';

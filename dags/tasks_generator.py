@@ -63,6 +63,14 @@ def startAnnuallyScraping(dag, start, end):
                 dag=dag)
     return task
 
+def datetimeAnnuallyScraping(dag, date):
+    task = BashOperator(
+            task_id='annually_scraping',
+            bash_command=f"cd /dbdv2 && scrapy crawl annually -a retry=-1 -a date={date}",
+            dag=dag)
+    return task
+
+
 def scrapingFailedDataAnnually(dag):
     task = BashOperator(
             task_id='retry_annually',

@@ -34,7 +34,6 @@ class AnnuallySpider(scrapy.Spider):
             except Exception as e:
                 print(e)
                 query = 'select DBD_COMPANY_ID from dbd_query'
-            print(query)
             company_ids = db.readIds(query)
             #db.clear_status_before_annually()
         elif int(self.retry) == 1:
@@ -43,6 +42,11 @@ class AnnuallySpider(scrapy.Spider):
             query = 'select DBD_COMPANY_ID from dbd_query where DBD_STATUS = "Failed"'
             company_ids2 = db.readIds(query)
             company_ids.extend(company_ids2)
+        elif int(self.retry) == -1:
+            date = self.date
+            query = f'select DBD_COMPANY_ID from dbd_query where DBD_LAST_RUN <= "{date}"'
+            company_ids = db.readIds(query)
+
         db.dbClose()
 
         if len(company_ids) > 0:
