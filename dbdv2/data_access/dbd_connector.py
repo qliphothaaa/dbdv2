@@ -9,7 +9,8 @@ class DbdConnector(object):
                 #host='localhost', 
                 #port=3309,
                 user='root', 
-                passwd='1234',
+                #passwd='1234',
+                passwd='opencloud1',
                 database='dbd',
                 )
         
@@ -49,6 +50,7 @@ class DbdConnector(object):
                 else:
                     print(values[index])
         except Exception as e:
+            row_count = 0
             if e.errno == 1062:#the code when the data already in database
                 print('duplicate')
             else:
@@ -73,6 +75,7 @@ class DbdConnector(object):
                 row_count += cur.rowcount
             self.db.commit()
         except Exception as e:
+            row_count = 0
             print(e)
             print(f'fail to update transaction about company{company_id}, rollback now')
             self.db.rollback()

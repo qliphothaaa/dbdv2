@@ -64,6 +64,7 @@ class DbdSpider(scrapy.Spider):
             objective = response.xpath('/html/body/div[1]/div[4]/div[2]/div[1]/div[2]/div[2]/div[1]/div[3]/div[5]/div/p/text()').get()
             if objective == '-':
                 objective = response.xpath('/html/body/div[1]/div[4]/div[2]/div[1]/div[2]/div[2]/div[1]/div[3]/div[3]/div/p/text()').get()
+            objective = objective.replace('\'', '')
 
             director_list = []
 

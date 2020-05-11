@@ -2,7 +2,11 @@ import re
 import datetime
 def address_separater(s):
     #this method separater the address which from datawarehouse to small part
-    s = s.replace('\'', '')
+    if s:
+        s = s.replace('\'', '')
+    else:
+        result = ['','','','','']
+        return result
 
     province_b    = 'กรุงเทพมหานคร'
     province      = 'จ\\.'

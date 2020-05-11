@@ -65,7 +65,10 @@ class Dbdv2DownloaderMiddleware(RetryMiddleware):
             except EOFError:
                 cookies = None
 
-        cookies = cookies[-1]['value']
+        for i in cookies:
+            if i['name']=='JSESSIONID':
+                cookies= i['value']
+                break
 
         try:
             time.sleep(0.1)
