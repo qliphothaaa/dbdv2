@@ -6,11 +6,9 @@ class DbdConnector(object):
         print('init db')
         self.db = mysql.connector.connect(
                 host='dbd_db', 
-                #host='localhost', 
-                #port=3309,
                 user='root', 
-                #passwd='1234',
-                passwd='opencloud1',
+                passwd='1234',
+                #passwd='opencloud1',
                 database='dbd',
                 )
         
@@ -87,7 +85,6 @@ class DbdConnector(object):
     def readIds(self, sql):
         try:
             cur = self.db.cursor()
-            #sql = 'select DBD_COMPANY_ID from dbd_new_query Where DBD_STATUS is NULL'
             cur.execute(sql)
             ids = cur.fetchall()
         except Exception as e:
@@ -234,6 +231,7 @@ class DbdConnector(object):
             print(e)
             print('fail to find biggest id')
         return biggest
+
 
     def clear_status_before_annually(self, start, end):
         try:

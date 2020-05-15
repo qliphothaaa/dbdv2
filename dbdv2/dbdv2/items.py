@@ -10,7 +10,6 @@ import scrapy
 
 class MonthlyItem(scrapy.Item):
     scraping_status = scrapy.Field()
-
     company_id      = scrapy.Field()
     company_name    = scrapy.Field()
     company_type    = scrapy.Field()
@@ -18,7 +17,6 @@ class MonthlyItem(scrapy.Item):
     objective       = scrapy.Field()
     directors       = scrapy.Field()
     bussiness_type  = scrapy.Field()
-
     address         = scrapy.Field()
 
 class FailedItem(scrapy.Item):
@@ -28,7 +26,6 @@ class FailedItem(scrapy.Item):
 
 class AnnuallyItem(scrapy.Item):
     scraping_status = scrapy.Field()
-
     company_id      = scrapy.Field()
     company_name    = scrapy.Field()
     company_type    = scrapy.Field()
@@ -36,7 +33,6 @@ class AnnuallyItem(scrapy.Item):
     objective       = scrapy.Field()
     directors       = scrapy.Field()
     bussiness_type  = scrapy.Field()
-
     address         = scrapy.Field()
 
 

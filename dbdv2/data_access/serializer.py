@@ -7,6 +7,7 @@ except:
 
 RECORD_NUM_ONCE = 100
 RECORD_NUM_IN_FILE = 100000
+
 class MdbdSerializer(object):
     def __init__(self, path, limit):
         self.path = path
@@ -41,31 +42,26 @@ class MdbdSerializer(object):
     def get_include_company_data(self):
         include_company_ids =  self.db_connector.read_include_new_company()
         for company_id in include_company_ids:
-            #yield (self.db_connector.read_company_info(company_id[0]), company_id[1])
             yield company_id
 
     def get_exclude_company_data(self):
         exclude_company_ids =  self.db_connector.read_exclude_new_company()
         for company_id in exclude_company_ids:
-            #yield (self.db_connector.read_company_info(company_id[0]), 0)
             yield company_id
 
     def get_include_company_data_all(self):
         include_company_ids =  self.db_connector.read_include_all_company()
         for company_id in include_company_ids:
-            #yield (self.db_connector.read_company_info(company_id[0]), company_id[1])
             yield company_id
 
     def get_exclude_company_data_all(self):
         exclude_company_ids =  self.db_connector.read_exclude_all_company()
         for company_id in exclude_company_ids:
-            #yield (self.db_connector.read_company_info(company_id[0]), 0)
             yield company_id
 
     def write_insert_file(self, id_generator, head):
         #set the file name
         file_name = self.path + head + self.time_str + 'insert.sql'
-        #
 
 
         #write to file

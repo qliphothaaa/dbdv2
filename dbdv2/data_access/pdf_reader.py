@@ -20,7 +20,7 @@ import sys
 class DbdPDFReader(object):
     def __init__(self, pdf_name, rows):
         self.pdf_name = pdf_name#the name of the pdf file
-        if rows == "0":
+        if rows == '':
             self.rows = None
         else:
             self.rows = int(rows)
@@ -117,15 +117,6 @@ class DbdPDFReader(object):
             
         dbconnector.dbClose()
 
-
-'''
-    def date_convert(self,time_str):
-        temptime = datetime.datetime.strptime(time_str, '%d/%M/%Y').date()
-        temptime = temptime.replace(year = temptime.year-543)
-        res = datetime.datetime.strftime(temptime , '%Y-%m-%d')
-        #print(res)
-        return res
-'''
 
 
 if __name__ == "__main__":

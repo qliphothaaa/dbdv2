@@ -8,7 +8,7 @@ from airflow.operators.bash_operator import BashOperator
 from airflow.operators.email_operator import EmailOperator
 
 
-file_config = Variable.get("file_setting", deserialize_json=True, default_var={"filename":"", "num":"0"})
+file_config = Variable.get("file_setting", deserialize_json=True, default_var={"filename":"", "num":""})
 
 
 filename = file_config["filename"]
@@ -16,12 +16,8 @@ filename = file_config["filename"]
 try:
     num = file_config["num"]
 except:
-    num = '0'
+    num = ''
 
-try:
-    column = file_config["column"]
-except:
-    column = ''
 
 def default_options():
     default_args = {
@@ -40,22 +36,19 @@ with DAG(
 
     task_start = start(d, 'monthly_scraping')
 
-    task0 = clearNewQuery(d)
-    task1 = loadExcel(d, filename, num, column)
+    task1 = loadExcel(d, filename, num)
     task2 = getCookies(d)
     task3 = startMonthlyScraping(d)
 
-    taskf0 = failedEmail(d, task0)
     taskf1 = failedEmail(d, task1)
     taskf2 = failedEmail(d, task2)
     taskf3 = failedEmail(d, task3)
 
     task_finished = successEmail(d, 'monthly_scraping')
 
-    task_start >>task0 >>  task1 >> task2 >> task3 >> task_finished
+    task_start >>  task1 >> task2 >> task3 >> task_finished
     #task_start>>task1>> task2>>task3>>task_finished
 
-    task0 >> taskf0
     task1 >> taskf1
     task2 >> taskf2
     task3 >> taskf3

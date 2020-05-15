@@ -27,13 +27,8 @@ def start(dag, dag_name):
     return task
 
 
-def loadExcel(dag, url, num, column):
-    task = BashOperator(
-            task_id='load_file',
-            bash_command="cd /dbdv2 && python3 data_access/run_load_excel.py %s %s %s"% (url, num, column),#
-            #on_failure_callback = notify_email,##
-            dag=dag)
-    return task
+#browser
+
 
 def getCookies(dag):
     task = BashOperator(
@@ -41,6 +36,9 @@ def getCookies(dag):
             bash_command="cd /dbdv2 && python3 browser/cookie_browser.py",
             dag=dag)
     return task
+
+
+#scrapy
 
 def startMonthlyScraping(dag):
     task = BashOperator(
@@ -85,6 +83,25 @@ def scrapingFailedData(dag):
             dag=dag)
     return task
 
+
+#data_access
+
+def loadExcel(dag, url, num):
+    task = BashOperator(
+            task_id='load_file',
+            bash_command=f"cd /dbdv2 && python3 data_access/main.py lf {url} {num}",#
+            #on_failure_callback = notify_email,##
+            dag=dag)
+    return task
+
+def readCSV(dag):
+    task = BashOperator(
+            task_id='read_csv',
+            bash_command="cd /dbdv2 && python data_access/main.py lc 'mdbd.csv' 2000",
+            dag=dag)
+    return task
+
+'''
 def clearMdbd(dag):
     task = BashOperator(
             task_id='clear_mdbd',
@@ -98,27 +115,24 @@ def clearNewQuery(dag):
             bash_command="cd /dbdv2 && python data_access/run_clear_new_query.py",
             dag=dag)
     return task
+'''
 
-def readCSV(dag):
-    task = BashOperator(
-            task_id='read_csv',
-            bash_command="cd /dbdv2 && python data_access/run_load_csv.py 'mdbd.csv'",
-            dag=dag)
-    return task
 
 def exportDBMonth(dag):
     task = BashOperator(
             task_id='export_new_data',
-            bash_command="cd /dbdv2 && python3 data_access/run_export_db.py",
+            bash_command="cd /dbdv2 && python3 data_access/main.py ed",
             dag=dag)
     return task
 
 def exportDBYear(dag):
     task = BashOperator(
             task_id='export_all_data',
-            bash_command="cd /dbdv2 && python3 data_access/run_export_db_all.py",
+            bash_command="cd /dbdv2 && python3 data_access/main.py eda",
             dag=dag)
     return task
+
+
 
 def failedEmail(dag, task):
     task = EmailOperator(

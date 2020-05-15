@@ -21,7 +21,7 @@ services:
             - ./www/templates:/usr/local/lib/python3.7/site-packages/airflow/www/templates
         depends_on:
             - database
-        command: ./wait-for-it.sh -t 0 -h dbd_db -p 3306 -- ./start.sh
+        command: ./wait-for-it.sh -t 0 -h dbd_db -p 3306 -- ./start_webserver.sh
               #command: ./start.sh
 
     python_scheduler:
@@ -40,7 +40,7 @@ services:
         depends_on:
             - database
               #command: ./start2.sh
-        command: ./wait-for-it.sh -t 0 -h dbd_db -p 3306 -- ./start2.sh
+        command: ./wait-for-it.sh -t 0 -h dbd_db -p 3306 -- ./start_scheduler.sh
 
         #django:
         #build: ./django_api

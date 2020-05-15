@@ -26,9 +26,9 @@ class CookieBrowser(object):
 
 
     def initPage(self):
-        print('init browser success')
         self.driver.get(self.target_captcha_url)#get the home page
-        print('finish get the page')
+        print('init browser success')
+        #print('finish get the page')
 
 
     def downloadCookie(self):
@@ -146,16 +146,12 @@ class CookieBrowser(object):
 
     def close(self):
         pid = self.driver.service.process.pid
-        #print('start to close tabs')
-        #print('start to close driver'+ str(pid))
         try:
             self.driver.close()
             os.kill(int(pid), signal.SIGTERM)
-            #print("killed the chrome using process")
         except ProcessLookupError as ex:
             print(ex)
             pass
-        #print('finish close driver')
 
 
 

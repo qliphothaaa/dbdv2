@@ -15,14 +15,17 @@ import sys
 
 
 class DbdExcelReader(object):
-    def __init__(self, path, rows, column_setting=''):
-        self.path = path#the path of to find the excel file
-        if rows == "0":
+    def __init__(self, xls_name, rows, column_setting=''):
+        self.xls_name = xls_name#the xls_name of to find the excel file
+        self.xls_path = './data_access/company_excel/'
+
+        if rows == '':
             self.rows = None
         else:
             self.rows = int(rows)
-        self.column_setting = column_setting
-        #print(self.column_setting)
+
+        #self.column_setting = column_setting
+
         self.column_dict = {
             "ลำดับ": "ROW",
             "เลขทะเบียน":"ID", 
@@ -38,8 +41,8 @@ class DbdExcelReader(object):
             "รหัส\nไปรษณีย์":"ZIPCODE",
             "ทุนจดทะเบียน":"REGISTRATION_MONEY",
             }
-        #self.column_dict["ทุนจดทะเบียน"] = "REGISTRATION_MONEY"
 
+    '''
     def enableColumnSetting(self):
         if self.column_setting:
             self.column_setting = self.column_setting.split(',')
@@ -49,33 +52,27 @@ class DbdExcelReader(object):
                 k = k.replace(" ", "\n")
                 self.column_dict[k] = v
             #print(self.column_dict)
+    '''
 
 
     def start(self):
-        self.enableColumnSetting()
         self.readExcel()
         self.checkData()
         self.hanldeData()
-
-        #oldtime=datetime.datetime.now()
         self.insertData()
-        #newtime=datetime.datetime.now()
-        #print(newtime-oldtime)
 
     def readExcel(self):
-        #self.data_dict = pd.read_excel(self.path, skiprows=2)
-        self.data_dict = pd.read_excel(self.path, skiprows=2, converters={'เลขทะเบียน':str}, nrows=self.rows)# import excel file as pandas dataframe
-        print(self.data_dict.columns)
+        self.data_dict = pd.read_excel(self.xls_path+self.xls_name, skiprows=2, converters={'เลขทะเบียน':str}, nrows=self.rows)# import excel file as pandas dataframe
         self.data_dict.rename(columns=self.column_dict,inplace=True)#change the column from thai to english
-        print(self.data_dict.columns)
-        #print(self.data_dict)
         
 
     def checkData(self):
+        #check the column in excel is complete or not
         for i,v in self.column_dict.items():
             if not v in self.data_dict.columns:
                 raise KeyError(f'can not find key {v} for {i}. Maybe the target changed the excel column, please check the excel file and add the changed column to variable. example:"ทุนจดทะเบียน:REGISTRATION_MONEY"')
         
+        #replace wrong or empty information to NaN
         check_nan_df = pd.isnull(self.data_dict)
         position = np.where(check_nan_df)
         for i in range(len(position[0])):
@@ -87,7 +84,6 @@ class DbdExcelReader(object):
 
         
     def hanldeData(self):
-        #self.data_dict['ID'] = self.data_dict['ID'].astype('str')
         self.data_dict['REGISTRATION_MONEY'] = self.data_dict['REGISTRATION_MONEY'].astype('str')
         self.data_dict['ZIPCODE'] = self.data_dict['ZIPCODE'].astype('str')
         self.data_dict['BUSINESS_TYPE_CODE'] = self.data_dict['BUSINESS_TYPE_CODE'].astype('str')

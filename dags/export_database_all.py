@@ -32,22 +32,18 @@ with DAG(
 
     task_start = start(d, 'export_database_all')
 
-    task1 = clearMdbd(d)
-    task2 = readCSV(d)
-    task3 = exportDBYear(d)
+    task1 = readCSV(d)
+    task2 = exportDBYear(d)
 
     taskf1 = failedEmail(d, task1)
     taskf2 = failedEmail(d, task2)
-    taskf3 = failedEmail(d, task3)
 
     task_finished = successEmail(d, 'export_database_all')
 
 
-    task_start >> task1 >> task2 >> task3 >> task_finished
-    #task_start >> task3 >> task_finished
+    task_start >> task1 >> task2 >> task_finished
 
     task1 >> taskf1
     task2 >> taskf2
-    task3 >> taskf3
 
 

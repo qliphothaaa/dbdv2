@@ -5,7 +5,6 @@ import pickle
 import os
 from scrapy import signals
 from scrapy.http import HtmlResponse
-from browser.scraping_browser import ScrapingBrowser
 from requests.exceptions import Timeout
 from scrapy.downloadermiddlewares.retry import RetryMiddleware
 import logging
@@ -71,7 +70,7 @@ class Dbdv2DownloaderMiddleware(RetryMiddleware):
                 break
 
         try:
-            time.sleep(0.1)
+            #time.sleep(0.1)
             response = requests.get(request.url, cookies = {'JSESSIONID':cookies}, timeout=10)
             html = str(response.content,'utf-8')
             page =  html
