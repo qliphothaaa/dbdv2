@@ -1,4 +1,4 @@
-Scrapy==1.8.0
+Scrapy==2.6.1
 mysql-connector-python==8.0.18
 pandas==0.25.0
 Pillow==5.4.1
